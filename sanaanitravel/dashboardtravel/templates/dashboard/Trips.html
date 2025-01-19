@@ -1,0 +1,415 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block content %}
+<div class="flex-col h-[70%]">
+
+    <div class="flex flex-row items-center gap-2 mx-2">
+        <h1 class="text-2xl font-bold">ادارة الرحلات</h1>
+        <div class="w-[80%] h-[5px] bg-[#F5F0F1] mt-4 rounded-lg"></div>
+    </div>
+
+    <div class="flex flex-row items-center gap-10 mx-7 my-4">
+
+        <button class="flex gap-[2px] border border-gray-300 items-center py-2">
+            <h5 class="text-black pr-2">filter</h5>
+            <img class="mr-[20px]" src="../../static/assetstravelers/image/img/icons/filter.svg" alt />
+        </button>
+
+        <button onclick="openDialog('Dialog5')" class="flex gap-[2px] bg-[#4278FF] mx-2 mt-3 mb-3 items-center py-2 rounded-lg w-[170px]">
+            <h5 class="text-white pr-2">اضافة رحلة جديده</h5>
+            <img class="" src="{% static 'assetstravelers/image/img/icons/add-circle.svg' %}" alt />
+        </button>
+        <div id="overlay1" class="custom-dialog z-10"></div>
+<!-- Dialog 5 اضافة رحلة-->
+<div id="Dialog5" class="custom-dialog z-10" style="display: none; direction: rtl">
+  <div class="w-full bg-primaryDialog flex items-center px-[25px] py-[10px]">
+      <h5 class="text-[30px] text-white ml-2">اضافة رحلة</h5>
+      <div class="flex-1 h-[2px] bg-white"></div>
+      <button class="text-3xl mx-2" onclick="openDialog('Dialog5')">X</button>
+  </div>
+  <form action="{% url 'add_trip' %}" method="POST" class="flex flex-col p-4" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div class="grid grid-cols-3 gap-2">
+          <div>
+
+            <select name="departure" class="custom-input" required>
+                <option>السفر من</option>
+                {% for cities in city %}
+                <option value="{{ cities.id }}">{{ cities.name }}</option>
+            {% endfor %}
+            </select>
+
+            <select name="destination" class="custom-input" required>
+                <option>السفر الى</option>
+                {% for cities in city %}
+                <option value="{{ cities.id }}">{{ cities.name }}</option>
+            {% endfor %}
+            </select>
+              <div class="flex gap-2 ">
+                  <select name="travel_type" class="custom-input flex-1" required>
+                      <option value="">نوع السفر</option>
+                      {% for traveltypes in traveltype %}
+                      <option value="{{ traveltypes.id }}">{{ traveltypes.name }}</option>
+                      {% endfor %}
+                  </select>
+                  <select name="trip_category" class="custom-input flex-1" required>
+                      <option value="">نوع الرحلة</option>
+                      {% for tripcategorys in tripcategory %}
+                      <option value="{{ tripcategorys.id }}">{{ tripcategorys.name }}</option>
+                  {% endfor %}
+                  </select>
+              </div>
+              <select name="vehicle_type" class="custom-input" required>
+                  <option value="">نوع السيارة للرحلة</option>
+                  {% for vehicles in vehicle %}
+                  <option value="{{ vehicles.id }}">{{ vehicles.name }}</option>
+              {% endfor %}
+              </select>
+              <input type="date" name="date" class="custom-input" required />
+              <input type="time" name="time" class="custom-input" required />
+              <input type="number" name="seat_count" class="custom-input" placeholder="عدد المقاعد" required />
+              <input type="number" name="seat_price" class="custom-input" placeholder="سعر المقعد الواحد" required />
+          </div>
+          <div>
+              <textarea name="details" class="custom-input" rows="14" placeholder="تفاصيل الرحلة" required></textarea>
+          </div>
+
+          <div class="flex flex-col items-center pt-2">
+            <img id="trip-image" 
+                 src="../../static/assetstravelers/image/img/icons8_collaborator_male_60px 2.png" 
+                 width="70%" height="90%" alt="trip Image" />
+            
+            <label for="file-input">
+              <input id="file-input" type="file" name="image" style="display: none" onchange="previewImage(event, 'trip-image')" />
+              <button class="custom-input w-[200px]" type="button" onclick="document.getElementById('file-input').click();">اختار صورة</button>
+            </label>
+          </div>
+
+          
+      </div>
+      <div class="w-full flex-row">
+          <button type="submit" class="w-[74%] py-1 text-white font-bold bg-primaryDialog rounded-md">حفــــــــــــــــظ</button>
+          <button type="button" class="w-1/4 py-1 border font-bold border-primaryDialog rounded-md text-primaryDialog" onclick="openDialog('Dialog5')">الغاء</button>
+      </div>
+  </form>
+</div>
+<!-- Dialog 5 end -->
+
+
+
+        <button onclick="openDialog('Dialog7')" class="flex gap-[2px] bg-[#4278FF] mx-2 mt-3 mb-3 items-center py-2 rounded-lg w-[170px]">
+            <h5 class="text-white pr-2">اضافة خدمة جديده</h5>
+            <img class="" src="{% static 'assetstravelers/image/img/icons/add-circle.svg' %}" alt />
+        </button>
+
+        <!-- Dialog 7 اضافة خدمة-->
+        <div id="Dialog7" class="custom-dialog" style="direction: rtl">
+            <div class="w-full bg-primaryDialog flex items-center px-[25px] py-[10px]">
+                <h5 class="text-[30px] text-white ml-2">اضافة خدمة</h5>
+                <div class="flex-1 h-[2px] bg-white"></div>
+                <button class="text-3xl mx-2" onclick="openDialog('Dialog7')">X</button>
+            </div>
+            <form action="{% url 'add_service'%}" method="POST" class="flex flex-col p-4" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="grid grid-cols-2 gap-2 ">
+                    <div>
+                        <input type="text" name="name" class="custom-input" placeholder=" اسم الخدمة" />
+                        <select name="service_type" class="custom-input">
+                            <option value>نوع  الخدمة</option>
+                            <option value="vip">VIP</option>
+                            <option value="priv">خاصة</option>
+                            <option value="fami">عائلية</option>
+                        </select>
+                        <textarea name="description" class="custom-input" rows="14" placeholder="تفاصيل الخدمة"></textarea>
+                    </div>
+
+
+                    <div class="flex flex-col items-center pt-2">
+                        <img src="{% static 'assetstravelers/image/img/icons8_collaborator_male_60px 2.png' %}" width="90%" height="90%" alt />
+                        <label for="file-input">
+                            <input id="file-input" type="file" name="image" style="display: none" />
+                            <button class="custom-input w-[200px]" type="button" onclick="document.getElementById('file-input').click();">اختار صورة</button>
+                        </label>
+                    </div>
+
+                    
+                </div>
+                <div class="w-full flex-row">
+                    <button type="submit" class="w-[74%] py-1 text-white font-bold bg-primaryDialog rounded-md text-ellipsiswhite">
+                        حفــــــــــــــــظ
+                    </button>
+                    <button class="w-1/4 py-1 border font-bold border-primaryDialog rounded-md text-primaryDialog">
+                        الغاء
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Dialog 7 end  -->
+
+        <form method="GET">
+            <div class="bg-[#F5F0F1] border border-gray-300 h-min flex flex-row mx-auto py-2 px-7 rounded-3xl gap-3 items-center">
+                <input type="text" name="q" value="{{ query }}" class="mx-auto bg-[#F5F0F1] px-7">
+                <button type="submit"><h5 class="text-gray-300 w-[80px]">Search</h5></button>
+                <img src="{% static 'assetstravelers/image/img/icons/Icon1.svg' %}" alt />
+            </div>
+        </form>
+
+    </div>
+
+    <!-- table  -->
+
+    <div>
+
+        <table class="min-w-full border bg-[#F5F0F1] border-[#F5F0F1] rounded-3xl overflow-hidden px-4">
+            <thead class="">
+                <tr class="bg-[#F5F0F1]">
+                    <th class="px-4 py-2 text-right border-b border-[#000000]"></th>
+                    <th class="px-4 py-2 text-right border-b border-[#000000]">من</th>
+                    <th class="px-4 py-2 text-right border-b border-[#000000]">الى</th>
+                    <th class="px-4 py-2 text-right border-b border-[#000000]">يوم</th>
+                    <th class="px-4 py-2 text-right border-b border-[#000000]">تاريخ</th>
+                    <th class="px-4 py-2 text-right border-b border-[#000000]">الوقت</th>
+                    <th class="px-4 py-2 text-right border-b border-[#000000]">عدد المقاعد</th>
+                    <th class="px-4 py-2 text-right border-b border-[#000000]">سعر المقعد</th>
+                    <th class="px-4 py-2 text-center border-b border-[#000000]">العمليـــــــــــــات</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for trip in trips %}
+                <tr>
+                    <td class="px-4 py-2 border-b border-[#F5F0F1]"><img src="{{ trip.image.url }}" alt width="70"  /></td>
+                    <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ trip.departure }}</td>
+                    <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ trip.destination }}</td>
+                    <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ trip.date|date:"l" }}</td>
+                    <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ trip.date }}</td>
+                    <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ trip.time }}</td>
+                    <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ trip.seat_count }}</td>
+                    <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ trip.seat_price }}</td>
+                    <td class="px-1 py-2 border-b border-[#F5F0F1] flex flex-row gap-2 justify-center">
+                        <button onclick="openEditDialogrr('{{ trip.id }}')" class="bg-[#4278FF] text-[#16151C] rounded-lg w-[80px] flex items-center gap-1 justify-center">
+                            <img class="" src="{% static 'assetstravelers/image/img/icons/edit.svg' %}" alt />
+                            <h6>تعديل</h6>
+                        </button>
+                        <button onclick="openDeleteDialoghh('{{ trip.id }}')" class="bg-[#FF424C] text-[#16151C] rounded-lg w-[80px] flex items-center gap-1 justify-center">
+                          <img class="" src="{% static 'assetstravelers/image/img/icons/Vector.svg' %}" alt />
+                          <h6>حذف</h6>
+                      </button>
+                        <button onclick="window.location.href='{% url 'trip_detail' trip.id %}'" class="bg-[#94FF42] rounded-lg w-[80px] flex items-center gap-1 justify-center">
+                            <img class="" src="{% static 'assetstravelers/image/img/icons/view.svg' %}" alt />
+                        </button>
+                    </td>
+                </tr>
+
+                {% empty %}
+                <tr>
+                    <td colspan="8" class="text-center text-[20px]">لا يوجد رحلات متاحة</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+    <!-- table end  -->
+
+
+
+
+
+
+
+
+
+
+    <!-- Dialog تعديل رحلة -->
+    <div id="EditDialog" class="custom-dialog" style="display: none; direction: rtl;">
+        <div class="w-full bg-primaryDialog flex items-center px-[25px] py-[10px]">
+            <h5 class="text-[30px] text-white ml-2">تعديل رحلة</h5>
+            <div class="flex-1 h-[2px] bg-white"></div>
+            <button class="text-3xl mx-2" onclick="closeEditDialog()">X</button>
+        </div>
+        <form id="editTripForm" action="{% url 'edit_trip' %}" method="POST" class="flex flex-col p-4" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="id" id="editTripId" />
+            <div class="grid grid-cols-3 gap-2">
+                <div>
+                    <select name="departure" id="departure" class="custom-input" required>
+                        <option>السفر من</option>
+                        {% for departure in city %}
+                            <option value="{{ departure.id }}">{{ departure.name }}</option>
+                        {% endfor %}
+                    </select>
+        
+                    <select name="destination" id="destination" class="custom-input" required>
+                        <option>السفر الى</option>
+                        {% for destination in city %}
+                            <option value="{{ destination.id }}">{{ destination.name }}</option>
+                        {% endfor %}
+                    </select>
+
+
+
+                    <div class="flex gap-2">
+                        <select name="travel_type" id="travel_type" class="custom-input flex-1" required>
+                            <option value="">نوع السفر</option>
+                            {% for travel_type in traveltype %}
+                            <option value="{{ travel_type.id }}">{{ travel_type.name }}</option>
+                            {% endfor %}
+                        </select>
+                        <select name="trip_category" id="trip_category" class="custom-input flex-1" required>
+                            <option value="">نوع الرحلة</option>
+                            {% for trip_category in tripcategory %}
+                            <option value="{{ trip_category.id }}">{{ trip_category.name }}</option>
+                        {% endfor %}
+                        </select>
+                    </div>
+                    <select name="vehicle_type" id="vehicle_type" class="custom-input" required>
+                        <option value="">نوع السيارة للرحلة</option>
+                        {% for vehicle_type in vehicle %}
+                        <option value="{{ vehicle_type.id }}">{{ vehicle_type.name }}</option>
+                    {% endfor %}
+                    </select>
+                    <input type="date" name="date" id="date" class="custom-input" required />
+                    <input type="time" name="time" id="time" class="custom-input" required />
+                    <input type="number" name="seat_count" id="seat_count" class="custom-input" placeholder="عدد المقاعد" required />
+                    <input type="number" name="seat_price" id="seat_price" class="custom-input" placeholder="سعر المقعد الواحد" required />
+                </div>
+                <div>
+                    <textarea name="details" id="details" class="custom-input" rows="14" placeholder="تفاصيل الرحلة" required></textarea>
+                </div>
+
+
+                <div class="flex flex-col items-center pt-2">
+                    <img 
+                      id="editImage" 
+                      src="" 
+                      alt="صورة المركبة" 
+                      style="max-width: 200px; max-height: 400px;" 
+                      onerror="this.onerror=null; this.src='{% static 'assetstravelers/image/img/icons8_collaborator_male_60px 2.png' %}'" 
+                    />
+                    <label 
+                      for="file-input" 
+                      class="custom-upload-button text-center"
+                    >
+                      اختر صورة
+                    </label>
+                    <input 
+                      id="file-input" 
+                      type="file" 
+                      name="image" 
+                      onchange="previewImageee(event, 'editImage')" 
+                      style="display: none;" 
+                    />
+                  </div>
+
+
+            </div>
+            <div class="w-full flex-row">
+                <button type="submit" class="w-[74%] py-1 text-white font-bold bg-primaryDialog rounded-md text-ellipsiswhite">حفــــــــــــــــظ</button>
+                <button type="button" class="w-1/4 py-1 border font-bold border-primaryDialog rounded-md text-primaryDialog" onclick="closeEditDialog()">الغاء</button>
+            </div>
+        </form>
+    </div>
+    <!-- Dialog تعديل رحلة end -->
+
+
+
+    <!-- Dialog حذف رحلة -->
+    <div id="DeleteDialog" class="custom-dialog" style="display: none; direction: rtl;">
+        <div class="w-full bg-red-600 flex items-center px-[25px] py-[10px]">
+            <h5 class="text-[30px] text-white ml-2">تأكيد الحذف</h5>
+            <div class="flex-1 h-[2px] bg-white"></div>
+            <button class="text-3xl mx-2" onclick="closeDeleteDialoghh()">X</button>
+        </div>
+        <div class="p-4">
+            <p class="text-center text-lg">هل أنت متأكد أنك تريد حذف هذه الرحلة؟</p>
+            <form id="deleteTripForm" action="{% url 'delete_trip' %}" method="POST">
+                {% csrf_token %}
+                <input type="hidden" name="id" id="deleteTripId" />
+                <div class="w-full flex-row">
+                    <button type="submit" class="w-[100%] py-1 text-white font-bold bg-red-700 rounded-md">نعم، احذفها</button>
+                    <button type="button" class="w-[100%] py-1 border font-bold border-red-700 rounded-md text-red-700" onclick="closeDeleteDialoghh()">إلغاء</button>
+                </div>
+            </form>
+        </div>
+    </div>
+    <!-- Dialog حذف رحلة end -->
+
+
+
+
+
+ <script>
+    const trips = [
+    {% for trip in trips %}
+    {
+        id: '{{ trip.id }}',
+        departure: '{{ trip.departure.id }}',
+        destination: '{{ trip.destination.id }}',
+        travel_type: '{{ trip.travel_type.id }}',
+        trip_category: '{{ trip.trip_category.id }}',
+        vehicle_type: '{{ trip.vehicle_type.id }}',
+        date: '{{ trip.date|date:"Y-m-d" }}',
+        time: '{{ trip.time|time:"H:i" }}',
+        seat_count: '{{ trip.seat_count }}',
+        seat_price: '{{ trip.seat_price|floatformat:2}}',
+        details: '{{ trip.details }}',
+        image: '{{ trip.image.url }}',
+    },
+    {% endfor %}
+];
+
+    function openEditDialogrr(tripId) {
+        const trip = trips.find(t => t.id === tripId);
+        document.getElementById('editTripId').value = trip.id;
+        document.getElementById("departure").value = trip.departure;
+        document.getElementById("destination").value = trip.destination;
+        document.getElementById('travel_type').value = trip.travel_type;
+        document.getElementById('trip_category').value = trip.trip_category;
+        document.getElementById('vehicle_type').value = trip.vehicle_type;
+        document.getElementById("date").value = trip.date;
+        document.getElementById("time").value = trip.time;
+        document.getElementById("seat_count").value = trip.seat_count;
+        document.getElementById("seat_price").value = parseFloat(trip.seat_price).toFixed(2);
+        document.getElementById("details").value = trip.details;
+        document.querySelector(".custom-dialog h5").innerText = `تعديل رحلة: ${trip.departure.name} إلى ${trip.destination.name}`;
+
+
+        const imageElement = document.getElementById('editImage');
+        imageElement.src = trip.image ? trip.image : '{% static "assetstravelers/image/img/icons8_collaborator_male_60px 2.png" %}'
+
+          document.getElementById('EditDialog').style.display = 'block'; 
+    }
+
+    function previewImagemm(event, imageId) {
+        const file = event.target.files[0]; 
+        if (file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                document.getElementById(imageId).src = e.target.result;
+            };
+            reader.readAsDataURL(file); 
+        }
+    }
+
+    function openDeleteDialoghh(tripId) {
+        document.getElementById('deleteTripId').value = tripId; 
+        document.getElementById('DeleteDialog').style.display = 'block';
+    }
+    
+    function closeEditDialog() {
+        document.getElementById('EditDialog').style.display = 'none';
+    }
+
+    function closeDeleteDialoghh() {
+        document.getElementById('DeleteDialog').style.display = 'none';
+    }
+  </script>
+
+
+
+
+
+</div>
+{% endblock %}
+
