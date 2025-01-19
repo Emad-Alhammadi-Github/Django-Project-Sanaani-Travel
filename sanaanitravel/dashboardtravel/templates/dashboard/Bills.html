@@ -1,0 +1,326 @@
+{% extends 'base.html' %}
+{% load  static %}
+{% block content %}
+<style>
+  @media print {
+    #print-reportull .flex { 
+      display: none; 
+    }
+
+    #report-content {
+      display: block; 
+    }
+  }
+</style>
+<div class=" flex-col  h-[70%]">
+
+
+    <div class="flex flex-row items-center gap-2 mx-2">
+        <h1 class=" text-2xl font-bold ">ادارة الفواتير</h1>
+        <div class="w-[80%] h-[5px] bg-[#F5F0F1] mt-4 rounded-lg"></div>
+
+    </div>
+
+
+    <div class="flex flex-row items-center gap-10 mx-7 my-4">
+
+
+        <button class="flex gap-[2px] border border-gray-300 items-center  py-2">
+            <h5 class="text-black  pr-2">filter</h5>
+            <img class="mr-[20px]" src="../../static/assetstravelers/image/img/icons/filter.svg" alt />
+
+          </button>
+
+
+
+          <button onclick="openDialog('Dialog6')" class="flex gap-[2px] bg-[#4278FF] mx-2 mt-3 mb-3  items-center  py-2 rounded-lg w-[170px]">
+            <h5 class="text-white  pr-2">اضافة فاتورة جديده</h5>
+            <img class="" src="{% static 'assetstravelers/image/img/icons/add-circle.svg'%}" alt /> 
+          </button>
+
+
+          <!-- Dialog 6 اضافة فاتورة-->
+          <div id="Dialog6" class="custom-dialog" style="direction: rtl">
+            <div
+              class="w-full bg-primaryDialog flex items-center px-[25px] py-[10px]"
+            >
+              <h5 class="text-[30px] text-white ml-2">اضافة فاتورة</h5>
+              <div class="flex-1 h-[2px] bg-white"></div>
+              <button class="text-3xl mx-2" onclick="openDialog('Dialog6')">X</button>
+            </div>
+            <form action method="POST" class="flex flex-col p-4" enctype="multipart/form-data">
+              <div class="grid grid-cols-2 gap-2">
+                <div>
+                  <input
+                    type="text"
+                    name="passenger"
+                    class="custom-input"
+                    placeholder="الاسم الرباعي"
+                  />
+                  <input
+                    type="text"
+                    name=""
+                    class="custom-input"
+                    placeholder="رقم البطاقة الشخصية او جواز السفر" 
+                  />
+
+                  <select name="trip" class="custom-input flex-1" id>
+                    <option value>الرحلة</option>
+                    {% for trip_location in trips %}
+                    <option value="{{ trip_location.id }}" {% if passenger.trip_location.id == trip_location.id  %}selected{% endif %}  data-price="{{ trip_location.seat_price }}">{{ trip_location.departure }} إلى {{ trip_location.destination }} ({{ trip_location.date }})</option>
+
+                {% endfor %}
+                  </select>
+                  
+                  {% comment %} <input type="text" name="trip" class="custom-input" placeholder="رقم الرحلة" /> {% endcomment %}
+                  <input
+                    type="text"
+                    name="seat_number"
+                    class="custom-input"
+                    placeholder="رقم المقعد"
+                  />
+          
+                </div>
+                <div>
+                  <select name="type_vehicle" class="custom-input flex-1" id>
+                    <option value>نوع المركبة</option>
+                      <option value>نوع السيارة</option>
+                      <option value="مرسيدس">مرسيدس</option>
+                      <option value="ليكزاز">ليكزاز</option>
+                      <option value="كورلا">كورلا</option>
+                      <option value="رافور">رافور</option>
+                      <option value="هيلوكس">هيلوكس</option>
+                      <option value="باص رويشان">باص رويشان</option>
+                      <option value="باص بلكه">باص بلكه</option>
+                      <option value="حافلة">حافلة</option>
+                  </select>
+
+                  <input type="number" name="paid_amount" id="editPaidAmount" class="custom-input" placeholder="المدفوع" required oninput="updateRemainingAmount()" />
+                  <input type="text" name="remaining_amount" id="editRemainingAmount" class="custom-input" placeholder="المتبقي" disabled />
+
+
+          
+                  <div class="flex gap-1">
+                    <input type="date" name="trip_date" class="custom-input flex-1" placeholder="تاريخ السفر" />
+          
+                    <input type="time" name="time" class="custom-input flex-1" placeholder="وقت السفر" />
+          
+                  </div>
+                </div>
+          
+              </div>
+              <div class="w-full flex-row">
+                <button
+                  class="w-[74%] py-1 text-white font-bold bg-primaryDialog rounded-md text-ellipsiswhite"
+                >
+                  حفــــــــــــــــظ
+                </button>
+                <button
+                  class="w-1/4 py-1 border font-bold border-primaryDialog rounded-md text-primaryDialog"
+                >
+                  الغاء
+                </button>
+              </div>
+            </form>
+          </div>
+
+
+          <div
+          class="bg-[#F5F0F1] border border-gray-300 h-min flex  flex-row mx-auto py-2 px-7 rounded-3xl gap-3 items-center">
+          <input type="text" value="" class="mx-auto bg-[#F5F0F1]  px-7">
+          <h5 class="text-gray-300 w-[80px]">Search</h5>
+          <img src="{% static 'assetstravelers/image/img/icons/Icon1.svg'%}" alt  />
+        </div>
+
+    </div>
+    
+    <!-- table  -->
+    <div>
+
+        <table class="min-w-full border bg-[#F5F0F1] border-[#F5F0F1] rounded-3xl overflow-hidden px-4">
+            <thead class="">
+                <tr class="bg-[#F5F0F1]">
+                    <th class="px-4 py-2 text-right border-b border-[#000000]"></th>
+                    <th class="px-4 py-2 text-right border-b border-[#000000]">الاسم</th>
+                    <th class="px-4 py-2 text-right border-b border-[#000000]">المدفوع</th>
+                    <th class="px-4 py-2 text-right border-b border-[#000000]">المتبقي</th>
+                    <th class="px-4 py-2 text-right border-b border-[#000000]">الرحلة</th>
+                    <th class="px-4 py-2 text-right border-b border-[#000000]">المقعد</th>
+                    <th class="px-4 py-2 text-right border-b border-[#000000]">تاريخ الرحلة</th>
+
+                    <th class="px-4 py-2 text-center border-b border-[#000000]">العمليـــــــــــــات</th>
+                </tr>
+            </thead>
+            <tbody>
+              {% for invoice in invoices %}
+                <tr>
+                    <td class="px-4 py-2 border-b border-[#F5F0F1]"><img src="../../img/SVG.svg" alt /></td>
+                    <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ invoice.passenger.name }}</td>
+                    <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ invoice.paid_amount }}</td>
+                    <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ invoice.remaining_amount }}</td>
+                    <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ invoice.trip.departure.name }} الى {{ invoice.trip.destination.name }}</td>
+                    <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ invoice.seat_number }}</td>
+                    <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ invoice.trip_date }}</td>
+
+                    <td class="px-1 py-2 border-b border-[#F5F0F1] flex flex-row gap-2 justify-center">
+                        <button onclick="openDialog('print-reportu')" class="bg-[#4278FF]  text-[#ffffff] rounded-lg w-[100px] flex items-center gap-1 justify-center"><h6>اصدار فاتورة</h6> </button>
+                           
+                        <!-- print-report -->
+                        <div id="print-reportu" class="custom-dialog w-[50%]" style="direction: rtl">
+                          <div  class="flex flex-col p-4">
+                            <div class="grid grid-cols-2 gap-2">
+                             <div class="flex flex-col items-center">
+                                <div class="flex flex-col items-center ">
+                                  <img
+                                    src="{% static 'assetstravelers/image/img/icons8_receipt_240px_2 1.png'%}"
+                                    width="80%"
+                                  />
+                                  <h1 class="text-[40px] w-full text-center font-bold">
+                                    طبـــــاعة فاتورة
+                                  </h1>
+                                  <button
+                                    id="print-btn"
+                                    class="w-full py-1 text-white font-bold mt-2 text-[24px] bg-primaryDialog text-ellipsiswhite"
+                                  >
+                                    طباعة
+                                  </button>
+                                  <button
+                                    class="w-full py-1 text-primaryDialog mt-2 font-bold text-[24px] border border-primaryDialog text-ellipsiswhite"
+                                  >
+                                    مشاركة
+                                  </button>
+                                </div>
+                                <button onclick="openDialog('print-reportu')"
+                                  class="w-full py-1 text-black mt-auto font-bold text-[24px] border border-black text-ellipsiswhite"
+                                >
+                                  العودة
+                                </button>
+                              </div> 
+
+                          
+                                <div id="report-content"  class="rounded-lg border-2 border-black flex flex-col gap-2 items-center px-[10px] py-2">
+
+                                
+                                
+                                  <img src="{% static 'assetstravelers/image/img/Group 1171275882.png'%}" width="250px" />
+                                  <h4 class="text-black font-bold text-[24px]">صنعاني للرحلات</h4>
+                                  <div class="grid grid-cols-2 w-full">
+                                      <h5>رقم الفاتورة:   </h5>
+                                      <h5>{{ invoice.id }}</h5>
+                                  </div>
+                                  <div
+                                    class="grid grid-cols-2 border border-black rounded-md w-full py-1 px-[10px] font-extrabold"
+                                  >
+                                    <div>
+                                      <h5>الاســـــــــــــــــــــــــــم:</h5>
+                                      <h5>رقــــــم البـــــطاقة :</h5>
+                                      <h5>رقـــــم الرحـــــــــــــلة:</h5>
+                                      <h5>رقـــــم المقعــــــــــد:</h5>
+                                      <h5>نـــــوع المركبــــــــــة:</h5>
+                                      <h5>المــــــــــــــــــــدفوع:</h5>
+                                      <h5>المتبقــــــــــــــــــــي:</h5>
+                                    </div>
+                                    <div>
+                                      <h5 >{{ invoice.passenger.name }}</h5>
+                                      <h5 >{{ invoice.passenger.id_number }}</h5>
+                                      <h5>{{ invoice.trip.id }}</h5>
+                                      <h5>{{ invoice.seat_number }}</h5>
+                                      <h5>{{ invoice.type_vehicle.vehicle_type }}</h5>
+                                      <h5>{{ invoice.paid_amount }}</h5>
+                                      <h5>{{ invoice.remaining_amount }}</h5>
+                                    </div>
+                                  </div>
+                                  <div
+                                    class="grid grid-cols-2 border border-black rounded-md w-full py-1 px-[10px] font-extrabold"
+                                  >
+                                    <div>
+                                      <h5>تاريخ الحجــــــــــــــــز:</h5>
+                                      <h5>تاريخ السفـــــــــــــــر :</h5>
+                              
+                                    </div>
+                                    <div>
+                                      <h5>{{ invoice.reservation_date|date:"Y-m-d" }}</h5>
+                                      <h5>{{ invoice.trip_date }}</h5>
+                      
+                                    </div>
+                                  </div>
+                                  <h5>للتواصل والاستفسار:</h5>
+                                  <h5>- 777777777-7333333333-01245786</h5>
+                                </div>
+                        
+
+
+                            </div>
+                          </div>
+                        </div>  
+
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">لا يوجد  فواتير متاحة</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+    <!-- table end  -->
+
+    <script>
+
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const { jsPDF } = window.jspdf;
+  
+      document.getElementById('print-btn').addEventListener('click', function () {
+          const doc = new jsPDF({
+              orientation: "portrait",
+              unit: "mm",
+              format: "a4"
+          });
+  
+          const content = document.getElementById('report-content');
+  
+          const unwantedContent = document.querySelector('.flex.flex-col.items-center');
+          unwantedContent.style.display = 'none';
+  
+          html2canvas(content, {
+              scale: 3, 
+          }).then(function (canvas) {
+              const imgData = canvas.toDataURL('image/png');
+  
+              const pageWidth = doc.internal.pageSize.width;
+              const pageHeight = doc.internal.pageSize.height;
+              const imgWidth = pageWidth - 20; 
+              const imgHeight = canvas.height * imgWidth / canvas.width; 
+  
+              doc.addImage(imgData, 'PNG', 10, 10, imgWidth, 250);
+  
+              doc.save('report.pdf');
+  
+              unwantedContent.style.display = 'block';
+          });
+      });
+  });
+
+
+
+      function updateRemainingAmount() {
+          const tripSelect = document.querySelector('select[name="trip_location"]');
+          const paidAmountInput = document.querySelector('input[name="paid_amount"]');
+          const remainingAmountInput = document.getElementById('remaining_amount');
+      
+          const selectedOption = tripSelect.options[tripSelect.selectedIndex];
+          const seatPrice = selectedOption ? parseFloat(selectedOption.getAttribute('data-price')) : 0;
+          const paidAmount = parseFloat(paidAmountInput.value) || 0;
+      
+          const remainingAmount = seatPrice - paidAmount;
+          remainingAmountInput.value = remainingAmount >= 0 ? remainingAmount.toFixed(2) : '0.00';
+      }
+
+
+    </script>
+
+    </div>
+{% endblock %}
