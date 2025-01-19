@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+{% load  static %}
+{% block content %}
+<div class=" flex-col  h-[70%]">
+
+
+    <div class="flex flex-row items-center gap-2 mx-2">
+        <h1 class=" text-2xl font-bold ">ادارة المركبات</h1>
+        <div class="w-[80%] h-[5px] bg-[#F5F0F1] mt-4 rounded-lg"></div>
+
+    </div>
+
+    <div class="flex flex-row items-center justify-center gap-2 mx-2 mb-4">
+        <h1 class=" text-2xl font-bold "> تفاصيل المركبة {{ vehicle.name }}</h1>
+
+    </div>
+
+     <div class="flex justify-center mt-5 items-center   gap-[50px]">
+     <!-- Card 1  -->
+        <div class="relative shadow-lg bg-white border border-[#4278FF] h-min w-[80%] flex flex-col justify-between overflow-hidden rounded-2xl">
+          <div class="h-[50%] w-full overflow-hidden">
+              <img src="{{ vehicle.image.url }}" alt="Vehicle Image" class="w-full h-full object-cover" />
+          </div>
+      
+          <div class="flex flex-col justify-between px-3 py-2 h-[50%]">
+
+              <div class="border-b border-[#16151C] mt-2 mr-3">
+                <h6 class="text-[16px] border-t border-[#16151C]">اسم المركبة : {{ vehicle.name }}</h6>
+                <h6 class="text-[16px] border-t border-[#16151C]">الموديل : {{ vehicle.model }}</h6>
+                <h6 class="text-[16px] border-t border-[#16151C]">نوع السيارة : {{ vehicle.vehicle_type }}</h6>
+                <h6 class="text-[16px] border-t border-[#16151C]">تاريخ الاضافة : {{ vehicle.date_added|date:'Y-m-d'}}</h6>
+                <h6 class="text-[16px] border-t border-[#16151C]">رقم اللوحة : {{ vehicle.plate_number }}</h6>
+                <h6 class="text-[16px] border-t border-[#16151C]">عدد الركاب : {{ vehicle.passenger_capacity }}</h6>
+                <h6 class="text-[16px] border-t border-[#16151C]"> نوع المحرك: {{ vehicle.motor_type }}</h6>
+                <h6 class="text-[16px] border-t border-[#16151C]"> المركبة لاي جهه تابعة: {{ vehicle.owner }}</h6>
+
+                  <h6 class="text-[16px] border-t border-[#16151C]">اسم السواق : {{ vehicle.driver.name }}</h6>
+                  <h6 class="text-[16px] border-t border-[#16151C]">رقم هاتف السواق : {{ vehicle.driver.phone }}</h6>
+                  <h6 class="text-[16px] border-t border-[#16151C]">جنسية السواق : {{ vehicle.driver.nationality }}</h6>
+                  <h6 class="text-[16px] border-t border-[#16151C]">الحالة :  {% if vehicle.status == "new" %}جديد {% elif vehicle.status == "old" %} مستعمل  {% elif vehicle.status == "in_service" %} في الخدمة  {%else%} عاطلة {% endif %}</h6>
+                  <h6 class="text-[16px] border-t border-[#16151C]">سعة البنزين : {{ vehicle.fuel_capacity }}</h6>
+                  <h6 class="text-[16px] border-t border-[#16151C]">سعر المركبة : {{ vehicle.price }}</h6>
+
+                  <h6 class="text-[16px] border-t border-[#16151C]">الوصف : {{ vehicle.description }}</h6>
+              </div>
+      
+
+          </div>
+      </div>
+
+
+
+
+
+
+</div>
+{% endblock %}
