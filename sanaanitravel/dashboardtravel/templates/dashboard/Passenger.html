@@ -1,0 +1,361 @@
+{% extends 'base.html' %}
+{% load  static %}
+{% block content %}
+<div class=" flex-col  h-[70%]">
+
+
+    <div class="flex flex-row items-center gap-2 mx-2">
+        <h1 class=" text-2xl font-bold ">ادارة المسافرين</h1>
+        <div class="w-[80%] h-[5px] bg-[#F5F0F1] mt-4 rounded-lg"></div>
+
+    </div>
+
+
+    <div class="flex flex-row items-center gap-10 mx-7 my-4">
+
+
+        <button class="flex gap-[2px] border border-gray-300 items-center  py-2">
+            <h5 class="text-black  pr-2">filter</h5>
+            <img class="mr-[20px]" src="../../static/assetstravelers/image/img/icons/filter.svg" alt />
+
+          </button>
+
+
+
+          <button onclick="openDialog('Dialog3')" class="flex gap-[2px] bg-[#4278FF] mx-2 mt-3 mb-3 justify-center items-center  py-2 rounded-lg w-[170px]">
+            <h5 class="text-white  pr-2">جديد</h5>
+            <img class="" src="{% static 'assetstravelers/image/img/icons/add-circle.svg'%}" alt />  
+          </button>
+
+
+          <!-- Dialog 3 اضافة مسافر -->
+          <div id="Dialog3" class="custom-dialog" style="direction: rtl">
+            <div class="w-full bg-primaryDialog flex items-center px-[25px] py-[10px]">
+                <h5 class="text-[30px] text-white ml-2">اضافة مسافر</h5>
+                <div class="flex-1 h-[2px] bg-white"></div>
+                <button class="text-3xl mx-2" onclick="openDialog('Dialog3')">X</button>
+            </div>
+            <form action="{% url 'add_passenger' %}" method="POST" class="flex flex-col p-4" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="grid grid-cols-3 gap-2">
+                    <div>
+                        <input type="text" name="name" class="custom-input" placeholder="الاسم الرباعي" required />
+                        <input type="text" name="id_number" class="custom-input" placeholder="رقم البطاقة الشخصية" required />
+                        <input type="text" name="passport_number" class="custom-input" placeholder="رقم الجواز" required />
+                        <input type="text" name="phone" class="custom-input" placeholder="رقم الهاتف 1" required />
+                        <input type="text" name="phone2" class="custom-input" placeholder="رقم الهاتف 2" />
+                    </div>
+                    <div>
+                      <select name="trip_location" class="custom-input flex-1" required>
+                        <option value="">الرحلة</option>
+                        {% for trip in trips %}
+                            <option value="{{ trip.id }}" data-price="{{ trip.seat_price }}">{{ trip.departure }} إلى {{ trip.destination }} ({{ trip.date }})</option>
+                        {% empty %}
+                            <option value="">لا توجد رحلات متاحة</option>
+                        {% endfor %}
+                    </select>
+                        <input type="number" name="paid_amount" class="custom-input" placeholder="العربون" required oninput="updateRemainingAmount()" />
+                        <input type="text" name="remaining_amount" id="remaining_amount" class="custom-input" placeholder="المتبقي" disabled />
+                        <input type="date" name="trip_date" class="custom-input" placeholder="التاريخ" required />
+        
+                        <div class="flex gap-1">
+                            <select name="gender" class="custom-input flex-1" required>
+                                <option value="">الجنس</option>
+                                <option value="1">ذكر</option>
+                                <option value="0">أنثى</option>
+                            </select>
+                            <select name="nationality" class="custom-input flex-1" required>
+                                <option value="">الجنسية</option>
+                                {% for nationality in nationalities %}
+                                <option value="{{ nationality.id }}">{{ nationality.name }}</option>
+                            {% endfor %}
+
+                            </select>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-center pt-2">
+                        <img id="passenger-image" 
+                             src="../../static/assetstravelers/image/img/icons8_collaborator_male_60px 2.png" 
+                             width="70%" height="90%" alt="passenger Image" />
+                        
+                        <label for="file-input">
+                          <input id="file-input" type="file" name="image" style="display: none" onchange="previewImage(event, 'passenger-image')" />
+                          <button class="custom-input w-[200px]" type="button" onclick="document.getElementById('file-input').click();">اختار صورة</button>
+                        </label>
+                      </div>
+                </div>
+                <div class="w-full flex-row">
+                    <button type="submit" class="w-[74%] py-1 text-white font-bold bg-primaryDialog rounded-md text-ellipsiswhite">حفــــــــــــــــظ</button>
+                    <button type="button" class="w-1/4 py-1 border font-bold border-primaryDialog rounded-md text-primaryDialog" onclick="openDialog('Dialog3')">الغاء</button>
+                </div>
+            </form>
+        </div>
+
+
+        <form method="GET">
+          <div
+          class="bg-[#F5F0F1] border border-gray-300 h-min flex  flex-row mx-auto py-2 px-7 rounded-3xl gap-3 items-center">
+          <input type="text" name="q" value="{{ query }}" class="mx-auto bg-[#F5F0F1]  px-7">
+          <button type="submit"><h5 class="text-gray-300 w-[80px]">Search</h5></button>
+          <img src="{% static 'assetstravelers/image/img/icons/Icon1.svg'%}" alt  />
+         </div>
+
+      </form>
+
+
+
+    </div>
+    
+    <!-- table  -->
+    <div>
+      <table class="min-w-full border bg-[#F5F0F1] border-[#F5F0F1] rounded-3xl overflow-hidden px-4">
+          <thead>
+              <tr class="bg-[#F5F0F1]">
+                  <th class="px-4 py-2 text-right border-b border-[#000000]"></th>
+                  <th class="px-4 py-2 text-right border-b border-[#000000]">الاسم</th>
+                  <th class="px-4 py-2 text-right border-b border-[#000000]">المدفوع</th>
+                  <th class="px-4 py-2 text-right border-b border-[#000000]">المتبقي</th>
+                  <th class="px-4 py-2 text-right border-b border-[#000000]">الرحلة</th>
+                  <th class="px-4 py-2 text-right border-b border-[#000000]">تاريخ الرحلة</th>
+                  <th class="px-4 py-2 text-center border-b border-[#000000]">العمليـــــــــــــات</th>
+              </tr>
+          </thead>
+          <tbody>
+              {% for passenger in passengers %}
+              <tr>
+                <td class="px-4 py-2 border-b border-[#F5F0F1]">
+                    <img src="{{ passenger.image.url }}" alt width="70" class="cursor-pointer" onclick="openModal('{{ passenger.image.url }}')" />
+                  </td>
+                  <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ passenger.name }}</td>
+                  <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ passenger.paid_amount }}</td>
+                  <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ passenger.remaining_amount }}</td>
+                  <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ passenger.trip_location.departure }} إلى {{ passenger.trip_location.destination }}</td>
+                  <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ passenger.trip_date }}</td>
+                  <td class="px-1 py-2 border-b border-[#F5F0F1] flex flex-row gap-2 justify-center">
+                    <button class="bg-[#4278FF] text-[#16151C] rounded-lg w-[80px] flex items-center gap-1 justify-center" onclick="openEditDialog('{{ passenger.id }}')">
+                      <img src="{% static 'assetstravelers/image/img/icons/edit.svg' %}" alt /><h6>تعديل</h6>
+                  </button>
+                      <button onclick="openDialog('DialogDelete{{ passenger.id }}')" class="bg-[#FF424C] text-[#16151C] rounded-lg w-[80px] flex items-center gap-1 justify-center"><img src="{% static 'assetstravelers/image/img/icons/Vector.svg' %}" alt /><h6>حذف</h6></button>
+                      <button onclick="window.location.href='{% url 'passenger_detail' passenger.id %}'" class="bg-[#94FF42] rounded-lg w-[80px] flex items-center gap-1 justify-center">
+                        <img class="" src="{% static 'assetstravelers/image/img/icons/view.svg' %}" alt />
+                    </button>
+
+                    <button onclick="openDialog('transction{{ passenger.id }}')" class="bg-[#80cb47] rounded-lg w-[80px] flex items-center gap-1 justify-center">
+                        <h6 class="text-[12px]">تعديل معاملة</h6>                    
+                    </button>
+                  </td>
+              </tr>
+              {% empty %}
+              <tr>
+                  <td colspan="6" class="text-center">لا يوجد مسافرين متاحين</td>
+              </tr>
+              {% endfor %}
+          </tbody>
+      </table>
+  </div>
+    <!-- table end  -->
+
+    {% for passenger in passengers %}
+        <!-- Dialog 4: تعديل مسافر -->
+        <div id="EditDialog{{ passenger.id }}" class="custom-dialog" style="direction: rtl; display: none;">
+          <div class="w-full bg-primaryDialog flex items-center px-[25px] py-[10px]">
+              <h5 class="text-[30px] text-white ml-2">تعديل مسافر</h5>
+              <div class="flex-1 h-[2px] bg-white"></div>
+              <button class="text-3xl mx-2" onclick="openDialog('EditDialog{{ passenger.id }}')">X</button>
+          </div>
+          <form action="{% url 'edit_passenger' passenger.id %}" method="POST" class="flex flex-col p-4" enctype="multipart/form-data">
+              {% csrf_token %}
+              <input type="hidden" name="passenger_id" id="editPassengerId" />
+              <div class="grid grid-cols-3 gap-2">
+                  <div>
+                      <input type="text" name="name" value="{{ passenger.name }}" class="custom-input" placeholder="الاسم الرباعي" required />
+                      <input type="text" name="id_number" value="{{ passenger.id_number }}" class="custom-input" placeholder="رقم البطاقة الشخصية" required />
+                      <input type="text" name="passport_number" value="{{ passenger.passport_number }}" class="custom-input" placeholder="رقم الجواز" required />
+
+                      <input type="text" name="phone" value="{{ passenger.phone }}"  class="custom-input" placeholder="رقم الهاتف 1" required />
+                      <input type="text" name="phone2" value="{{ passenger.phone }}" class="custom-input" placeholder="رقم الهاتف 2" />
+                  </div>
+                  <div>
+                      <select name="trip_location" id="editTripLocation" class="custom-input flex-1" required>
+                          <option value="">الرحلة</option>
+                          {% for trip_location in trips %}
+                              <option value="{{ trip_location.id }}" {% if passenger.trip_location.id == trip_location.id  %}selected{% endif %}  data-price="{{ trip_location.seat_price }}">{{ trip_location.departure }} إلى {{ trip_location.destination }} ({{ trip_location.date }})</option>
+
+                          {% endfor %}
+                      </select>
+
+
+                      <input type="number" name="paid_amount" value="{{ passenger.paid_amount|floatformat }}" class="custom-input" placeholder="العربون" required oninput="updateRemainingAmount()" />
+                      <input type="text" name="remaining_amount"  id="remaining_amount" class="custom-input" placeholder="المتبقي" disabled />
+                      <input type="date" name="trip_date" value="{{ passenger.trip_date|date:'Y-m-d' }}" id="editTripDate" class="custom-input" placeholder="التاريخ" />
+
+                      <div class="flex gap-1">
+                          <select name="gender" class="custom-input flex-1" id>
+                              <option value="">الجنس</option>
+                              <option value="1" {% if passenger.gender == "1" %}selected{% endif %}>ذكر</option>
+                              <option value="0" {% if passenger.gender == "0" %}selected{% endif %}>أنثى</option>
+                          </select>
+                          <select name="nationality" class="custom-input flex-1" required>
+                              <option value="">الجنسية</option>
+                              {% for nationality in nationalities %}
+                              <option value="{{ nationality.id }}" {% if passenger.nationality.id == nationality.id %}selected{% endif %}>
+                                  {{ nationality.name }}
+                              </option>
+                          {% endfor %}
+                          </select>
+                      </div>
+                  </div>
+
+
+                  <div class="flex flex-col items-center pt-2">
+                    <img 
+                      id="editImage{{ passenger.id }}" 
+                      src="{{ passenger.image.url }}" 
+                      alt="صورة المسافر" 
+                      style="max-width: 200px; max-height: 400px;" 
+                      onerror="this.onerror=null; this.src='{% static 'assetstravelers/image/img/icons8_collaborator_male_60px 2.png' %}'" 
+                    />
+                    <label 
+                      for="file-input-{{ passenger.id }}" 
+                      class="custom-upload-button text-center"
+                    >
+                      اختر صورة
+                    </label>
+                    <input 
+                      id="file-input-{{ passenger.id }}" 
+                      type="file" 
+                      name="image" 
+                      onchange="previewImageee(event, '{{ passenger.id }}')" 
+                      style="display: none;" 
+                    />
+                  </div>
+
+
+
+              </div>
+              <div class="w-full flex-row">
+                  <button type="submit" class="w-[74%] py-1 text-white font-bold bg-primaryDialog rounded-md">تحديث</button>
+                  <button type="button" class="w-1/4 py-1 border font-bold border-primaryDialog rounded-md" onclick="openDialog('EditDialog{{ passenger.id }}')">الغاء</button>
+              </div>
+          </form>
+      </div>
+      {% endfor %}
+
+
+
+
+      {% for passenger in passengers %}
+      <!-- Dialog 4:  معاملة -->
+      <div id="transction{{ passenger.id }}" class="custom-dialog" style="direction: rtl; display: none;">
+        <div class="w-full bg-primaryDialog flex items-center px-[25px] py-[10px]">
+            <h5 class="text-[30px] text-white ml-2">تعديل معاملة</h5>
+            <div class="flex-1 h-[2px] bg-white"></div>
+            <button class="text-3xl mx-2" onclick="openDialog('transction{{ passenger.id }}')">X</button>
+        </div>
+        <form action="{% url 'transction_payment_passenger' passenger.id %}" method="POST" class="flex flex-col p-4" enctype="multipart/form-data">
+            {% csrf_token %}
+            <input type="hidden" name="passenger_id" id="editPassengerId" />
+            <div class="grid grid-cols-1 gap-2">
+
+                <div class=" -py-3">
+                      <label>المدفوع:<input type="text" name="paid_amount" id="editPaidAmount{{ passenger.id }}" value="{{ passenger.paid_amount }}" class="custom-input" disabled />
+                      </label>
+                      <br>
+
+                      <label >المتبقي:<input type="text" id="editRemainingAmount{{ passenger.id }}" value="{{ passenger.remaining_amount }}" class="custom-input" disabled />
+                      </label>
+                      <br>
+
+                      <label>إضافة للمتبقي:</label>
+                      <input type="number" name="additional_payment" id="additionalPayment{{ passenger.id }}" class="custom-input" placeholder="إضافة للمتبقي" oninput="updateNewRemaining({{ passenger.id }})" />
+
+                      <label>المتبقي الجديد:</label>
+                      <input type="text" id="newRemainingAmount{{ passenger.id }}" class="custom-input" placeholder="المتبقي بعد الإضافة" disabled />
+
+                </div>
+            </div>
+            <div class="w-full flex-row">
+                <button type="submit" class="w-[74%] py-1 text-white font-bold bg-primaryDialog rounded-md">تحديث</button>
+                <button type="button" class="w-1/4 py-1 border font-bold border-primaryDialog rounded-md" onclick="openDialog('transction{{ passenger.id }}')">الغاء</button>
+            </div>
+        </form>
+    </div>
+    {% endfor %}
+
+
+
+
+
+
+
+     {% for passenger in passengers %}     
+<!-- Dialog 5: تأكيد الحذف -->
+    <div id="DialogDelete{{ passenger.id }}" class="custom-dialog" style="direction: rtl; display: none;">
+        <div class="w-full bg-primaryDialog flex items-center px-[25px] py-[10px]">
+            <h5 class="text-[30px] text-white ml-2">تأكيد الحذف</h5>
+            <div class="flex-1 h-[2px] bg-white"></div>
+            <button class="text-3xl mx-2" onclick="openDialog('DialogDelete{{ passenger.id }}')">X</button>
+        </div>
+        <form action="{% url 'delete_passenger' passenger.id%}" method="POST">
+            {% csrf_token %}
+            <input type="hidden" name="passenger_id" id="deletePassengerId" />
+            <p class="p-4">هل أنت متأكد أنك تريد حذف هذا المسافر {{ passenger.name }}؟ هذه العملية لا يمكن التراجع عنها.</p>
+            <div class="w-full flex-row">
+                <button type="submit" class="w-[74%] py-1 text-white font-bold bg-primaryDialog rounded-md">حذف</button>
+                <button type="button" class="w-1/4 py-1 border font-bold border-primaryDialog rounded-md" onclick="openDialog('DialogDelete{{ passenger.id }}')">الغاء</button>
+            </div>
+        </form>
+    </div>
+    {% endfor %}
+
+    <div id="imageModal" class="fixed inset-0 bg-black bg-opacity-50 hidden justify-center items-center z-50 flex">
+        <div class="relative">
+          <span class="absolute top-0 right-0 text-black text-2xl cursor-pointer" onclick="closeModal()">&times;</span>
+          <img id="modalImage" src="" alt="Preview Image" class="max-w-full max-h-screen object-contain">
+        </div>
+      </div>
+      
+    <script>
+        function updateRemainingAmount() {
+            const tripSelect = document.querySelector('select[name="trip_location"]');
+            const paidAmountInput = document.querySelector('input[name="paid_amount"]');
+            const remainingAmountInput = document.getElementById('remaining_amount');
+        
+            const selectedOption = tripSelect.options[tripSelect.selectedIndex];
+            const seatPrice = selectedOption ? parseFloat(selectedOption.getAttribute('data-price')) : 0;
+            const paidAmount = parseFloat(paidAmountInput.value) || 0;
+        
+            const remainingAmount = seatPrice - paidAmount;
+            remainingAmountInput.value = remainingAmount >= 0 ? remainingAmount.toFixed(2) : '0.00';
+        }
+
+        function updateNewRemaining(passengerId) {
+            const remainingAmountInput = document.getElementById(`editRemainingAmount${passengerId}`);
+            const additionalPaymentInput = document.getElementById(`additionalPayment${passengerId}`);
+            const newRemainingAmountInput = document.getElementById(`newRemainingAmount${passengerId}`);
+        
+            const remainingAmount = parseFloat(remainingAmountInput.value) || 0;
+            const additionalPayment = parseFloat(additionalPaymentInput.value) || 0;
+        
+            const newRemainingAmount = remainingAmount - additionalPayment;
+            newRemainingAmountInput.value = newRemainingAmount >= 0 ? newRemainingAmount.toFixed(2) : '0.00';
+        }
+
+  function openModal(imageUrl) {
+    const modal = document.getElementById("imageModal");
+    const modalImage = document.getElementById("modalImage");
+    modalImage.src = imageUrl; 
+    modal.classList.remove("hidden");  
+  }
+
+  function closeModal() {
+    const modal = document.getElementById("imageModal");
+    modal.classList.add("hidden"); 
+  }
+
+
+
+      </script>
+
+    </div>
+{% endblock %}
