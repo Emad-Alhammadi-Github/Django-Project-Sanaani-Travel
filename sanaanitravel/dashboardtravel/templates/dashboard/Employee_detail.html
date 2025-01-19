@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+{% load  static %}
+{% block content %}
+<div class=" flex-col  h-[70%]">
+
+
+    <div class="flex flex-row items-center gap-2 mx-2">
+        <h1 class=" text-2xl font-bold ">ادارة الموظفين</h1>
+        <div class="w-[80%] h-[5px] bg-[#F5F0F1] mt-4 rounded-lg"></div>
+
+    </div>
+
+    <div class="flex flex-row items-center justify-center gap-2 mx-2 mb-4">
+        <h1 class="text-2xl font-bold">تفاصيل الموظف {{ employee.name }}</h1>
+
+    </div>
+
+     <div class="flex justify-center mt-5 items-center   gap-[50px]">
+     <!-- Card 1  -->
+        <div class="relative shadow-lg bg-white border border-[#4278FF] h-min w-[80%] flex flex-col justify-between overflow-hidden rounded-2xl">
+          <div class="h-[50%] w-full overflow-hidden">
+            {% if employee.image %}
+            <img src="{{ employee.image.url }}" alt="صورة الموظف" class="w-full h-full object-cover" />
+        {% else %}
+            <img src="{% static 'assetstravelers/image/img/icons8_collaborator_male_60px 2.png' %}" alt="صورة افتراضية" class="w-full h-full object-cover"/>
+        {% endif %}
+
+          </div>
+      
+          <div class="flex flex-col justify-between px-3 py-2 h-[50%]">
+
+              <div class="border-b border-[#16151C] mt-2 mr-3">
+                <h6 class="text-[16px] border-t border-[#16151C]">اسم الموظف: {{ employee.name }}</h6>
+                <h6 class="text-[16px] border-t border-[#16151C]"> اسم المستخدم للموظف: {{ employee.user.username }}</h6>
+
+                <h6 class="text-[16px] border-t border-[#16151C]">الوظيفة: {{ employee.job_title }}</h6>
+                <h6 class="text-[16px] border-t border-[#16151C]">رقم الهاتف: {{ employee.phone }}</h6>
+                <h6 class="text-[16px] border-t border-[#16151C]">رقم البطاقة الشخصية: {{ employee.id_number }}</h6>
+
+                <h6 class="text-[16px] border-t border-[#16151C]">البريد الإلكتروني: {{ employee.user.email }}</h6>
+                <h6 class="text-[16px] border-t border-[#16151C]">الجنسية: {{ employee.nationality }}</h6>
+                <h6 class="text-[16px] border-t border-[#16151C]">نوع المستخدم: {{ employee.user_type }}</h6>
+                <h6 class="text-[16px] border-t border-[#16151C]">الراتب: {{ employee.salary }}</h6>
+                <h6 class="text-[16px] border-t border-[#16151C]">الجنس: {{ employee.gender }}</h6>
+              </div>
+      
+
+          </div>
+      </div>
+
+
+</div>
+{% endblock %}
