@@ -1,0 +1,432 @@
+{% extends 'base.html' %}
+{% load  static %}
+{% block content %}
+<div class=" flex-col  h-[70%]">
+
+
+    <div class="flex flex-row items-center gap-2 mx-2">
+        <h1 class=" text-2xl font-bold ">ادارة المركبات</h1>
+        <div class="w-[80%] h-[5px] bg-[#F5F0F1] mt-4 rounded-lg"></div>
+
+    </div>
+
+
+    <div class="flex flex-row items-center gap-10 mx-7 my-4">
+
+
+        <button class="flex gap-[2px] border border-gray-300  items-center  py-2">
+            <h5 class="text-black  pr-2">filter</h5>
+            <img class="mr-[20px]" src="../../static/assetstravelers/image/img/icons/filter.svg" alt />
+
+          </button>
+
+
+
+          <button onclick="openDialog('Dialog1')" class="flex gap-[2px] bg-[#4278FF] mx-2 mt-3 mb-3 justify-center items-center  py-2 rounded-lg w-[170px]">
+            <h5 class="text-white  pr-2">جديد</h5>
+            <img class="" src="{% static 'assetstravelers/image/img/icons/add-circle.svg'%}" alt />   
+          </button>
+          <!-- Dialog 1 اضافة مركبة -->
+          <div id="Dialog1" class="custom-dialog z-10" style="direction: rtl">
+            <div
+              class="w-full bg-primaryDialog flex items-center px-[25px] py-[10px]"
+            >
+              <h5 class="text-[30px] text-white ml-2">اضافة مركبة</h5>
+              <div class="flex-1 h-[2px] bg-white"></div>
+              <button class="text-3xl mx-2" onclick="openDialog('Dialog1')">X</button>
+            </div>
+            <form action="{% url 'add_vehicle'%}" method="POST" class="flex flex-col p-4" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="grid grid-cols-3 gap-2">
+                <div>
+                  <input type="text" name="name" class="custom-input" placeholder=" اسم السيارة" />
+
+                  <select name="vehicle_type" id class="custom-input">
+                    <option value>نوع السيارة</option>
+                    <option value="مرسيدس">مرسيدس</option>
+                    <option value="ليكزاز">ليكزاز</option>
+                    <option value="كورلا">كورلا</option>
+                    <option value="رافور">رافور</option>
+                    <option value="هيلوكس">هيلوكس</option>
+                    <option value="باص رويشان">باص رويشان</option>
+                    <option value="باص بلكه">باص بلكه</option>
+                    <option value="حافلة">حافلة</option>
+                  </select>
+                  <select name="model" id class="custom-input">
+                    <option value> الموديل</option>
+                    <option value="1990">1990</option>
+                    <option value="1995">1995</option>
+                    <option value="1998">1998</option>
+                    <option value="2000">2000</option>
+                    <option value="2002">2002</option>
+                    <option value="2004">2004</option>
+                    <option value="2006">2006</option>
+                    <option value="2008">2008</option>
+                    <option value="2010">2010</option>
+                    <option value="2012">2012</option>
+                    <option value="2014">2014</option>
+                    <option value="2015">2015</option>
+                    <option value="2016">2016</option>
+                    <option value="2017">2017</option>
+                    <option value="2018">2018</option>
+                    <option value="2019">2019</option>
+                    <option value="2020">2020</option>
+                    <option value="2021">2021</option>
+                    <option value="2022">2022</option>
+                  </select>
+                  <input type="date" name="date_added" class="custom-input" placeholder="سنة الاصدار" />
+                  <select name="status" class="custom-input">
+                    <option value>الحالة</option>
+                    <option value="new">جديد</option>
+                    <option value="old">مستعمل</option>
+                    <option value="in_service">في الخدمة</option>
+                    <option value="out_of_service">عاطلة</option>
+
+                  </select>
+                  <select name="driver" class="custom-input">
+                    <option value>السواق</option>
+                    {% for driver in drivers %}
+                    <option value="{{ driver.id }}" >{{ driver.name }}</option>
+                      {% empty %}
+                       <option value="">لا يوجد سواق متاح</option>
+                    {% endfor %}
+                  </select>
+                  <input
+                    type="number"
+                    name="plate_number"
+                    class="custom-input"
+                    placeholder="رقم اللوحة"
+                  />
+                  <input
+                    type="number"
+                    name="passenger_capacity"
+                    class="custom-input"
+                    placeholder="عدد الركاب"
+                  />
+                </div>
+                <div>
+                  <select name="motor_type" id class="custom-input">
+                    <option value>نوع المحرك</option>
+                    <option value="بترول">بترول</option>
+                    <option value="غاز">غاز</option>
+                    <option value="ديزل">ديزل</option>
+                    <option value="كهرباء">كهرباء</option>
+                  </select>
+                  <input
+                    type="number"
+                    name="fuel_capacity"
+                    class="custom-input"
+                    placeholder="سعة البنزين"/>
+
+                  <input
+                    type="number"
+                    class="custom-input"
+                    name="price"
+                    id
+                    placeholder="سعر المركبة"
+                  />
+                  <select name="owner" id class="custom-input">
+                    <option value>تبعية المركبة</option>
+                    <option value="تابعة للشركة">تابعة للشركة</option>
+                    <option value="للشركة اخرى">للشركة اخرى</option>
+                    <option value="لسواق">لسواق</option>
+                  </select>
+                  <textarea name="description" class="custom-input" rows="7"></textarea>
+                </div>
+                <div class="flex flex-col items-center pt-2">
+                  <img id="vehicle-image" 
+                       src="../../static/assetstravelers/image/img/icons8_collaborator_male_60px 2.png" 
+                       width="70%" height="90%" alt="vehicle Image" />
+                  
+                  <label for="file-input">
+                    <input id="file-input" type="file" name="image" style="display: none" onchange="previewImage(event, 'vehicle-image')" />
+                    <button class="custom-input w-[200px]" type="button" onclick="document.getElementById('file-input').click();">اختار صورة</button>
+                  </label>
+                </div>
+
+
+              </div>
+              <div class="w-full flex-row">
+                <button type="submit" class="w-[74%] py-1 text-white font-bold bg-primaryDialog rounded-md">حفــــــــــــــــظ</button>
+                <button type="button" class="w-1/4 py-1 border font-bold border-primaryDialog rounded-md text-primaryDialog" onclick="openDialog('Dialog1')">الغاء</button>
+              </div>
+            </form>
+          </div>
+
+
+          <div
+          class="bg-[#F5F0F1] border border-gray-300 h-min flex  flex-row mx-auto py-2 px-7 rounded-3xl gap-3 items-center">
+          <input type="text" value="" class="mx-auto bg-[#F5F0F1]  px-7">
+          <h5 class="text-gray-300 w-[80px]">Search</h5>
+          <img src="{% static 'assetstravelers/image/img/icons/Icon1.svg'%}" alt  />
+        </div>
+
+    </div>
+    
+
+
+
+     {% comment %} <div class="w-[100%] h-min justify-center mt-5 items-center grid grid-cols-4 gap-[50px]"> {% endcomment %}
+      <div class="cards-container flex flex-wrap gap-4">
+     <!-- Card 1  -->
+        {% for vehicle in vehicles %}
+        <div class="relative shadow-lg bg-white border border-[#4278FF] h-[400px] w-[250px] flex flex-col justify-between overflow-hidden rounded-2xl">
+          <div class="h-[50%] w-full overflow-hidden">
+              <img src="{{ vehicle.image.url }}" alt="Vehicle Image" class="w-full h-full object-cover" />
+          </div>
+      
+          <div class="flex flex-col justify-between px-3 py-2 h-[50%]">
+              <div class="border border-[#F5F0F1] shadow-sm rounded-3xl mt-2 w-[50%] flex justify-center mr-3">
+                  <h6 class="text-[16px]">{{ vehicle.name }} {{ vehicle.model }}</h6>
+              </div>
+      
+              <div class="border-b border-[#16151C] mt-2 mr-3">
+                  <h6 class="text-[16px] border-t border-[#16151C]">السواق : {{ vehicle.driver.name }}</h6>
+                  <h6 class="text-[16px] border-t border-[#16151C]">الحالة : {{ vehicle.status }}</h6>
+                  <h6 class="text-[16px] border-t border-[#16151C]">سعة البنزين : {{ vehicle.fuel_capacity }}</h6>
+              </div>
+      
+              <div class="px-1 py-2 border-b border-[#F5F0F1] flex flex-row gap-2 justify-center">
+                  <button class="bg-[#4278FF] text-[#16151C] rounded-lg w-[80px] flex items-center gap-1 justify-center" onclick="openEditDialog('{{ vehicle.id }}')">
+                      <img class="" src="../../img/icons/edit.svg" alt="" />
+                      <h6>تعديل</h6>
+                  </button>
+                  <button onclick="window.location.href='{% url 'vehicle_detail' vehicle.id %}'" class="bg-[#F2FF00] rounded-lg w-[80px] flex items-center gap-1 justify-center">
+                      <img class="" src="../../img/icons/view.svg" alt="" />
+                  </button>
+                  <button class="bg-[#FF0000] text-[#16151C] rounded-lg w-[80px] flex items-center gap-1 justify-center" onclick="openDialog('DialogDelete{{ vehicle.id }}')">
+                      <img class="" src="../../img/icons/Vector.svg" alt="" />
+                      <h6>حذف</h6>
+                  </button>
+              </div>
+          </div>
+      </div>
+
+
+
+        {% comment %} <div
+          class="relative shadow-lg bg-white border border-[#4278FF]  h-min w-full flex rounded-2xl flex-col justify-between overflow-hidden">
+          <img src="{{ vehicle.image.url }}" alt />
+
+
+            <div class="border  border-[#F5F0F1] shadow-sm rounded-3xl mt-2  w-[50%] flex justify-center mr-3">
+             <h6 class="text-[16px] ">{{ vehicle.name }} {{ vehicle.model }}</h6>   
+            </div>
+
+            <div class="border-b  border-[#16151C] mt-2  mr-3">
+                <h6 class="text-[16px] border-t  border-[#16151C]">السواق : {{ vehicle.driver.name }}</h6>   
+                <h6 class="text-[16px] border-t  border-[#16151C]">الحالة : {{ vehicle.status }} </h6>   
+                <h6 class="text-[16px] border-t  border-[#16151C]">سعة البنزين : {{ vehicle.fuel_capacity }} </h6>   
+               
+            </div>
+
+          <div class="px-1 py-2 border-b border-[#F5F0F1] flex flex-row gap-2 justify-center">
+          <button class="bg-[#4278FF]  text-[#16151C] rounded-lg w-[80px] flex items-center gap-1 justify-center" onclick="openEditDialog('{{ vehicle.id }}')"><img class="" src="../../img/icons/edit.svg"alt /><h6>تعديل</h6> </button>
+          <button class="bg-[#F2FF00]  rounded-lg w-[80px] flex items-center gap-1 justify-center"><img class="" src="../../img/icons/view.svg"alt /></button>
+          <button class="bg-[#FF0000]  text-[#16151C]  rounded-lg w-[80px] flex items-center gap-1 justify-center" onclick="openDialog('DialogDelete{{ vehicle.id }}')"><img class="" src="../../img/icons/Vector.svg"alt /><h6>حذف</h6> </button>
+          </div>
+
+          
+        </div> {% endcomment %}
+
+        {% empty %}
+        <div class="shadow-lg bg-white border border-[#4278FF] ">
+            <p class="text-center">لا يوجد مركبات متاحة</p>
+        </div>
+        {% endfor %}
+     </div>
+
+
+
+
+
+
+     {% for vehicle in vehicles %}
+     <!-- Dialog تعديل مركبة -->
+     <div id="EditDialog{{ vehicle.id }}"  class="custom-dialog" style="display: none; direction: rtl;">
+       <div class="w-full bg-primaryDialog flex items-center px-[25px] py-[10px]">
+           <h5 class="text-[30px] text-white ml-2">تعديل مركبة</h5>
+           <div class="flex-1 h-[2px] bg-white"></div>
+           <button class="text-3xl mx-2 close-dialog" onclick="openDialog('EditDialog{{ vehicle.id }}')">X</button>
+       </div>
+       <form action="{% url 'edit_vehicle' vehicle.id %}" method="POST" class="flex flex-col p-4" enctype="multipart/form-data">
+        {% csrf_token %}
+        <div class="grid grid-cols-3 gap-2">
+          <div>
+            <input type="text" name="name" value="{{ vehicle.name }}" class="custom-input" placeholder=" اسم السيارة" />
+
+            <select name="vehicle_type" class="custom-input">
+              <option value>نوع السيارة</option>
+              <option value="مرسيدس" {% if vehicle.vehicle_type == "مرسيدس" %}selected{% endif %}>مرسيدس</option>
+              <option value="ليكزاز" {% if vehicle.vehicle_type == "ليكزاز" %}selected{% endif %}>ليكزاز</option>
+              <option value="كورلا" {% if vehicle.vehicle_type == "كورلا" %}selected{% endif %}>كورلا</option>
+              <option value="رافور" {% if vehicle.vehicle_type == "رافور" %}selected{% endif %}>رافور</option>
+              <option value="هيلوكس" {% if vehicle.vehicle_type == "هيلوكس" %}selected{% endif %}>هيلوكس</option>
+              <option value="باص رويشان" {% if vehicle.vehicle_type == "باص رويشان" %}selected{% endif %}>باص رويشان</option>
+              <option value="باص بلكه" {% if vehicle.vehicle_type == "باص بلكه" %}selected{% endif %}>باص بلكه</option>
+              <option value="حافلة" {% if vehicle.vehicle_type == "حافلة" %}selected{% endif %}>حافلة</option>
+
+            </select>
+            <select name="model" id class="custom-input">
+              <option value> الموديل</option>
+              <option value="1990" {% if vehicle.model == "1990" %}selected{% endif %}>1990</option>
+              <option value="1995" {% if vehicle.model == "1995" %}selected{% endif %}>1995</option>
+              <option value="1998" {% if vehicle.model == "1998" %}selected{% endif %}>1998</option>
+              <option value="2000" {% if vehicle.model == "2000" %}selected{% endif %}>2000</option>
+              <option value="2002" {% if vehicle.model == "2002" %}selected{% endif %}>2002</option>
+              <option value="2004" {% if vehicle.model == "2004" %}selected{% endif %}>2004</option>
+              <option value="2006" {% if vehicle.model == "2006" %}selected{% endif %}>2006</option>
+              <option value="2008" {% if vehicle.model == "2008" %}selected{% endif %}>2008</option>
+              <option value="2010" {% if vehicle.model == "2010" %}selected{% endif %}>2010</option>
+              <option value="2012" {% if vehicle.model == "2012" %}selected{% endif %}>2012</option>
+              <option value="2014" {% if vehicle.model == "2014" %}selected{% endif %}>2014</option>
+              <option value="2015" {% if vehicle.model == "2015" %}selected{% endif %}>2015</option>
+              <option value="2016" {% if vehicle.model == "2016" %}selected{% endif %}>2016</option>
+              <option value="2017" {% if vehicle.model == "2017" %}selected{% endif %}>2017</option>
+              <option value="2018" {% if vehicle.model == "2018" %}selected{% endif %}>2018</option>
+              <option value="2019" {% if vehicle.model == "2019" %}selected{% endif %}>2019</option>
+              <option value="2020" {% if vehicle.model == "2020" %}selected{% endif %}>2020</option>
+              <option value="2021" {% if vehicle.model == "2021" %}selected{% endif %}>2021</option>
+              <option value="2022" {% if vehicle.model == "2022" %}selected{% endif %}>2022</option>
+
+            </select>
+            <input type="date" name="date_added" value="{{ vehicle.date_added|date:'Y-m-d'}}" class="custom-input" placeholder="سنة الاصدار" />
+            <select name="status" class="custom-input">
+              <option value>الحالة</option>
+              <option value="new" {% if vehicle.status == "new" %}selected{% endif %}>جديد</option>
+              <option value="old"{% if vehicle.status == "old" %}selected{% endif %}>مستعمل</option>
+              <option value="in_service"{% if vehicle.status == "in_service" %}selected{% endif %}>في الخدمة</option>
+              <option value="out_of_service"{% if vehicle.status == "out_of_service" %}selected{% endif %}>عاطلة</option>
+
+            </select>
+            <select name="driver" class="custom-input">
+              <option value>السواق</option>
+              {% for driver in drivers %}
+                <option value="{{ driver.id }}" {% if vehicle.driver.id == driver.id  %}selected{% endif %}>
+                    {{ driver.name }}
+                </option>
+              {% endfor %}
+
+            </select>
+            <input
+              type="number"
+              name="plate_number"
+              value="{{ vehicle.plate_number }}"
+              class="custom-input"
+              placeholder="رقم اللوحة"
+            />
+            <input
+              type="number"
+              name="passenger_capacity"
+              value="{{ vehicle.passenger_capacity }}"
+              class="custom-input"
+              placeholder="عدد الركاب"
+            />
+          </div>
+          <div>
+            <select name="motor_type" id class="custom-input">
+              <option value>نوع المحرك</option>
+              <option value="بترول" {% if vehicle.motor_type == "بترول" %}selected{% endif %}>بترول</option>
+              <option value="غاز" {% if vehicle.motor_type == "غاز" %}selected{% endif %}>غاز</option>
+              <option value="ديزل" {% if vehicle.motor_type == "ديزل" %}selected{% endif %}>ديزل</option>
+              <option value="كهرباء" {% if vehicle.motor_type == "كهرباء" %}selected{% endif %}>كهرباء</option>
+            </select>
+            <input
+              type="number"
+              name="fuel_capacity"
+              value="{{ vehicle.fuel_capacity|floatformat }}"
+              class="custom-input"
+              placeholder="سعة البنزين"/>
+
+            <input
+              type="number"
+              class="custom-input"
+              name="price"
+              value="{{ vehicle.price|floatformat  }}"
+              placeholder="سعر المركبة"
+            />
+            <select name="owner" id class="custom-input">
+              <option value>تبعية المركبة</option>
+              <option value="تابعة للشركة" {% if vehicle.owner == "تابعة للشركة" %}selected{% endif %}>تابعة للشركة</option>
+              <option value="للشركة اخرى" {% if vehicle.owner == "للشركة اخرى" %}selected{% endif %}>للشركة اخرى</option>
+              <option value="لسواق" {% if vehicle.owner == "لسواق" %}selected{% endif %}>لسواق</option>
+            </select>
+            <textarea name="description" class="custom-input" rows="7">{{ vehicle.description }}</textarea>
+          </div>
+          
+          <div class="flex flex-col items-center pt-2">
+            <img 
+              id="editImage{{ vehicle.id }}" 
+              src="{{ vehicle.image.url }}" 
+              alt="صورة المركبة" 
+              style="max-width: 200px; max-height: 400px;" 
+              onerror="this.onerror=null; this.src='{% static 'assetstravelers/image/img/icons8_collaborator_male_60px 2.png' %}'" 
+            />
+            <label 
+              for="file-input-{{ vehicle.id }}" 
+              class="custom-upload-button text-center"
+            >
+              اختر صورة
+            </label>
+            <input 
+              id="file-input-{{ vehicle.id }}" 
+              type="file" 
+              name="image" 
+              onchange="previewImageee(event, '{{ vehicle.id }}')" 
+              style="display: none;" 
+            />
+          </div>
+
+
+
+        </div>
+        <div class="w-full flex-row">
+          <button
+          type="submit"
+            class="w-[74%] py-1 text-white font-bold bg-primaryDialog rounded-md text-ellipsiswhite"
+          >
+          تحديث
+          </button>
+          <button
+          type="button"
+          class="w-1/4 py-1 border font-bold border-primaryDialog rounded-md text-primaryDialog"
+          onclick="openDialog('EditDialog{{ vehicle.id }}')"
+            >
+            الغاء
+          </button>
+        </div>
+      </form>
+   </div>
+   <!-- Dialog تعديل مركبة end -->
+   {% endfor %}
+
+
+
+
+
+     {% for vehicle in vehicles %}
+     <!-- Dialog حذف مركبة -->
+     <div id="DialogDelete{{ vehicle.id }}" class="custom-dialog" style="display: none; direction: rtl;">
+         <div class="w-full bg-red-600 flex items-center px-[25px] py-[10px]">
+             <h5 class="text-[30px] text-white ml-2">تأكيد الحذف</h5>
+             <div class="flex-1 h-[2px] bg-white"></div>
+             <button class="text-3xl mx-2" onclick="openDialog('DialogDelete{{ vehicle.id }}')">X</button>
+         </div>
+         <div class="p-4">
+             <p class="text-center text-lg">{{ vehicle.name }} هل أنت متأكد أنك تريد حذف هذه المركبة</p>
+             <form action="{% url 'delete_vehicle' vehicle.id %}" method="POST">
+                 {% csrf_token %}
+                 <input type="hidden" name="id" id="deleteTripId" />
+                 <div class="w-full flex-row">
+                     <button type="submit" class="w-[100%] py-1 text-white font-bold bg-red-700 rounded-md">نعم، احذفها</button>
+                     <button type="button" class="w-[100%] py-1 border font-bold border-red-700 rounded-md text-red-700" onclick="openDialog('DialogDelete{{ vehicle.id }}')">إلغاء</button>
+                 </div>
+             </form>
+         </div>
+     </div>
+     <!-- Dialog حذف مركبة end -->
+     {% endfor %}
+
+
+</div>
+{% endblock %}
