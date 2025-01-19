@@ -1,0 +1,242 @@
+{% load  static %}
+<html lang="en">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Document</title>
+        <link rel="stylesheet" href="{% static 'assetstravelers/css/output.css'%} "  />
+        <style>
+        @import url("https://fonts.googleapis.com/css2?family=Cairo:wght@200..1000&family=IBM+Plex+Sans+Arabic:wght@100;200;300;400;500;600;700&family=Reem+Kufi:wght@400..700&display=swap");
+      </style>
+          <script src="https://cdn.tailwindcss.com"></script>
+    
+      </head>
+
+    <style>
+    #app {
+      font-family: "Cairo", sans-serif;
+      background-image: linear-gradient(rgba(0, 0, 0, 0.4), rgba(0, 0, 0, 0.4)),
+        url("{% static 'assetstravelers/image/img/asdasda.jpg'%}");
+      background-repeat: no-repeat;
+      background-size: cover;
+      background-position: center;
+    }
+  </style>
+    <body>
+        <!-- Title -->
+        <div id="app" class="w-full h-[250px] flex justify-between items-end">
+            <div
+                class="text-[#fff] text-[26px] font-bold flex flex-row items-end mx-10 my-3 gap-2">
+                <div class="flex flex-col justify-end items-end">
+                    <h5 class="text-base">الكريمي</h5>
+                    <h5
+                        class="bg-white text-black p-1 rounded-lg">30251456785</h5>
+                </div>
+                <div class="flex flex-col justify-end items-end">
+                    <h5 class="text-base">النجم</h5>
+                    <h5
+                        class="bg-white text-black p-1 rounded-lg">25135144551</h5>
+                </div>
+                <h5>رقم الحساب للايداع</h5>
+            </div>
+            <div
+            class="text-[#fff] text-[32px] font-bold flex flex-col items-end mx-10">
+              <h5>رقم الرحلة: {{ trip.id }}</h5>
+              <h5>من {{ trip.departure }} الى {{ trip.destination }}</h5>
+          </div>
+        </div>
+
+        <!-- Div Movement -->
+        <div class="absolute top-[50px] left-1/2 transform -translate-x-1/2">
+            <!-- Image Bus -->
+            <img src="{% static 'assetstravelers/image/img/Group 1171275883.svg'%}" width="120px"
+                class="mb-4" /> 
+
+                <img
+                src="{{trip.vehicle_type.image.url}}"
+                class="border-2 border-black rounded-lg"
+                width="120" />
+            <div class="w-[1px] h-[280px] bg-black mx-auto my-4"></div>
+        </div>
+
+        <div class="flex flex-row" style="direction: rtl">
+            <div class="flex-1 flex flex-col">
+                <div class="flex h-1/2 items-center w-full">
+                    <h5 class="m-2 mr-4 font-extrabold text-[#363636]">بيانات
+                        الرحلة</h5>
+                    <span class="flex-1 h-[1px] mx-2 bg-black">
+
+
+                    </span>
+                </div>
+                <p class="p-4">
+                    نوع السفر:  {{trip.travel_type.name}} 
+                    <br>
+                    نوع الرحلة:  {{trip.trip_category.name}}
+                    <br>
+                    نوع السيارة: {{trip.vehicle_type.name}}
+                    <br>
+                   تاريخ الرحلة: {{trip.date}}
+                   <br>
+                    وقت الرحلة : {{trip.time}}
+                    <br>
+                     سعر الرحلة: {{trip.seat_price}}
+                     <br>
+                     سائق الرحلة: {{trip.vehicle_type.driver.name}}
+                     <br>
+                     وصف الرحلة: {{trip.details}}
+                </p>
+                <div class="flex h-1/2 items-center w-full">
+                    <h5 class="m-2 mr-4 font-extrabold text-[#363636]">
+                        تعليمات التقديم
+                    </h5>
+                    <span class="flex-1 h-[1px] mx-2 bg-black"></span>
+                </div>
+                <p class="p-4">
+                    استمتع برحلات فريدة ومخصصة بالكامل لاحتياجاتك. نقدم
+                    خــــــــدمات
+                    النقل الخـــاص بسيارات حــــديثة ومجهزة بأعلى معايير الراحة
+                    والأمان،
+                    ســــــواء كان ذلك لنقل أفراد أو مجموعات صغيرة، مع مــــرونة
+                    تامة في
+                    اختيار الوجهة والتوقيت.
+                </p>
+            </div>
+            <form action="{% url 'checkout' trip.id  %}" method="POST" class="flex flex-col w-1/2" enctype="multipart/form-data" >
+                {% csrf_token %}
+                <div class="flex-1 flex flex-row">
+                    <div class="w-2/3">
+                        <div
+                            class="border rounded-md border-black m-2 mt-24 flex p-1 gap-2">
+                            <img src="{% static 'assetstravelers/image/img/icons8_person_64px 1.png'%}" alt />
+                            <input
+                                type="text"
+                                name="name"
+                                placeholder="الاسم الرباعي"
+                                class="border-none text-sm flex-1" />
+                        </div>
+                        <div class="w-full flex">
+                            <div
+                                class="w-1/2 border rounded-md border-black m-2 flex p-1 gap-2">
+                                <img
+                                    src="{% static 'assetstravelers/image/img/icons8_identification_documents_50px 1.svg'%}"
+                                    alt />
+                                <input
+                                    type="number"
+                                    name="id_number"
+                                    placeholder="رقم البطاقة الشخصية"
+                                    class="border-none text-sm flex-1" />
+                            </div>
+                            <div
+                                class="w-1/2 border rounded-md border-black m-2 flex p-1 gap-2">
+                                <img
+                                    src="{% static 'assetstravelers/image/img/icons8_identification_documents_50px 1.svg'%}" 
+                                    alt />
+                                <input
+                                    type="text"
+                                    name="passport_number"
+                                    placeholder=" رقم الجواز"
+                                    class="border-none text-sm flex-1" />
+                            </div>
+                        </div>
+                        <div class="w-full flex">
+                            <div
+                                class="w-1/2 border rounded-md border-black m-2 flex p-1 gap-2">
+                                <img src="{% static 'assetstravelers/image/img/icons8_phone_50px 1.svg'%}"
+                                    alt />
+                                <input
+                                    type="text"
+                                    name="phone"
+                                    placeholder=" رقم الهاتف 1"
+                                    class="border-none text-sm flex-1" />
+                            </div>
+                            <div
+                                class="w-1/2 border rounded-md border-black m-2 flex p-1 gap-2">
+                                <img src="{% static 'assetstravelers/image/img/icons8_phone_50px 1.svg'%}"
+                                    alt />
+                                <input
+                                    type="text"
+                                    placeholder="رقم الهاتف 2 "
+                                    class="border-none text-sm flex-1" />
+                            </div>
+                        </div>
+                        <div class="w-full flex">
+                            <div
+                                class="w-1/2 border rounded-md border-black m-2 flex p-1 gap-2">
+                                <select name="nationality" class="border-none text-sm flex-1" required>
+                                    <option value="">الجنسية</option>
+                                    {% for nationality in nationalities %}
+                                    <option value="{{ nationality.id }}">{{ nationality.name }}</option>
+                                {% endfor %}
+    
+                                </select>
+                            </div>
+                            <div
+                                class="w-1/2 border rounded-md border-black m-2 flex p-1 gap-2">
+                                <img
+                                    src="{% static 'assetstravelers/image/img/icons8_gender_equality_24px 1.svg'%}"
+                                    alt />
+                                    <select name="gender" class="border-none text-sm flex-1" required>
+                                        <option value="">الجنس</option>
+                                        <option value="1">ذكر</option>
+                                        <option value="0">أنثى</option>
+                                    </select>
+                            </div>
+
+                            <div
+                            class="w-1/2 border rounded-md border-black m-2 flex p-1 gap-2">
+
+                            <input type="number" name="paid_amount"  class="custom-input" placeholder="كتابة المبلغ المحول  في سند الايداع" required />
+
+
+                        </div>
+                        </div>
+                    </div>
+
+
+
+
+
+
+                    <div class="w-1/3 mt-20">
+                        <input type="file" style="display: none" name="image" onchange="previewImage(event, 'passenger-image')"
+                            id="image" />
+                        <label
+                            for="image"
+                            class="bg-[#fafafb] border rounded-xl border-[#ececee] cursor-pointer hover:bg-[#d8d8d8] transition-all flex flex-col m-6 py-9 justify-center items-center gap-2">
+                            <h5 class="text-[#3b3b3c] text-[18px]">صوره سند
+                                الايداع</h5>
+                            <img id="passenger-image"   src="{% static 'assetstravelers/image/img/camera.svg'%}" />
+                        </label>
+                    </div> 
+
+
+
+
+                </div>
+
+
+                <div class="w-full flex flex-row gap-2 p-2">
+                    <button
+                        onclick="window.location.href='{% url 'home'%}'"
+                        class="rounded-lg px-4 py-2 bg-[#dfa510] text-white">
+                        حجز مقد اخر
+                    </button>
+                    <button
+                        type="submit"
+                        class="rounded-lg flex-1 px-4 py-2 bg-[#7152f3] text-white">
+                        حفظ
+                    </button>
+                    <button
+                        onclick="window.location.href='{% url 'home'%}'"
+                        class="rounded-lg px-5 py-2  text-black">
+                        الغاء
+                    </button>
+                </div>
+
+
+
+            </form>
+        </div>
+    </body>
+</html>
