@@ -1,0 +1,58 @@
+# Python
+*.pyc
+*.pyo
+*.pyd
+__pycache__/
+*.sqlite3
+*.db
+
+# Django
+*.log
+*.pot
+*.py[cod]
+local_settings.py
+db.sqlite3
+media/
+staticfiles/
+
+# Environment variables
+.env
+.venv/
+venv/
+env/
+ENV/
+Lib/
+
+# IDEs
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Coverage reports
+htmlcov/
+coverage.xml
+*.cover
+.coverage
+
+# Distribution / packaging
+.Python
+build/
+dist/
+*.egg-info/
+MANIFEST
+
+# MyPy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Test results
+.nosetests.xml
+coverage.xml
+*.cover
+*.log
+
+# Miscellaneous
+.DS_Store
+Thumbs.db
