@@ -1,0 +1,360 @@
+{% extends 'base.html' %}
+{% load  static %}
+{% block content %}
+<div class=" flex-col  h-[70%]">
+
+
+    <div class="flex flex-row items-center gap-2 mx-2">
+        <h1 class=" text-2xl font-bold ">ادارة الموظفين</h1>
+        <div class="w-[80%] h-[5px] bg-[#F5F0F1] mt-4 rounded-lg"></div>
+
+    </div>
+
+
+    <div class="flex flex-row items-center gap-10 mx-7 my-4">
+
+
+        <button class="flex gap-[2px] border border-gray-300  items-center  py-2">
+            <h5 class="text-black  pr-2">filter</h5>
+            <img class="mr-[20px]" src="../../static/assetstravelers/image/img/icons/filter.svg" alt />
+
+          </button>
+
+
+
+          <button onclick="openDialog('Dialog2')" class="flex gap-[2px] bg-[#4278FF] mx-2 mt-3 mb-3 justify-center items-center  py-2 rounded-lg w-[170px]">
+            <h5 class="text-white  pr-2">جديد</h5>
+            <img class="" src="{% static 'assetstravelers/image/img/icons/add-circle.svg'%}" alt /> 
+          </button>
+
+          <!-- Dialog 2 اضافة موظف -->
+          <div id="Dialog2" class="custom-dialog" style="direction: rtl">
+            <div
+              class="w-full bg-primaryDialog flex items-center px-[25px] py-[10px]"
+            >
+              <h5 class="text-[30px] text-white ml-2">اضافة موظف</h5>
+              <div class="flex-1 h-[2px] bg-white"></div>
+              <button class="text-3xl mx-2" onclick="openDialog('Dialog2')">X</button>
+            </div>
+            <form action="{% url 'add_employee' %}" method="POST" class="flex flex-col p-4" enctype="multipart/form-data">
+              {% csrf_token %}
+              <div class="grid grid-cols-3 gap-2">
+                <div>
+                  <input
+                    type="text"
+                    name="name"
+                    class="custom-input"
+                    placeholder="الاسم الرباعي"
+                  />
+                  <input
+                    type="text"
+                    name="job_title"
+                    class="custom-input"
+                    placeholder="المسمى الوظيفي"
+                  />
+                  <input type="email" name="email" class="custom-input" placeholder="الايميل" />
+                  <input
+                    type="text"
+                    name="phone"
+                    class="custom-input"
+                    placeholder="رقم الهاتف 1"
+                  />
+                  <input
+                    type="text"
+                    name="phone1"
+                    class="custom-input"
+                    placeholder="رقم الهاتف 2"
+                  />
+                </div>
+                <div>
+                  <input
+                    type="text"
+                    name="username"
+                    class="custom-input"
+                    placeholder="اسم المستخدم"
+                  />
+                  <input
+                    type="password"
+                    name="password"
+                    class="custom-input"
+                    placeholder="كلمة المرور"
+                  />
+                  <input
+                    type="number"
+                    name="id_number"
+                    class="custom-input"
+                    placeholder="رقم البطاقة الشخصية"
+                  />
+                  <input
+                    type="number"
+                    name="salary"
+                    class="custom-input"
+                    placeholder="الراتب المالي"
+                  />
+                  <div class="flex gap-2">
+                    <select name="gender" class="custom-input flex-2" id>
+                      <option value>الجنس</option>
+                      <option value="1">ذكر</option>
+                      <option value="0">أنثئ</option>
+                    </select>
+                    <select name="nationality" class="custom-input flex-2" id>
+                      <option value>الجنسية</option>
+                      {% for nationality in nationalities %}
+                      <option value="{{ nationality.id }}">{{ nationality.name }}</option>
+                  {% endfor %}
+                    </select>
+                    <select name="user_type" class="custom-input flex-2">
+                      <option>نوع المستخدم</option>
+                      <option value="admin">أدمن</option>
+                      <option value="employee">موظف</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="flex flex-col items-center pt-2">
+                  <img id="employee-image" 
+                       src="../../static/assetstravelers/image/img/icons8_collaborator_male_60px 2.png" 
+                       width="70%" height="90%" alt="employee Image" />
+                  
+                  <label for="file-input">
+                    <input id="file-input" type="file" name="image" style="display: none" onchange="previewImage(event, 'employee-image')" />
+                    <button class="custom-input w-[200px]" type="button" onclick="document.getElementById('file-input').click();">اختار صورة</button>
+                  </label>
+                </div>
+              </div>
+              <div class="w-full flex-row">
+                <button type="submit" class="w-[74%] py-1 text-white font-bold bg-primaryDialog rounded-md">حفــــــــــــــــظ</button>
+                <button type="button" class="w-1/4 py-1 border font-bold border-primaryDialog rounded-md text-primaryDialog" onclick="openDialog('Dialog2')">الغاء</button>
+              </div>
+            </form>
+          </div>
+
+
+          <div
+          class="bg-[#F5F0F1] border border-gray-300 h-min flex  flex-row mx-auto py-2 px-7 rounded-3xl gap-3 items-center">
+          <input type="text" value="" class="mx-auto bg-[#F5F0F1]  px-7">
+          <h5 class="text-gray-300 w-[80px]">Search</h5>
+          <img src="{% static 'assetstravelers/image/img/icons/Icon1.svg'%}" alt  />
+        </div>
+
+    </div>
+    
+    <!-- table  -->
+    <div>
+
+        <table class="min-w-full border bg-[#F5F0F1] border-[#F5F0F1] rounded-3xl overflow-hidden px-4">
+            <thead class="">
+                <tr class="bg-[#F5F0F1]">
+                    <th class="px-4 py-2 text-right border-b border-[#000000]"></th>
+                    <th class="px-4 py-2 text-right border-b border-[#000000]">الاسم</th>
+                    <th class="px-4 py-2 text-right border-b border-[#000000]">الهاتف</th>
+                    <th class="px-4 py-2 text-right border-b border-[#000000]">كلمة السر</th>
+                    <th class="px-4 py-2 text-right border-b border-[#000000]">الرقم الوضيفي</th>
+
+                    <th class="px-4 py-2 text-center border-b border-[#000000]">العمليـــــــــــــات</th>
+                </tr>
+            </thead>
+            <tbody>
+              {% for employee in employees %}
+                <tr>
+                  <td class="px-4 py-2 border-b border-[#F5F0F1]">
+                    {% if employee.image %}
+                        <img src="{{ employee.image.url }}" alt="صورة الموظف" width="70" />
+                    {% else %}
+                        <img src="{% static 'assetstravelers/image/img/icons8_collaborator_male_60px 2.png' %}" alt="صورة افتراضية" width="70" />
+                    {% endif %}
+                </td>                  
+                <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ employee.name }}</td>
+                  <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ employee.phone }}</td>
+                  <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ employee.password|length|stringformat:"s" }}</td>
+                  <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ employee.id_number }}
+
+                    <td class="px-1 py-2 border-b border-[#F5F0F1] flex flex-row gap-2 justify-center">
+                      <button onclick="openEditDialog('{{ employee.id }}')" class="bg-[#4278FF] text-[#16151C] rounded-lg w-[80px] flex items-center gap-1 justify-center">
+                        <img class="" src="{% static 'assetstravelers/image/img/icons/edit.svg' %}" alt />
+                        <h6>تعديل</h6>
+                    </button>                            
+                        <button onclick="openDialog('DialogDelete{{ employee.id }}')"  class="bg-[#FF424C]  text-[#16151C]  rounded-lg w-[80px] flex items-center gap-1 justify-center"><img class="" src="{% static 'assetstravelers/image/img/icons/Vector.svg'%}" alt /><h6>حذف</h6> </button>
+                        <button onclick="window.location.href='{% url 'employee_detail' employee.id %}'" class="bg-[#94FF42]  rounded-lg w-[80px] flex items-center gap-1 justify-center"><img class="" src="{% static 'assetstravelers/image/img/icons/view.svg'%}" alt /></button>
+
+
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" class="text-center">لا يوجد موظفين متاحين</td>
+                </tr>
+
+
+
+
+                {% endfor %}
+            </tbody>
+        </table>
+
+    </div>
+    <!-- table end  -->
+
+                              {% for employee in employees %}
+                                <!-- Dialog Edit -->
+                                <div id="EditDialog{{ employee.id }}" class="custom-dialog" style="direction: rtl">
+                                  <div class="w-full bg-primaryDialog flex items-center px-[25px] py-[10px]">
+                                      <h5 class="text-[30px] text-white ml-2">تعديل موظف</h5>
+                                      <div class="flex-1 h-[2px] bg-white"></div>
+                                      <button class="text-3xl mx-2" onclick="openDialog('EditDialog{{ employee.id }}')">X</button>
+                                  </div>
+                                  <form action="{% if employee.id %}{% url 'edit_employee' employee.id %}{% endif %}" method="POST" class="flex flex-col p-4" enctype="multipart/form-data">
+                                    {% csrf_token %}
+                                    <div class="grid grid-cols-3 gap-2">
+                                      <div>
+                                        <input
+                                          type="text"
+                                          name="name"
+                                          value="{{ employee.name }}"
+                                          class="custom-input"
+                                          placeholder="الاسم الرباعي"
+                                        />
+                                        <input
+                                          type="text"
+                                          name="job_title"
+                                          value="{{ employee.job_title }}"
+                                          class="custom-input"
+                                          placeholder="المسمى الوظيفي"
+                                        />
+                                        <input type="email" name="email" value="{{ employee.user.email }}" class="custom-input" placeholder="الايميل" />
+                                        <input
+                                          type="text"
+                                          name="phone"
+                                          value="{{ employee.phone }}"
+                                          class="custom-input"
+                                          placeholder="رقم الهاتف 1"
+                                        />
+                                        <input
+                                          type="text"
+                                          class="custom-input"
+                                          placeholder="رقم الهاتف 2"
+                                        />
+                                      </div>
+                                      <div>
+                                        <input
+                                          type="text"
+                                          name="username"
+                                           value="{{ employee.user.username }}"
+                                          class="custom-input"
+                                          placeholder="اسم المستخدم"
+                                        />
+                                        <input
+                                          type="password"
+                                          name="password"
+                                          value="{{ employee.password }}"
+                                          class="custom-input"
+                                          placeholder="كلمة المرور"
+                                        />
+                                        <input
+                                          type="number"
+                                          name="id_number"
+                                          value="{{ employee.id_number }}"
+                                          class="custom-input"
+                                          placeholder="رقم البطاقة الشخصية"
+                                        />
+                                        <input
+                                          type="number"
+                                          name="salary"
+                                          value="{{ employee.salary }}"
+                                          class="custom-input"
+                                          placeholder="الراتب المالي"
+                                        />
+
+                                        <div class="flex gap-1">
+                                          <select name="gender" class="custom-input flex-1">
+                                            <option value>الجنس</option>
+                                            <option value="1" {% if employee.gender == "1" %}selected{% endif %}>ذكر</option>
+                                            <option value="0" {% if employee.gender == "0" %}selected{% endif %}>أنثى</option>
+                                        </select>
+                                        <select name="nationality" class="custom-input flex-1">
+                                            <option value>الجنسية</option>
+                                            {% for nationality in nationalities %}
+                                            <option value="{{ nationality.id }}" {% if employee.nationality.id == nationality.id %}selected{% endif %}>
+                                                {{ nationality.name }}
+                                            </option>
+                                        {% endfor %}
+                                        </select>
+
+                                        <select name="user_type" class="custom-input flex-1">
+                                          <option value="admin" {% if employee.user_type == "admin" %}selected{% endif %}>أدمن</option>
+                                          <option value="employee" {% if employee.user_type == "employee" %}selected{% endif %}>موظف</option>
+                                        </select>
+
+                                        </div>
+                                      </div>
+                                      <div class="flex flex-col items-center pt-2">
+                                        <img 
+                                          id="editImage{{ employee.id }}" 
+                                          src="{% if employee.image %}{{ employee.image.url }}{% else %}{% static 'assetstravelers/image/img/icons8_collaborator_male_60px 2.png' %}{% endif %}" 
+                                          alt="صورة الموظف" 
+                                          style="max-width: 200px; max-height: 400px;" 
+                                          onerror="this.onerror=null; this.src='{% static 'assetstravelers/image/img/icons8_collaborator_male_60px 2.png' %}'" 
+                                        />
+                                        <label 
+                                          for="file-input-{{ employee.id }}" 
+                                          class="custom-upload-button text-center"
+                                        >
+                                          اختر صورة
+                                        </label>
+                                        <input 
+                                          id="file-input-{{ employee.id }}" 
+                                          type="file" 
+                                          name="image" 
+                                          onchange="previewImageee(event, '{{ employee.id }}')" 
+                                          style="display: none;" 
+                                        />
+                                      </div>
+
+
+
+                                    </div>
+                                    <div class="w-full flex-row">
+                                      <button
+                                        type="submit"
+                                        class="w-[74%] py-1 text-white font-bold bg-primaryDialog rounded-md text-ellipsiswhite"
+                                      >
+                                      تحديث
+                                      </button>
+                                      <button
+                                       type="button"
+                                        class="w-1/4 py-1 border font-bold border-primaryDialog rounded-md text-primaryDialog"
+                                        onclick="openDialog('EditDialog{{ employee.id }}')"
+                                      >
+                                        الغاء
+                                      </button>
+                                    </div>
+                                  </form>
+
+                              </div>
+                              {% endfor %}
+
+
+                              {% for employee in employees %}
+                              <!-- Dialog Delete -->
+                              <div id="DialogDelete{{ employee.id }}" class="custom-dialog" style="direction: rtl">
+                                  <div class="w-full bg-primaryDialog flex items-center px-[25px] py-[10px]">
+                                      <h5 class="text-[30px] text-white ml-2">حذف موظف</h5>
+                                      <div class="flex-1 h-[2px] bg-white"></div>
+                                      <button class="text-3xl mx-2" onclick="openDialog('DialogDelete{{ employee.id }}')">X</button>
+                                  </div>
+                                  <form action="{% if employee.id %}{% url 'delete_employee' employee.id %}{% endif %}" method="POST" class="flex flex-col p-4">
+                                      {% csrf_token %}
+                                      <p>هل أنت متأكد أنك تريد حذف الموظف: {{ employee.name }}؟</p>
+                                      <div class="w-full flex-row">
+                                          <button type="submit" class="w-[74%] py-1 text-white font-bold bg-primaryDialog rounded-md">نعم</button>
+                                          <button type="button" class="w-1/4 py-1 border font-bold border-primaryDialog rounded-md" onclick="openDialog('DialogDelete{{ employee.id }}')">لا</button>
+                                      </div>
+                                  </form>
+                              </div>
+                              {% endfor %}
+
+
+
+</div>
+{% endblock %}
+
+
