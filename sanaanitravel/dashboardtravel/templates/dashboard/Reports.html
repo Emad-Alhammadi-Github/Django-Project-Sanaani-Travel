@@ -1,0 +1,154 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+<div class=" flex-col mt-2  h-[70%]">
+
+
+    <div class="flex flex-row items-center gap-4 mx-2">
+        <h1 class=" text-2xl font-bold ">التقارير</h1>
+        <div class="w-[90%] h-[5px] bg-[#F5F0F1] mt-4 rounded-lg"></div>
+
+    </div>
+
+
+    <div class="flex flex-row justify-end gap-10 mx-7 my-4">
+
+        <form method="get" action="">
+            <input type="number" name="year" placeholder="اختر السنة" class="border rounded px-2 py-1">
+            <button type="submit" class="bg-blue-500 text-white px-4 py-1 rounded">تحديث</button>
+        </form>
+
+
+        <button id="print-btn" class="flex gap-[2px] bg-[#4278FF] mx-2 mt-3 mb-3 justify-center py-2 rounded-lg w-[300px]">
+            <h5 class="text-white pr-2">طباعة</h5>
+        </button>
+        
+
+    </div>
+
+
+    <div id="report-content" class=" bg-[#A2A1A80D] rounded-xl w-[90%] mx-auto ">
+ 
+
+        <div class="flex flex-row justify-between items-center border-b border-[#16151C] py-6 px-1">
+            <h5 class="text-xl font-bold">التقارير السنوي</h5>
+
+
+            <h5 class="text-xl font-bold">{{ selected_year }}</h5>
+            <img src="../../static/assetstravelers/image/img/Group 1171275883.svg" width="80" alt />
+
+        </div>
+
+        <div class="bg-[#A2A1A80D] rounded-xl w-[90%] mx-auto mt-4">
+            <div class="overflow-hidden rounded-lg bg-transparent mb-5">
+                <h2 class="text-start text-xl font-bold p-4">تقرير مالي</h2>
+                <table class="min-w-full border border-black border-collapse">
+                    <tbody>
+                        <tr>
+                            <td class="px-4 py-2 border w-[30%] border-black text-right">متوسط دخل الشهر</td>
+                            <td class="px-4 py-2 border border-black">{{ monthly_income }}</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 border border-black text-right">متوسط دخل نصف السنة</td>
+                            <td class="px-4 py-2 border border-black">{{ mid_year_income }}</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 border border-black text-right">متوسط دخل سنة كاملة</td>
+                            <td class="px-4 py-2 border border-black">{{ full_year_income }}</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 border border-black text-right">المجموع المالي الكلي</td>
+                            <td class="px-4 py-2 border border-black">{{ total_income }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+    
+            <div class="overflow-hidden rounded-lg bg-transparent mb-5">
+                <h2 class="text-start text-xl font-bold p-4">الرحلات</h2>
+                <table class="min-w-full border border-black border-collapse">
+                    <tbody>
+                        <tr>
+                            <td class="px-4 py-2 border w-[30%] border-black text-right">الداخلية</td>
+                            <td class="px-4 py-2 border border-black">{{ internal_trips }}</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 border border-black text-right">الخارجية</td>
+                            <td class="px-4 py-2 border border-black">{{ external_trips }}</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 border border-black text-right">الخاصة</td>
+                            <td class="px-4 py-2 border border-black">{{ private_trips }}</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 border border-black text-right">الشاحنات</td>
+                            <td class="px-4 py-2 border border-black">{{ truck_trips }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div> 
+    
+             <div class="overflow-hidden rounded-lg bg-transparent mb-6">
+                <h2 class="text-start text-xl font-bold p-4">المركبات</h2>
+                <table class="w-full border border-black border-collapse">
+                    <tbody>
+                        <tr>
+                            <td class="px-4 py-2 border w-[30%] border-black text-right">الفعالة</td>
+                            <td class="px-4 py-2 border border-black">{{ active_vehicles }}</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 border border-black text-right">الموقفة</td>
+                            <td class="px-4 py-2 border border-black">{{ stopped_vehicles }}</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 border border-black text-right">الإجمالي الكلي</td>
+                            <td class="px-4 py-2 border border-black">{{ total_vehicles }}</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 border border-black text-right">أكثر استخداماً</td>
+                            <td class="px-4 py-2 border border-black">{{ most_used_vehicle }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>      
+
+    </div>
+    
+
+
+
+
+
+    <script>
+
+        document.addEventListener('DOMContentLoaded', function () {
+            const { jsPDF } = window.jspdf;
+
+            document.getElementById('print-btn').addEventListener('click', function () {
+                const doc = new jsPDF({
+                    orientation: "portrait",
+                    unit: "mm",
+                    format: "a4"
+                });
+
+                const content = document.getElementById('report-content');
+
+                html2canvas(content, {
+                    scale: 3, 
+                }).then(function (canvas) {
+                    const imgData = canvas.toDataURL('image/png');
+
+                    doc.addFont('Arial', 'Arial', 'normal');
+                    doc.addImage(imgData, 'PNG', 10, 10, 190, 0); 
+                    doc.save('report.pdf'); 
+                });
+            });
+        });
+
+
+
+        </script>
+        
+    </div>
+{% endblock %}
