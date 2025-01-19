@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+{% load  static %}
+{% block content %}
+<div class=" flex-col  h-[70%]">
+
+
+    <div class="flex flex-row items-center gap-2 mx-2">
+        <h1 class=" text-2xl font-bold ">ادارة الرحلات</h1>
+        <div class="w-[80%] h-[5px] bg-[#F5F0F1] mt-4 rounded-lg"></div>
+
+    </div>
+
+    <div class="flex flex-row items-center justify-center gap-2 mx-2 mb-4">
+        <h1 class=" text-2xl font-bold ">  تفاصيل الرحلة من {{ trip.departure.name }} الى {{ trip.destination.name }}</h1>
+
+    </div>
+
+     <div class="flex justify-center mt-5 items-center   gap-[50px]">
+     <!-- Card 1  -->
+        <div class="relative shadow-lg bg-white border border-[#4278FF] h-min w-[80%] flex flex-col justify-between overflow-hidden rounded-2xl">
+          <div class="h-[50%] w-full overflow-hidden">
+              <img src="{{ trip.image.url }}" alt="trip Image" class="w-full h-full object-cover" />
+          </div>
+      
+          <div class="flex flex-col justify-between px-3 py-2 h-[50%]">
+
+              <div class="border-b border-[#16151C] mt-2 mr-3">
+                <h6 class="text-[16px] border-t border-[#16151C]"> الرحلة : من {{ trip.departure.name }} الى {{ trip.destination.name }}</h6>
+
+                <h6 class="text-[16px] border-t border-[#16151C]">نوع السفر : {{ trip.travel_type.name }}</h6>
+                <h6 class="text-[16px] border-t border-[#16151C]">نوع الرحلة : {{ trip.trip_category.name }}</h6>
+                <h6 class="text-[16px] border-t border-[#16151C]">نوع السيارة : {{ trip.trip_type }}</h6>
+                <h6 class="text-[16px] border-t border-[#16151C]">نوع السيارة : {{ trip.vehicle_type.name}}</h6>
+                <h6 class="text-[16px] border-t border-[#16151C]"> تاريخ الرحلة : {{ trip.date }}</h6>
+                <h6 class="text-[16px] border-t border-[#16151C]"> وقت الرحلة : {{ trip.time }}</h6>
+                <h6 class="text-[16px] border-t border-[#16151C]">  عدد المقاعد: {{ trip.seat_count }}</h6>
+                <h6 class="text-[16px] border-t border-[#16151C]"> سعر المقعد: {{ trip.seat_price }}</h6>
+
+                  <h6 class="text-[16px] border-t border-[#16151C]">الوصف : {{ trip.details }}</h6>
+              </div>
+      
+
+          </div>
+      </div>
+
+
+
+</div>
+{% endblock %}
