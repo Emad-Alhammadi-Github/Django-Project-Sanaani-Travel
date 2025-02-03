@@ -37,14 +37,19 @@
             </div>
             <form action="{% url 'add_passenger' %}" method="POST" class="flex flex-col p-4" enctype="multipart/form-data">
                 {% csrf_token %}
-                <div class="grid grid-cols-3 gap-2">
+                <div class="grid grid-cols-4 gap-2">
                     <div>
                         <input type="text" name="name" class="custom-input" placeholder="الاسم الرباعي" required />
                         <input type="text" name="id_number" class="custom-input" placeholder="رقم البطاقة الشخصية" required />
+
                         <input type="text" name="passport_number" class="custom-input" placeholder="رقم الجواز" required />
                         <input type="text" name="phone" class="custom-input" placeholder="رقم الهاتف 1" required />
                         <input type="text" name="phone2" class="custom-input" placeholder="رقم الهاتف 2" />
+                        <input type="date" name="date_of_birth" class="custom-input" placeholder="التاريخ" required />
+
                     </div>
+
+
                     <div>
                       <select name="trip_location" class="custom-input flex-1" required>
                         <option value="">الرحلة</option>
@@ -73,16 +78,39 @@
                             </select>
                         </div>
                     </div>
-                    <div class="flex flex-col items-center pt-2">
-                        <img id="passenger-image" 
-                             src="../../static/assetstravelers/image/img/icons8_collaborator_male_60px 2.png" 
-                             width="70%" height="90%" alt="passenger Image" />
-                        
-                        <label for="file-input">
-                          <input id="file-input" type="file" name="image" style="display: none" onchange="previewImage(event, 'passenger-image')" />
-                          <button class="custom-input w-[200px]" type="button" onclick="document.getElementById('file-input').click();">اختار صورة</button>
-                        </label>
+
+
+                    <div>
+                        <div class="flex flex-col items-center pt-2">
+                            <img id="passenger-identify_img" 
+                                 src="../../static/assetstravelers/image/img/icons8_collaborator_male_60px 2.png" 
+                                 width="70%" height="90%" alt="passenger Image" />
+                            
+                            <label for="identify_img-file-input">
+                              <input id="identify_img-file-input" type="file" name="identify_img" style="display: none" onchange="previewImage(event, 'passenger-identify_img')" />
+                              <button class="custom-input w-[200px]" type="button" onclick="document.getElementById('identify_img-file-input').click();">اختار صورة الهوية</button>
+                            </label>
+                          </div>
                       </div>
+
+                    <div>
+                        <div class="flex flex-col items-center pt-2">
+                            <img id="passenger-image" 
+                                 src="../../static/assetstravelers/image/img/icons8_collaborator_male_60px 2.png" 
+                                 width="70%" height="90%" alt="passenger Image" />
+                            
+                            <label for="file-input">
+                              <input id="file-input" type="file" name="image" style="display: none" onchange="previewImage(event, 'passenger-image')" />
+                              <button class="custom-input w-[200px]" type="button" onclick="document.getElementById('file-input').click();">اختار الصورة الشخصية</button>
+                            </label>
+                          </div>
+                      </div>
+
+
+
+
+
+
                 </div>
                 <div class="w-full flex-row">
                     <button type="submit" class="w-[74%] py-1 text-white font-bold bg-primaryDialog rounded-md text-ellipsiswhite">حفــــــــــــــــظ</button>
@@ -166,7 +194,7 @@
           <form action="{% url 'edit_passenger' passenger.id %}" method="POST" class="flex flex-col p-4" enctype="multipart/form-data">
               {% csrf_token %}
               <input type="hidden" name="passenger_id" id="editPassengerId" />
-              <div class="grid grid-cols-3 gap-2">
+              <div class="grid grid-cols-4 gap-2">
                   <div>
                       <input type="text" name="name" value="{{ passenger.name }}" class="custom-input" placeholder="الاسم الرباعي" required />
                       <input type="text" name="id_number" value="{{ passenger.id_number }}" class="custom-input" placeholder="رقم البطاقة الشخصية" required />
@@ -174,6 +202,8 @@
 
                       <input type="text" name="phone" value="{{ passenger.phone }}"  class="custom-input" placeholder="رقم الهاتف 1" required />
                       <input type="text" name="phone2" value="{{ passenger.phone }}" class="custom-input" placeholder="رقم الهاتف 2" />
+                      <input type="date" name="date_of_birth" class="custom-input" value="{{ passenger.date_of_birth|date:'Y-m-d' }}" placeholder="التاريخ" required />
+
                   </div>
                   <div>
                       <select name="trip_location" id="editTripLocation" class="custom-input flex-1" required>
@@ -210,6 +240,30 @@
                   <div class="flex flex-col items-center pt-2">
                     <img 
                       id="editImage{{ passenger.id }}" 
+                      src="{{ passenger.identify_img.url }}" 
+                      alt="صورة الهوية" 
+                      style="max-width: 200px; max-height: 400px;" 
+                      onerror="this.onerror=null; this.src='{% static 'assetstravelers/image/img/icons8_collaborator_male_60px 2.png' %}'" 
+                    />
+                    <label 
+                      for="identify_img-file-input-{{ passenger.id }}" 
+                      class="custom-upload-button text-center"
+                    >
+                      اختر صورة الهوية
+                    </label>
+                    <input 
+                      id="identify_img-file-input-{{ passenger.id }}" 
+                      type="file" 
+                      name="image" 
+                      onchange="previewImageee(event, '{{ passenger.id }}')" 
+                      style="display: none;" 
+                    />
+                  </div>
+
+
+                  <div class="flex flex-col items-center pt-2">
+                    <img 
+                      id="editImage{{ passenger.id }}" 
                       src="{{ passenger.image.url }}" 
                       alt="صورة المسافر" 
                       style="max-width: 200px; max-height: 400px;" 
@@ -219,7 +273,7 @@
                       for="file-input-{{ passenger.id }}" 
                       class="custom-upload-button text-center"
                     >
-                      اختر صورة
+                      اختر صورة المسافر
                     </label>
                     <input 
                       id="file-input-{{ passenger.id }}" 
