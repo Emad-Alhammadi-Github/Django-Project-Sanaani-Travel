@@ -3,6 +3,9 @@ from ..models import Trip,City,TravelType,TripCategory,Vehicle
 from django.db.models import Q
 import os
 from django.contrib.auth.decorators import login_required
+from django.http import JsonResponse
+from datetime import datetime
+from django.db.models import Count
 #####################################  ادارة الرحلات ##################################################################
 
 @login_required(login_url='login')
@@ -14,6 +17,64 @@ def trip_list(request):
     tripcategory = TripCategory.objects.all()  
     vehicle = Vehicle.objects.all()
     return render(request, 'dashboard/Trips.html', {'trips': trips, 'query': query,'city': city,'traveltype': traveltype,'tripcategory': tripcategory,'vehicle': vehicle})
+
+
+def trip_filter(request):
+    trips = Trip.objects.all()
+    city = City.objects.all()  
+    traveltype = TravelType.objects.all()  
+    tripcategory = TripCategory.objects.all()  
+    vehicle = Vehicle.objects.all()
+    if request.method == 'POST':
+        specific_date = request.POST.get('specific_date', None)
+        
+        if specific_date:
+            try:
+                specific_date = datetime.strptime(specific_date, "%Y-%m-%d").date()
+                trips = trips.filter(date=specific_date)
+            except ValueError:
+                trips = trips
+        if 'new_trips' in request.POST:
+            trips = trips.filter(date__gte=datetime.today())
+        if 'highest_price' in request.POST:
+            trips = trips.order_by('-seat_price')
+        if 'lowest_price' in request.POST:
+            trips = trips.order_by('seat_price')
+        if 'most_booked' in request.POST:
+            trips = trips.annotate(booking_count=Count('passengers')).order_by('-booking_count')
+
+    return render(request, 'dashboard/Trips.html', {'trips': trips,'city': city,'traveltype': traveltype,'tripcategory': tripcategory,'vehicle': vehicle})
+
+
+
+
+# def trip_filter(request):
+#     print("Entering the trip_filter view")
+
+#     trips = Trip.objects.all()
+#     print(f"Total trips before filtering: {len(trips)}")
+
+
+#     if request.method == 'POST':
+#         if 'new_trips' in request.POST:
+#             trips = trips.filter(date__gte=datetime.today())
+#         if 'highest_price' in request.POST:
+#             trips = trips.order_by('-seat_price')
+#         if 'lowest_price' in request.POST:
+#             trips = trips.order_by('seat_price')
+#         if 'specific_date' in request.POST:
+#             specific_date = request.POST.get('specific_date')
+#             trips = trips.filter(date=specific_date)
+#         if 'most_booked' in request.POST:
+#             trips = trips.annotate(booking_count=Count('passengers')).order_by('-booking_count')
+
+#     trips_list = list(trips.values())
+#     return JsonResponse({'trips': trips_list})
+
+
+
+
+
 
 
 @login_required(login_url='login')
