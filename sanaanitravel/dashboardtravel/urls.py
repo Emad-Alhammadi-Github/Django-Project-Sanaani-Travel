@@ -20,6 +20,7 @@ urlpatterns = [
     path('dashboard', home_dashboard, name='home_dashboard'),
     path('checkout/<int:trip_id>/', checkout, name='checkout'),
     path('success/', success_page, name='success_page'),
+    path('error_checkOut/', error_checkOut, name='error_checkOut'),
     path('search/', search_trips, name='search_trips'),
 
 #####################################   الرئيسية النهاية ##################################################################
@@ -44,6 +45,7 @@ urlpatterns = [
 
 #####################################  ادارة الرحلات ##################################################################
     path('trip/', trip_list, name='trip_list'),
+    path('trip/filter/', trip_filter, name='trip_filter'),
     path('trips/add/', add_trip, name='add_trip'),
     path('edit_trip/', edit_trip, name='edit_trip'),
     path('trip_detail/<int:trip_id>/', trip_detail, name='trip_detail'),
