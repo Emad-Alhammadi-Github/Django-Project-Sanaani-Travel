@@ -1,5 +1,5 @@
 from django.shortcuts import render, get_object_or_404, redirect
-from ..models import Trip, Passenger, Invoice,ReservationRequest
+from ..models import Trip, Passenger, Invoice,ReservationRequest,Vehicle
 from django.db.models import Q
 from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch, Q
@@ -54,13 +54,17 @@ def add_invoice(request):
             trip=Trip.objects.get(id=request.POST['trip']),
             seat_number=request.POST['seat_number'],
             trip_date=request.POST['trip_date'],
-            total_amount=request.POST['total_amount']
+            total_amount=request.POST['total_amount'],
+            payment_method=request.POST['payment_method'],
+            status=request.POST['status'],
         )
         invoice.save()
         return redirect('invoice_list')
+    
     passengers = Passenger.objects.all()
+    vehicles = Vehicle.objects.all()
     trips = Trip.objects.all()
-    return render(request, 'trips/add_invoice.html', {'passengers': passengers, 'trips': trips})
+    return render(request, 'trips/add_invoice.html', {'passengers': passengers, 'trips': trips, 'vehicles': vehicles})
 
 
 
