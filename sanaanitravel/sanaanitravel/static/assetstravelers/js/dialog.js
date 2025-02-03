@@ -66,4 +66,4 @@ function previewImageee(event, driverId) {
 document.getElementById('upload-button').addEventListener('click', function() {
   document.getElementById('file-input').click(); 
 });
-document.getElementById('file-input').addEventListener('change', previewImage);
+// document.getElementById('file-input').addEventListener('change', previewImage);
