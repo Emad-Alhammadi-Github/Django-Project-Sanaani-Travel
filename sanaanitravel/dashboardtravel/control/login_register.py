@@ -28,7 +28,7 @@ def login_view(request):
                 if employee.user_type == 'admin':
                     return redirect('trip_list') 
                 else:
-                    return redirect('trip_list')
+                    return redirect('home')
                 
             except Employee.DoesNotExist:
                 messages.error(request, "المستخدم ليس موظفًا مسجلًا في النظام.")
