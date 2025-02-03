@@ -37,7 +37,7 @@
             </div>
             <form action="{% url 'add_vehicle'%}" method="POST" class="flex flex-col p-4" enctype="multipart/form-data">
               {% csrf_token %}
-              <div class="grid grid-cols-3 gap-2">
+              <div class="grid grid-cols-4 gap-2">
                 <div>
                   <input type="text" name="name" class="custom-input" placeholder=" اسم السيارة" />
 
@@ -133,6 +133,7 @@
                   </select>
                   <textarea name="description" class="custom-input" rows="7"></textarea>
                 </div>
+
                 <div class="flex flex-col items-center pt-2">
                   <img id="vehicle-image" 
                        src="../../static/assetstravelers/image/img/icons8_collaborator_male_60px 2.png" 
@@ -144,6 +145,16 @@
                   </label>
                 </div>
 
+                <div class="flex flex-col items-center pt-2">
+                  <img id="vehicle-img1" 
+                       src="../../static/assetstravelers/image/img/icons8_collaborator_male_60px 2.png" 
+                       width="70%" height="90%" alt="vehicle img1" />
+                  
+                  <label for="img1-file-input">
+                    <input id="img1-file-input" type="file" name="img1" style="display: none" onchange="previewImage(event, 'vehicle-img1')" />
+                    <button class="custom-input w-[200px]" type="button" onclick="document.getElementById('img1-file-input').click();">اختار صورة</button>
+                  </label>
+                </div>
 
               </div>
               <div class="w-full flex-row">
@@ -251,7 +262,7 @@
        </div>
        <form action="{% url 'edit_vehicle' vehicle.id %}" method="POST" class="flex flex-col p-4" enctype="multipart/form-data">
         {% csrf_token %}
-        <div class="grid grid-cols-3 gap-2">
+        <div class="grid grid-cols-4 gap-2">
           <div>
             <input type="text" name="name" value="{{ vehicle.name }}" class="custom-input" placeholder=" اسم السيارة" />
 
@@ -354,6 +365,8 @@
             <textarea name="description" class="custom-input" rows="7">{{ vehicle.description }}</textarea>
           </div>
           
+
+
           <div class="flex flex-col items-center pt-2">
             <img 
               id="editImage{{ vehicle.id }}" 
@@ -378,6 +391,32 @@
           </div>
 
 
+          
+          <div class="flex flex-col items-center pt-2">
+            <img 
+              id="editImage{{ vehicle.id }}" 
+              src="{{ vehicle.img1.url }}" 
+              alt="صورة المركبة" 
+              style="max-width: 200px; max-height: 400px;" 
+              onerror="this.onerror=null; this.src='{% static 'assetstravelers/image/img/icons8_collaborator_male_60px 2.png' %}'" 
+            />
+            <label 
+              for="img1-file-input-{{ vehicle.id }}" 
+              class="custom-upload-button text-center"
+            >
+              اختر صورة
+            </label>
+            <input 
+              id="img1-file-input-{{ vehicle.id }}" 
+              type="file" 
+              name="img1" 
+              onchange="previewImageee(event, '{{ vehicle.id }}')" 
+              style="display: none;" 
+            />
+          </div>
+
+
+ 
 
         </div>
         <div class="w-full flex-row">
