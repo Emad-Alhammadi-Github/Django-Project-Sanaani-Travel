@@ -51,12 +51,14 @@
             <form action method="POST" class="flex flex-col p-4" enctype="multipart/form-data">
               <div class="grid grid-cols-2 gap-2">
                 <div>
-                  <input
-                    type="text"
-                    name="passenger"
-                    class="custom-input"
-                    placeholder="الاسم الرباعي"
-                  />
+
+                  <select name="passenger" class="custom-input flex-1" id>
+                    <option value> المسافر</option>
+                    {% for passenger in passengers %}
+                    <option value="{{ passenger.id }}" >{{ passenger.name }}</option>
+                {% endfor %}
+                </select>
+
                   <input
                     type="text"
                     name=""
@@ -79,25 +81,38 @@
                     class="custom-input"
                     placeholder="رقم المقعد"
                   />
-          
+                  <select name="type_vehicle" class="custom-input flex-1" id>
+                    <option value>نوع السيارة</option>
+                    {% for vehicle in vehicles %}
+                    <option value="{{ vehicle.id }}" >{{ vehicle.name }}</option>
+                {% endfor %}
+                </select>
                 </div>
                 <div>
-                  <select name="type_vehicle" class="custom-input flex-1" id>
-                    <option value>نوع المركبة</option>
-                      <option value>نوع السيارة</option>
-                      <option value="مرسيدس">مرسيدس</option>
-                      <option value="ليكزاز">ليكزاز</option>
-                      <option value="كورلا">كورلا</option>
-                      <option value="رافور">رافور</option>
-                      <option value="هيلوكس">هيلوكس</option>
-                      <option value="باص رويشان">باص رويشان</option>
-                      <option value="باص بلكه">باص بلكه</option>
-                      <option value="حافلة">حافلة</option>
-                  </select>
+
 
                   <input type="number" name="paid_amount" id="editPaidAmount" class="custom-input" placeholder="المدفوع" required oninput="updateRemainingAmount()" />
                   <input type="text" name="remaining_amount" id="editRemainingAmount" class="custom-input" placeholder="المتبقي" disabled />
+                  
+                  
+                  <div class="flex gap-1">
+                    <select name="payment_method" class="custom-input flex-1" id>
+                      <option value>طريقة الدفع</option>
+                      <option value="كاش">كاش</option>
+                      <option value="حوالة">حوالة</option>
+                    </select>
 
+                   <select name="status" id="status"class="custom-input flex-1" >
+                    <option value> حالة الفاتورة</option>
+
+                    <option value="pending">قيد الانتظار</option>
+                    <option value="paid">مدفوعة</option>
+                    <option value="overdue">متأخرة</option>
+                    <option value="cancelled">ملغاة</option>
+                    </select>
+
+
+                  </div>
 
           
                   <div class="flex gap-1">
@@ -106,6 +121,7 @@
                     <input type="time" name="time" class="custom-input flex-1" placeholder="وقت السفر" />
           
                   </div>
+
                 </div>
           
               </div>
@@ -116,7 +132,9 @@
                   حفــــــــــــــــظ
                 </button>
                 <button
+                type="button"
                   class="w-1/4 py-1 border font-bold border-primaryDialog rounded-md text-primaryDialog"
+                  onclick="openDialog('Dialog6')"
                 >
                   الغاء
                 </button>
