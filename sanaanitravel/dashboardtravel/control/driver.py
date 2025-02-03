@@ -18,6 +18,7 @@ def driver_detail(request, driver_id):
     driver = Driver.objects.get(id=driver_id)
     return render(request, 'dashboard/Drivers_detail.html', {'driver': driver})
 
+
 @login_required(login_url='login')
 def add_driver(request):
     if request.method == 'POST':
@@ -28,12 +29,16 @@ def add_driver(request):
             experience_years=request.POST['experience_years'],
             phone=request.POST['phone'],
             license_type=request.POST['license_type'],
-            license_number=request.POST['license_number'],
+            license_img=request.FILES['license_img'],
+           
             id_number=request.POST['id_number'],
+            identify_img=request.FILES['identify_img'],
             passport_number=request.POST['passport_number'],
             gender=request.POST['gender'],
             nationality=nationality,
-            image=request.FILES['image']
+            image=request.FILES['image'],
+            license_number=request.POST['license_number'],
+            date_of_birth=request.POST['date_of_birth'],
         )
         driver.save()
         return redirect('driver_list')
@@ -57,9 +62,17 @@ def edit_driver(request,driver_id):
         driver.passport_number = request.POST['passport_number']
         driver.gender = request.POST['gender']
         driver.nationality = nationality
-        
+        driver.date_of_birth=request.POST['date_of_birth']
+
         if 'image' in request.FILES and request.FILES['image']:
             driver.image = request.FILES['image']
+
+        if 'license_img' in request.FILES and request.FILES['license_img']:
+            driver.license_img = request.FILES['license_img']
+
+        if 'identify_img' in request.FILES and request.FILES['identify_img']:
+            driver.identify_img = request.FILES['identify_img']
+            
         driver.save()
         return redirect('driver_list')
 
