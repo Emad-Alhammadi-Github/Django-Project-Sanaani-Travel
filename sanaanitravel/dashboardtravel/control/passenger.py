@@ -39,6 +39,8 @@ def add_passenger(request):
         trip_date = request.POST.get('trip_date')
         gender = request.POST.get('gender')
         image = request.FILES.get('image')
+        identify_img = request.FILES.get('identify_img')
+        date_of_birth=request.POST.get('date_of_birth')
         print(image)
 
         trip = Trip.objects.get(id=trip_location_id)
@@ -69,6 +71,8 @@ def add_passenger(request):
             gender=gender,
             nationality=nationality,
             image=image,
+            identify_img=identify_img,
+            date_of_birth=date_of_birth,
         )
         passenger.save()
         return redirect('passenger_list')
@@ -93,6 +97,8 @@ def edit_passenger(request,passenger_id):
         trip_date = request.POST.get('trip_date')
         gender = request.POST.get('gender')
         image = request.FILES.get('image') 
+        identify_img = request.FILES.get('identify_img')
+        date_of_birth=request.POST.get('date_of_birth')
         # additional_payment = request.POST.get('additional_payment')
         print("111111111111111111111111111")
         # print(additional_payment)
@@ -122,6 +128,7 @@ def edit_passenger(request,passenger_id):
         passenger.trip_date = trip_date
         passenger.gender = gender
         passenger.nationality = nationality
+        passenger.date_of_birth = date_of_birth
         
         if image:
             if passenger.image:
@@ -129,7 +136,13 @@ def edit_passenger(request,passenger_id):
                 if os.path.isfile(old_image_path):
                     os.remove(old_image_path)
             passenger.image = image 
-        
+
+        if identify_img:
+            if passenger.identify_img:
+                old_identify_img_path = os.path.join(settings.MEDIA_ROOT, str(passenger.identify_img))
+                if os.path.isfile(old_identify_img_path):
+                    os.remove(old_identify_img_path)
+            passenger.identify_img = identify_img 
         passenger.save()
 
         return redirect('passenger_list')  
