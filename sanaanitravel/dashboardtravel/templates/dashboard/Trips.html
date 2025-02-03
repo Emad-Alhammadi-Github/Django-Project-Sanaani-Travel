@@ -10,10 +10,41 @@
 
     <div class="flex flex-row items-center gap-10 mx-7 my-4">
 
-        <button class="flex gap-[2px] border border-gray-300 items-center py-2">
+        <button class="flex gap-[2px] border border-gray-300 items-center py-2" onclick="openDialog('Dialog12')">
             <h5 class="text-black pr-2">filter</h5>
             <img class="mr-[20px]" src="../../static/assetstravelers/image/img/icons/filter.svg" alt />
         </button>
+
+        
+        <div id="Dialog12" style="display: none; position: absolute; background: white; border: 1px solid #ccc; padding: 10px;">
+            <button class="absolute top-2 left-2 text-xl" onclick="openDialog('Dialog12')" >X</button><br>
+            <form method="POST" action="{% url 'trip_filter' %}">
+            {% csrf_token %}
+            
+            <label>
+                <input type="checkbox" name="new_trips" > الرحلات الجديدة
+            </label><br>
+            <label>
+                <input type="checkbox" name="highest_price"> الأعلى سعرًا
+            </label><br>
+            <label>
+                <input type="checkbox" name="lowest_price" > الأقل سعرًا
+            </label><br>
+            <label>
+                <input type="date" name="specific_date" value="{{ request.GET.specific_date }}">
+                تاريخ معين
+            </label><br>
+            <label>
+                <input type="checkbox" name="most_booked"> الأكثر حجزًا
+            </label><br>
+        
+            <button type="submit" class="w-[50%] py-1 text-white font-bold bg-primaryDialog rounded-md">تطبيق الفلاتر</button>
+        </form>
+    </div> 
+
+
+
+
 
         <button onclick="openDialog('Dialog5')" class="flex gap-[2px] bg-[#4278FF] mx-2 mt-3 mb-3 items-center py-2 rounded-lg w-[170px]">
             <h5 class="text-white pr-2">اضافة رحلة جديده</h5>
@@ -122,15 +153,23 @@
                         </select>
                         <textarea name="description" class="custom-input" rows="14" placeholder="تفاصيل الخدمة"></textarea>
                     </div>
+                    {% comment %} <div class="flex flex-col items-center pt-2">
+                        <img id="service-image" 
+                             src="../../static/assetstravelers/image/img/icons8_collaborator_male_60px 2.png" 
+                             width="70%" height="90%" alt="service Image" />
+                        
+                        <label for="file-input">
+                          <input id="file-input" type="file" name="image" style="display: none" onchange="previewImage(event, 'service-image')" />
+                          <button class="custom-input w-[200px]" type="button" onclick="document.getElementById('file-input').click();">اختار صورة</button>
+                        </label>
+                      </div> {% endcomment %}
 
-
-                    <div class="flex flex-col items-center pt-2">
+                     <div class="flex flex-col items-center pt-2">
                         <img src="{% static 'assetstravelers/image/img/icons8_collaborator_male_60px 2.png' %}" width="90%" height="90%" alt />
                         <label for="file-input">
-                            <input id="file-input" type="file" name="image" style="display: none" />
-                            <button class="custom-input w-[200px]" type="button" onclick="document.getElementById('file-input').click();">اختار صورة</button>
+                            <input id="file-input" type="file" name="image"  />
                         </label>
-                    </div>
+                    </div> 
 
                     
                 </div>
@@ -138,7 +177,7 @@
                     <button type="submit" class="w-[74%] py-1 text-white font-bold bg-primaryDialog rounded-md text-ellipsiswhite">
                         حفــــــــــــــــظ
                     </button>
-                    <button class="w-1/4 py-1 border font-bold border-primaryDialog rounded-md text-primaryDialog">
+                    <button type="button" class="w-1/4 py-1 border font-bold border-primaryDialog rounded-md text-primaryDialog" onclick="openDialog('Dialog7')">
                         الغاء
                     </button>
                 </div>
@@ -404,6 +443,66 @@
     function closeDeleteDialoghh() {
         document.getElementById('DeleteDialog').style.display = 'none';
     }
+
+
+
+
+
+
+
+
+
+    document.getElementById("filterForm").addEventListener("submit", function(event) {
+        event.preventDefault();  // منع إرسال النموذج بشكل تقليدي
+    
+        var formData = new FormData(this);
+    
+        fetch('/trip/filter/', {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value  // إضافة CSRF Token
+            }
+        })
+        .then(response => {
+            // تحقق من نوع المحتوى في الاستجابة
+            if (!response.ok) {
+                throw new Error('Failed to load trips');
+            }
+            return response.json();
+        })
+        .then(data => {
+            var trips = data.trips;
+            var tableBody = document.querySelector("table tbody");
+            tableBody.innerHTML = '';  // مسح الجدول الحالي
+    
+            trips.forEach(trip => {
+                var row = `
+                    <tr>
+                        <td class="px-4 py-2 border-b border-[#F5F0F1]"><img src="${trip.image}" alt width="70" /></td>
+                        <td class="px-4 py-2 border-b border-[#F5F0F1]">${trip.departure}</td>
+                        <td class="px-4 py-2 border-b border-[#F5F0F1]">${trip.destination}</td>
+                        <td class="px-4 py-2 border-b border-[#F5F0F1]">${trip.date}</td>
+                        <td class="px-4 py-2 border-b border-[#F5F0F1]">${trip.time}</td>
+                        <td class="px-4 py-2 border-b border-[#F5F0F1]">${trip.seat_count}</td>
+                        <td class="px-4 py-2 border-b border-[#F5F0F1]">${trip.seat_price}</td>
+                        <td class="px-1 py-2 border-b border-[#F5F0F1] flex flex-row gap-2 justify-center">
+                            <button class="bg-[#4278FF] text-[#16151C] rounded-lg w-[80px] flex items-center gap-1 justify-center">
+                                <img src="/path/to/edit/icon" alt />
+                                <h6>تعديل</h6>
+                            </button>
+                        </td>
+                    </tr>
+                `;
+                tableBody.innerHTML += row;
+            });
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('حدث خطأ، يرجى المحاولة مرة أخرى');
+        });
+    });
+    
   </script>
 
 
