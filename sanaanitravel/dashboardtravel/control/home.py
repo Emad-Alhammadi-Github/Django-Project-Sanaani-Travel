@@ -76,3 +76,5 @@ def search_trips(request):
 def success_page(request):
     return render(request, 'home/success_page.html')
 
+def error_checkOut(request):
+    return render(request, 'home/error_checkOut.html')
