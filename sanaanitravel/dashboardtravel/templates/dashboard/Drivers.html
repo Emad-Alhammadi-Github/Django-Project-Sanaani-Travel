@@ -39,7 +39,9 @@
             </div>
             <form action="{% url 'add_driver' %}" method="POST" class="flex flex-col p-4" enctype="multipart/form-data">
               {% csrf_token %}
-              <div class="grid grid-cols-3 gap-2">
+              <div class="grid grid-cols-4 gap-2">
+
+
                 <div>
                   <input
                     type="text"
@@ -74,7 +76,6 @@
                     placeholder="رقم الهاتف 2"
                   />
 
-                  <input type="text" name="passport_number" class="custom-input" placeholder="رقم الجواز" />
 
                 </div>
           
@@ -88,33 +89,86 @@
                   </select>
                   <input type="text" name="license_number" class="custom-input" placeholder="رقم رخصة القيادة " />
 
+                  <div class="flex flex-col items-center pt-1 ">
+                    <img id="license_img-image" 
+                         src="../../static/assetstravelers/image/img/icons8_collaborator_male_60px 2.png" 
+                         width="70%" height="90%" alt="license_img Image" />
+                    
+                    <label for="license_img-file-input">
+                      <input id="license_img-file-input" type="file" name="license_img" style="display: none" onchange="previewImage(event, 'license_img-image')" />
+                      <button class="custom-input w-[180px]" type="button" onclick="document.getElementById('license_img-file-input').click();">اختار صورة رخصة القيادة</button>
+                    </label>
+                  </div>          
+          
+
+                </div>
+
+                
+
+
+                <div>
                   <input type="text" name="id_number" class="custom-input" placeholder="رقم البطاقة الشخصية" />
+                  <input type="text" name="passport_number" class="custom-input" placeholder="رقم الجواز" />
+
           
-          
+                  <div class="flex flex-col items-center pt-2">
+                    <img id="identify_img-image" 
+                         src="../../static/assetstravelers/image/img/icons8_collaborator_male_60px 2.png" 
+                         width="70%" height="90%" alt="identify_img Image" />
+                    
+                    <label for="identify_img-file-input">
+                      <input id="identify_img-file-input" type="file" name="identify_img" style="display: none" onchange="previewImage(event, 'identify_img-image')" />
+                      <button class="custom-input w-[140px]" type="button" onclick="document.getElementById('identify_img-file-input').click();">اختار صورة الهوية </button>
+                    </label>
+                  </div>
+
+                </div>
+
+
+
+
+                <div>
+                  <input type="date" name="date_of_birth" class="custom-input flex-1" required />
+
                   <div class="flex gap-1">
                     <select name="gender" class="custom-input flex-1" id>
                       <option value>الجنس</option>
                       <option value="1">ذكر</option>
                       <option value="0">أنثئ</option>
                     </select>
-                    <select name="nationality" class="custom-input flex-1" id>
+
+                   <select name="nationality" class="custom-input flex-1" id>
                       <option value>الجنسية</option>
                       {% for nationality in nationalities %}
                       <option value="{{ nationality.id }}">{{ nationality.name }}</option>
                        {% endfor %}
                     </select>
+
+
                   </div>
+                  <div class="flex flex-col items-center pt-2">
+                    <img id="driver-image" 
+                         src="../../static/assetstravelers/image/img/icons8_collaborator_male_60px 2.png" 
+                         width="70%" height="90%" alt="Driver Image" />
+                    
+                    <label for="file-input">
+                      <input id="file-input" type="file" name="image" style="display: none" onchange="previewImage(event, 'driver-image')" />
+                      <button class="custom-input w-[140px]" type="button" onclick="document.getElementById('file-input').click();">اختار صورة</button>
+                    </label>
+                  </div>
+
+
+
                 </div>
-                <div class="flex flex-col items-center pt-2">
-                  <img id="driver-image" 
-                       src="../../static/assetstravelers/image/img/icons8_collaborator_male_60px 2.png" 
-                       width="70%" height="90%" alt="Driver Image" />
-                  
-                  <label for="file-input">
-                    <input id="file-input" type="file" name="image" style="display: none" onchange="previewImage(event, 'driver-image')" />
-                    <button class="custom-input w-[200px]" type="button" onclick="document.getElementById('file-input').click();">اختار صورة</button>
-                  </label>
-                </div>
+
+
+
+
+
+
+
+
+
                 
               </div>
               <div class="w-full flex-row">
@@ -201,7 +255,7 @@
       </div>
       <form action="{% url 'edit_driver' driver.id %}" method="POST" class="flex flex-col p-4" enctype="multipart/form-data">
         {% csrf_token %}
-        <div class="grid grid-cols-3 gap-2">
+        <div class="grid grid-cols-4 gap-2">
           <div>
             <input
               type="text"
@@ -248,9 +302,68 @@
             </select>
             <input type="text" name="license_number" value="{{ driver.license_number }}" class="custom-input" placeholder="رقم رخصة القيادة " />
 
+
+
+            <div class="flex flex-col items-center pt-1">
+              <img 
+                id="editImage{{ driver.id }}" 
+                src="{{ driver.license_img.url }}" 
+                alt="صورة الرخصة" 
+                style="max-width: 200px; max-height: 400px;" 
+                onerror="this.onerror=null; this.src='{% static 'assetstravelers/image/img/icons8_collaborator_male_60px 2.png' %}'" 
+              />
+              <label 
+                for="license_img-file-input-{{ driver.id }}" 
+                class="custom-upload-button text-center"
+              >
+                اختر صورةالرخصة
+              </label>
+              <input 
+                id="license_img-file-input-{{ driver.id }}" 
+                type="file" 
+                name="license_img" 
+                onchange="previewImageee(event, '{{ driver.id }}')" 
+                style="display: none;" 
+              />
+            </div>
+    
+          </div>
+
+
+          <div>
             <input type="text" name="id_number" value="{{ driver.id_number }}" class="custom-input" placeholder="رقم البطاقة الشخصية" />
-    
-    
+            <input type="text" name="passport_number" value="{{ driver.passport_number }}" class="custom-input" placeholder="رقم الجواز" />
+            <div class="flex flex-col items-center pt-1">
+              <img 
+                id="editImage{{ driver.id }}" 
+                src="{{ driver.identify_img.url }}" 
+                alt="صورة الهوية" 
+                style="max-width: 200px; max-height: 400px;" 
+                onerror="this.onerror=null; this.src='{% static 'assetstravelers/image/img/icons8_collaborator_male_60px 2.png' %}'" 
+              />
+              <label 
+                for="identify_img-file-input-{{ driver.id }}" 
+                class="custom-upload-button text-center"
+              >
+                اختر صورةالهوية
+              </label>
+              <input 
+                id="identify_img-file-input-{{ driver.id }}" 
+                type="file" 
+                name="identify_img" 
+                onchange="previewImageee(event, '{{ driver.id }}')" 
+                style="display: none;" 
+              />
+            </div>
+
+          </div>
+
+
+
+
+          <div>
+            <input type="date" name="date_of_birth" value="{{ driver.date_of_birth|date:'Y-m-d' }}" class="custom-input flex-1" required />
+
             <div class="flex gap-1">
               <select name="gender" class="custom-input flex-1" id>
                 <option value="">الجنس</option>
@@ -266,29 +379,36 @@
             {% endfor %}
               </select>
             </div>
+
+
+            <div class="flex flex-col items-center pt-2">
+              <img 
+                id="editImage{{ driver.id }}" 
+                src="{{ driver.image.url }}" 
+                alt="صورة سواق" 
+                style="max-width: 200px; max-height: 400px;" 
+                onerror="this.onerror=null; this.src='{% static 'assetstravelers/image/img/icons8_collaborator_male_60px 2.png' %}'" 
+              />
+              <label 
+                for="file-input-{{ driver.id }}" 
+                class="custom-upload-button text-center"
+              >
+                اختر صورة
+              </label>
+              <input 
+                id="file-input-{{ driver.id }}" 
+                type="file" 
+                name="image" 
+                onchange="previewImageee(event, '{{ driver.id }}')" 
+                style="display: none;" 
+              />
+            </div>
+
+
           </div>
-          <div class="flex flex-col items-center pt-2">
-            <img 
-              id="editImage{{ driver.id }}" 
-              src="{{ driver.image.url }}" 
-              alt="صورة سواق" 
-              style="max-width: 200px; max-height: 400px;" 
-              onerror="this.onerror=null; this.src='{% static 'assetstravelers/image/img/icons8_collaborator_male_60px 2.png' %}'" 
-            />
-            <label 
-              for="file-input-{{ driver.id }}" 
-              class="custom-upload-button text-center"
-            >
-              اختر صورة
-            </label>
-            <input 
-              id="file-input-{{ driver.id }}" 
-              type="file" 
-              name="image" 
-              onchange="previewImageee(event, '{{ driver.id }}')" 
-              style="display: none;" 
-            />
-          </div>
+
+
+
           
         </div>
         <div class="w-full flex-row">
