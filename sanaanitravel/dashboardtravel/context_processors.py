@@ -48,20 +48,3 @@ def dashboard_data(request):
         'daily_passenger': daily_passenger,
         # 'user_type': user_type,
     }
-
-        # 
-
-    # user_type = request.user.employee.user_type
-    # إجمالي المركبات
-    # total_vehicles = Vehicle.objects.count()
-    # in_service = Vehicle.objects.filter(status='in_service').count()
-    # out_of_service = total_vehicles - in_service
-
-    # إجمالي السواقين
-    # total_drivers = Driver.objects.count()
-    # in_drivers = Driver.objects.filter(status='active').count()
-    # out_of_drivers = total_drivers - in_drivers
-
-    # المسافرين
-    # total_passengers = Passenger.objects.count()
-    # daily_passenger = calculate_daily_passenger()
