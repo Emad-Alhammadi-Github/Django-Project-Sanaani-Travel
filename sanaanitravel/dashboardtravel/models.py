@@ -29,8 +29,6 @@ class TripCategory(models.Model):
     def __str__(self):
         return self.name
 
-
-
 #### السواقين
 class Driver(models.Model):
     name = models.CharField(max_length=100)  # الاسم
@@ -38,11 +36,17 @@ class Driver(models.Model):
     phone = models.CharField(max_length=15)  # الهاتف
     license_type = models.CharField(max_length=50)  # نوع رخصة القيادة
     license_number = models.CharField(max_length=50)  # رقم رخصة القيادة
+    license_img = models.ImageField(upload_to='driver/license_img/', null=True, blank=True)  # مسار صورة رخصة القيادة للسائق
+
     id_number = models.CharField(max_length=50)  # رقم البطاقة الشخصية
+    identify_img =models.ImageField(upload_to='driver/identify_img/', null=True, blank=True)   # مسار صورة الهوية الوطنية للسائق
+
     passport_number = models.CharField(max_length=50)  # رقم جواز السفر
     gender = models.CharField(max_length=10)  # الجنس
     nationality = models.ForeignKey(Nationality, on_delete=models.CASCADE, related_name='cities_driver')  #   الجنسية
-    image = models.ImageField(upload_to='driver_images/', null=True, blank=True)  # صورة
+    image = models.ImageField(upload_to='driver/driver_images/', null=True, blank=True)  # صورة
+    date_of_birth = models.DateField()  # تاريخ ميلاد السائق
+
     def __str__(self):
         return self.name
 
@@ -62,8 +66,9 @@ class Vehicle(models.Model):
     # driver =  models.ManyToManyField(Driver)  # السائق
     driver = models.ForeignKey(Driver, on_delete=models.CASCADE)  # السائق
     description = models.TextField()  # وصف السيارة
-    image = models.ImageField(upload_to='vehicle_images/', null=True, blank=True)  # صورة
-   
+    image = models.ImageField(upload_to='vehicle/vehicle_images/', null=True, blank=True)  # صورة
+    img1 = models.ImageField(upload_to='vehicle/', null=True, blank=True)  # صورة أولى للمركبة (اختياري)
+
     def __str__(self):
         return self.name
 
@@ -104,10 +109,14 @@ class Employee(models.Model):
     user_type = models.CharField(max_length=10, choices=[('admin', 'أدمن'), ('employee', 'موظف')], default='employee')
 
 
+
+
 ### المسافرين
 class Passenger(models.Model):
     name = models.CharField(max_length=100)  # الاسم
     id_number = models.CharField(max_length=50)  # رقم البطاقة الشخصية
+    identify_img = models.ImageField(upload_to='passenger/identify_img/', null=True, blank=True)  # مسار صورة الهوية الوطنية للراكب
+
     passport_number = models.CharField(max_length=50)  # رقم جواز السفر
     phone = models.CharField(max_length=15)  # الهاتف
     trip_location = models.ForeignKey(Trip, on_delete=models.CASCADE, related_name='passengers')  # مكان الرحلة    
@@ -117,7 +126,9 @@ class Passenger(models.Model):
     seat_number = models.IntegerField()  # المقعد
     gender = models.CharField(max_length=10)  # الجنس
     nationality = models.ForeignKey(Nationality, on_delete=models.CASCADE, related_name='cities_passenger')  #  الجنسية
-    image = models.ImageField(upload_to='passenger_images/', null=True, blank=True)  # صورة
+    image = models.ImageField(upload_to='passenger/passenger_images/', null=True, blank=True)  # صورة
+    date_of_birth = models.DateField()  # تاريخ ميلاد الراكب
+
     def __str__(self):
         return self.name
 
@@ -137,7 +148,14 @@ class ReservationRequest(models.Model):
 
 ### الفواتير
 class Invoice(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'Pending'),          # قيد الانتظار
+        ('paid', 'Paid'),                # مدفوعة
+        ('overdue', 'Overdue'),          # متأخرة
+        ('cancelled', 'Cancelled'),      # ملغاة
+     ]
     passenger = models.ForeignKey(Passenger, on_delete=models.CASCADE)  # المسافر
+    # reservationrequest = models.ForeignKey(ReservationRequest, on_delete=models.CASCADE)  # المسافر
     type_vehicle = models.ForeignKey(Vehicle, on_delete=models.CASCADE)  # نوع السيارة
     paid_amount = models.DecimalField(max_digits=10, decimal_places=2)  # المدفوع
     remaining_amount = models.DecimalField(max_digits=10, decimal_places=2)  # المتبقي
@@ -146,6 +164,20 @@ class Invoice(models.Model):
     trip_date = models.DateField()  # تاريخ الرحلة
     time = models.TimeField()  # الوقت
     total_amount = models.DecimalField(max_digits=10, decimal_places=2)  # المجموع
+    payment_method = models.CharField(max_length=15)  # طريقة الدفع
+
+    status = models.CharField(max_length=15, choices=STATUS_CHOICES, default='pending')  # حالة الفاتورة
+
+# # نموذج المدفوعات يمثل المدفوعات المرتبطة بالفواتير
+class Payment(models.Model):
+    invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)  # الفاتورة المرتبطة بالدفع
+    payment_date = models.DateTimeField(auto_now_add=True)  # تاريخ الدفع
+    amount = models.DecimalField(max_digits=10, decimal_places=2)  # المبلغ المدفوع
+    transfer_number = models.CharField(max_length=50, blank=True, null=True)  # رقم الحوالة (اختياري)
+    proof_document = models.CharField(max_length=200, blank=True, null=True)  # مستند إثبات الدفع (اختياري)
+    proof_document_img = models.ImageField(upload_to='payment/proof_document_img/', null=True, blank=True)   # مستند إثبات الدفع (اختياري)
+    verified = models.BooleanField(default=False)  # حالة التحقق من الدفع
+
 
 
 ### الخدمات
