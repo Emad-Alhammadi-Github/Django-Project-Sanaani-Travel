@@ -45,7 +45,8 @@ def add_vehicle(request):
             fuel_capacity=request.POST['fuel_capacity'],
             description=request.POST['description'],
             driver=Driver.objects.get(id=request.POST['driver']),
-            image=request.FILES['image']
+            image=request.FILES['image'],
+            img1=request.FILES['img1']
         )
         vehicle.save()
         return redirect('vehicle_list')
@@ -72,6 +73,9 @@ def edit_vehicle(request, vehicle_id):
         vehicle.driver = Driver.objects.get(id=request.POST['driver'])
         if 'image' in request.FILES:
             vehicle.image = request.FILES['image']
+
+        if 'img1' in request.FILES:
+            vehicle.img1 = request.FILES['img1']
         vehicle.save()
         return redirect('vehicle_list')
     drivers = Driver.objects.all()
