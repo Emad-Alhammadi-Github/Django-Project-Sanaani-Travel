@@ -14,6 +14,43 @@
 
     <div class="flex flex-row justify-end gap-10 mx-7 my-4">
 
+        <div class="my-4">
+            <label for="trip-type">نوع الرحلة:</label>
+            <select id="trip-type" class="border rounded px-2 py-1">
+                <option value="">اختر نوع الرحلة</option>
+                <option value="internal">داخلية</option>
+                <option value="external">خارجية</option>
+            </select>
+        </div>
+
+        <div id="internal-trip" class="my-4 hidden">
+            <label for="yemen-cities">اختر المحافظة:</label>
+            <select id="yemen-cities" class="border rounded px-2 py-1">
+                {% for city in cities %}
+                    {% if city.nationality.name == "اليمن" %}
+                        <option value="{{ city.id }}">{{ city.name }}</option>
+                    {% endif %}
+                {% endfor %}
+            </select>
+        </div>
+
+        <div id="external-trip" class="my-4 hidden">
+            <label for="nationality">اختر الدولة:</label>
+            <select id="nationality" class="border rounded px-2 py-1">
+                <option value="">اختر الدولة</option>
+                {% for nationality in nationalities %}
+                    <option value="{{ nationality.id }}">{{ nationality.name }}</option>
+                {% endfor %}
+            </select>
+
+            <label for="cities">اختر المحافظة:</label>
+            <select id="cities" class="border rounded px-2 py-1">
+                <option value="">اختر المحافظة</option>
+            </select>
+        </div>
+
+
+
         <form method="get" action="">
             <input type="number" name="year" placeholder="اختر السنة" class="border rounded px-2 py-1">
             <button type="submit" class="bg-blue-500 text-white px-4 py-1 rounded">تحديث</button>
@@ -146,6 +183,44 @@
             });
         });
 
+        document.addEventListener('DOMContentLoaded', function () {
+            const tripTypeSelect = document.getElementById('trip-type');
+            const internalTripDiv = document.getElementById('internal-trip');
+            const externalTripDiv = document.getElementById('external-trip');
+            const nationalitySelect = document.getElementById('nationality');
+            const citiesSelect = document.getElementById('cities');
+
+            tripTypeSelect.addEventListener('change', function () {
+                if (tripTypeSelect.value === 'internal') {
+                    internalTripDiv.classList.remove('hidden');
+                    externalTripDiv.classList.add('hidden');
+                } else if (tripTypeSelect.value === 'external') {
+                    externalTripDiv.classList.remove('hidden');
+                    internalTripDiv.classList.add('hidden');
+                } else {
+                    internalTripDiv.classList.add('hidden');
+                    externalTripDiv.classList.add('hidden');
+                }
+            });
+
+            nationalitySelect.addEventListener('change', function () {
+                const nationalityId = nationalitySelect.value;
+                citiesSelect.innerHTML = '<option value="">اختر المحافظة</option>';
+
+                if (nationalityId) {
+                    fetch(`/get-cities/?nationality_id=${nationalityId}`)
+                        .then(response => response.json())
+                        .then(data => {
+                            data.cities.forEach(city => {
+                                const option = document.createElement('option');
+                                option.value = city.id;
+                                option.textContent = city.name;
+                                citiesSelect.appendChild(option);
+                            });
+                        });
+                }
+            });
+        });
 
 
         </script>
