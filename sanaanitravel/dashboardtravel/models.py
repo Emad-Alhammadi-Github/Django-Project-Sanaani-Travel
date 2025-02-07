@@ -98,15 +98,15 @@ class Trip(models.Model):
 ### الموظفين
 class Employee(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    name = models.CharField(max_length=100)  # الاسم
-    job_title = models.CharField(max_length=50)  # المسمى الوظيفي
-    phone = models.CharField(max_length=15)  # الهاتف
-    id_number = models.CharField(max_length=50)  # رقم البطاقة الشخصية
-    salary = models.DecimalField(max_digits=10, decimal_places=2)  # الراتب
-    gender = models.CharField(max_length=10)  # الجنس
+    name = models.CharField(max_length=100,null=True)  # الاسم
+    job_title = models.CharField(max_length=50,null=True)  # المسمى الوظيفي
+    phone = models.CharField(max_length=15,null=True)  # الهاتف
+    id_number = models.CharField(max_length=50,null=True)  # رقم البطاقة الشخصية
+    salary = models.DecimalField(max_digits=10, decimal_places=2,null=True)  # الراتب
+    gender = models.CharField(max_length=10,null=True)  # الجنس
     nationality = models.ForeignKey(Nationality, on_delete=models.CASCADE, related_name='cities_employee')  #   الجنسية
     image = models.ImageField(upload_to='employee_images/', null=True, blank=True)  # صورة
-    user_type = models.CharField(max_length=10, choices=[('admin', 'أدمن'), ('employee', 'موظف')], default='employee')
+    user_type = models.CharField(max_length=10, choices=[('admin', 'أدمن'), ('employee', 'موظف'), ('customer', 'عميل')], default='customer')
 
 
 
