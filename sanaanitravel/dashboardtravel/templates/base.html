@@ -72,7 +72,7 @@
           <a href="{% url 'trip_list'%}" class="  z-10">تواصل معنا</a>
         </div>
   
-        <a href="{% url 'logout' %}" 
+        <a href="{% url 'logoutadmin' %}" 
            class="text-[14px] px-4 py-1 text-white border border-white rounded-2xl">تسجيل الخروج</a>
         </div>
       </div>
@@ -113,7 +113,7 @@
             
             
                 <div class="flex flex-col items-center pl-4 w-full"> 
-
+                  {% if request.session.user_type == "admin" %}
                   <div class="flex flex-row h-10 gap-2 justify-start w-[80%]">
                       <div class="border-l-[2px] border-[#000000]"></div>
                       <img src="{% static 'assetstravelers/image/img/icons/icons8_luggage_trolley_48px_3 2.svg'%}" width="24" />
@@ -134,14 +134,14 @@
                       <div class="border-l-[2px] border-[#000000]"></div>
                       <a href="{% url 'vehicle_list' %}" class="text-[#07002c] font-bold text-[16px]" id="link-vehicle" onclick="changeActiveLink(this)">ادارة المركبات</a>
                   </div>
-                  {% if request.session.user_type == "admin" %}
+                  
                   <div class="flex flex-row h-10 gap-2 justify-start w-[80%]">
                       <div class="border-l-[2px] border-[#000000]"></div>
                       <img src="{% static 'assetstravelers/image/img/icons/icons8_collaborator_male_52px 1.svg'%}" width="24" />
                       <div class="border-l-[2px] border-[#000000]"></div>
                       <a href="{% url 'employee_list' %}" class="text-[#07002c] font-bold text-[16px]" id="link-employee" onclick="changeActiveLink(this)">ادارة الموظفين</a>
                   </div>
-              
+                  {% endif %}
                   <div class="flex flex-row h-10 gap-2 justify-start w-[80%]">
                       <div class="border-l-[2px] border-[#000000]"></div>
                       <img src="{% static 'assetstravelers/image/img/icons/icons8_traveler_48px 1.svg'%}" width="24" />
@@ -149,12 +149,35 @@
                       <a href="{% url 'passenger_list' %}" class="text-[#07002c] font-bold text-[16px]" id="link-passenger" onclick="changeActiveLink(this)">ادارة المسافرين</a>
                   </div>
 
-                  <div class="flex flex-row h-10 gap-2 justify-start w-[80%]">
+                  {% comment %} <div class="flex flex-row h-10 gap-2 justify-start w-[80%]">
                     <div class="border-l-[2px] border-[#000000]"></div>
                     <img src="{% static 'assetstravelers/image/img/icons/icons8_booking_100px.svg' %}" width="24" />
                     <div class="border-l-[2px] border-[#000000]"></div>
                     <a href="{% url 'reservation_requests' %}" class="text-[#07002c] font-bold text-[16px]" id="link-reservation" onclick="changeActiveLink(this)">إدارة الطلبات</a>
-                </div>
+                </div> {% endcomment %}
+
+                <div class="flex flex-col w-[80%]">
+                  <!-- زر إدارة الطلبات -->
+                  <div class="flex flex-row h-10 gap-2 justify-start cursor-pointer" onclick="toggleDropdown('reservationDropdown')">
+                      <div class="border-l-[2px] border-[#000000]"></div>
+                      <img src="{% static 'assetstravelers/image/img/icons/icons8_booking_100px.svg' %}" width="24" />
+                      <div class="border-l-[2px] border-[#000000]"></div>
+                      <span class="text-[#07002c] font-bold text-[16px]" id="link-reservation" onclick="changeActiveLink(this)">إدارة الطلبات</span>
+                      <img src="{% static 'assetstravelers/image/img/icons/icons8_expand_arrow_24px.svg' %}" width="16" class="ml-auto transition-transform transform" id="arrow-reservation" />
+                  </div>
+              
+                  <!-- القائمة الفرعية -->
+
+                  <div id="reservationDropdown" class="hidden flex flex-col pl-6 mt-2">
+                    <div class="border-l-[2px] border-[#000000]"></div>
+                    <div class="mx-8">
+                      <a href="{% url 'reservation_requests' %}" class="text-[#07002c] font-bold text-[14px] py-1">طلبات الحجز</a>
+                      <a href="{% url 'approve_reservation_list' %}" class="text-[#07002c] font-bold text-[14px] py-1">الطلبات المقبولة</a>
+                      <a href="{% url 'reject_reservation_list' %}" class="text-[#07002c] font-bold text-[14px] py-1">الطلبات المرفوضة</a>
+                    </div>
+                      <div class="border-l-[2px] border-[#000000]"></div>
+                    </div>
+              </div>
 
                   <div class="flex flex-row h-10 gap-2 justify-start w-[80%]">
                       <div class="border-l-[2px] border-[#000000]"></div>
@@ -162,7 +185,7 @@
                       <div class="border-l-[2px] border-[#000000]"></div>
                       <a href="{% url 'invoices_list' %}" class="text-[#07002c] font-bold text-[16px]" id="link-bill" onclick="changeActiveLink(this)">ادارة الفواتير</a>
                   </div>
-              
+                  {% if request.session.user_type == "admin" %}
                   <div class="flex flex-row h-10 gap-2 justify-start w-[80%]">
                       <div class="border-l-[2px] border-[#000000]"></div>
                       <img src="{% static 'assetstravelers/image/img/icons/icons8_edit_pie_chart_report_100px_1 1.svg'%}" width="24" />
@@ -527,7 +550,18 @@ class="w-fit h-[130px] bg-[#4278FF] rounded-2xl px-4 py-8 flex justify-between i
   });
 
 
+  function toggleDropdown(id) {
+    var dropdown = document.getElementById(id);
+    var arrow = document.getElementById('arrow-reservation');
 
+    if (dropdown.classList.contains('hidden')) {
+        dropdown.classList.remove('hidden');
+        arrow.classList.add('rotate-180');
+    } else {
+        dropdown.classList.add('hidden');
+        arrow.classList.remove('rotate-180');
+    }
+}
 </script>
 
 
