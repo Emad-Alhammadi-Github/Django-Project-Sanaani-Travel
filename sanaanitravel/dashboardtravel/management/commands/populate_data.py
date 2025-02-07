@@ -13,15 +13,72 @@ class Command(BaseCommand):
         for country in nationalities:
             Nationality.objects.get_or_create(name=country)
 
-        yemen_nationality = Nationality.objects.get(name='اليمن')
-        cities = [
-        'صنعاء', 'عدن', 'المكلا', 'تعز', 'الحديدة',
-        'البيضاء', 'إب', 'لحج', 'مأرب', 'صعدة',
- 
-        ]
+        countries_and_cities = {
+            'اليمن': [
+                'صنعاء', 'عدن', 'المكلا', 'تعز', 'الحديدة',
+                'البيضاء', 'إب', 'لحج', 'مأرب', 'صعدة'
+            ],
+            'مصر': [
+                'القاهرة', 'الإسكندرية', 'الجيزة', 'أسوان', 'المنصورة',
+                'طنطا', 'الزقازيق', 'قنا', 'الفيوم', 'الأقصر'
+            ],
+            'السعودية': [
+                'الرياض', 'جدة', 'مكة', 'المدينة المنورة', 'الدمام',
+                'الطائف', 'الخبر', 'الدمام', 'القطيف', 'بريدة'
+            ],
+            'الأردن': [
+                'عمان', 'إربد', 'الزرقاء', 'المفرق', 'البتراء',
+                'العقبة', 'جرش', 'مادبا', 'الكرك', 'السلط'
+            ],
+            'العراق': [
+                'بغداد', 'البصرة', 'نينوى', 'كربلاء', 'المثنى',
+                'النجف', 'السليمانية', 'ديالى', 'ذي قار', 'الأنبار'
+            ],
+            'فلسطين': [
+                'رام الله', 'القدس', 'الخليل', 'نابلس', 'غزة',
+                'جنين', 'بيت لحم', 'طولكرم', 'الناصرة', 'قلقيلية'
+            ],
+            'سوريا': [
+                'دمشق', 'حلب', 'اللاذقية', 'طرطوس', 'حمص',
+                'دير الزور', 'الرقة', 'إدلب', 'حماة', 'درعا'
+            ],
+            'لبنان': [
+                'بيروت', 'طرابلس', 'صيدا', 'بعلبك', 'زحلة',
+                'صور', 'جبيل', 'الهرمل', 'الشوف', 'عاليه'
+            ],
+            'الإمارات': [
+                'دبي', 'أبوظبي', 'الشارقة', 'العين', 'الفجيرة',
+                'رأس الخيمة', 'عجمان', 'أم القيوين', 'الظفرة'
+            ],
+            'الكويت': [
+                'الكويت العاصمة', 'الفروانية', 'حولي', 'الأحمدي', 'مبارك الكبير',
+                'الجهراء', 'المنقف', 'النعيم', 'صباح السالم'
+            ]
+        }
 
-        for city in cities:
-          City.objects.get_or_create(name=city, nationality=yemen_nationality)
+        # إضافة المدن لكل دولة
+        for country, cities in countries_and_cities.items():
+            nationality = Nationality.objects.get(name=country)
+            for city in cities:
+                City.objects.get_or_create(name=city, nationality=nationality)
+
+        # nationalities = [
+        #     'اليمن', 'مصر', 'السعودية', 'الأردن', 'العراق',
+        #     'فلسطين', 'سوريا', 'لبنان', 'الإمارات', 'الكويت',
+        # ]
+
+        # for country in nationalities:
+        #     Nationality.objects.get_or_create(name=country)
+
+        # yemen_nationality = Nationality.objects.get(name='اليمن')
+        # cities = [
+        # 'صنعاء', 'عدن', 'المكلا', 'تعز', 'الحديدة',
+        # 'البيضاء', 'إب', 'لحج', 'مأرب', 'صعدة',
+ 
+        # ]
+
+        # for city in cities:
+        #   City.objects.get_or_create(name=city, nationality=yemen_nationality)
 
         travel_types = [
             'برّي', 'بحري',
@@ -31,7 +88,7 @@ class Command(BaseCommand):
             TravelType.objects.get_or_create(name=travel_type)
 
         trip_categories = [
-            'الشاحنات', 'خاصة', 'عامة','الداخلية','الخارجية'
+        'خاصة', 'عامة','الداخلية','الخارجية'
         ]
 
         for trip_category in trip_categories:
