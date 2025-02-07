@@ -5,7 +5,7 @@ import os
 from django.contrib.auth.decorators import login_required
 #####################################  ادارة المركبات ##################################################################
 
-@login_required(login_url='login')
+@login_required(login_url='loginadmin')
 def vehicle_list(request):
     query = request.GET.get('q', '')
     vehicles = Vehicle.objects.filter(Q(name__icontains=query) | Q(plate_number__icontains=query))
@@ -18,7 +18,7 @@ def vehicle_list(request):
 
 
 
-
+@login_required(login_url='loginadmin')
 def vehicle_detail(request, vehicle_id):
     vehicle = Vehicle.objects.get(id=vehicle_id)
     return render(request, 'dashboard/Vehicle_detail.html', {'vehicle': vehicle})
@@ -29,7 +29,7 @@ def vehicle_detail(request, vehicle_id):
 
 
 
-@login_required(login_url='login')
+@login_required(login_url='loginadmin')
 def add_vehicle(request):
     if request.method == 'POST':
         vehicle = Vehicle(
@@ -55,7 +55,7 @@ def add_vehicle(request):
 
 
 
-@login_required(login_url='login')
+@login_required(login_url='loginadmin')
 def edit_vehicle(request, vehicle_id):
     vehicle = get_object_or_404(Vehicle, id=vehicle_id)
     if request.method == 'POST':
@@ -83,7 +83,7 @@ def edit_vehicle(request, vehicle_id):
 
 
 
-@login_required(login_url='login')
+@login_required(login_url='loginadmin')
 def delete_vehicle(request, vehicle_id):
     vehicle = get_object_or_404(Vehicle, id=vehicle_id)
     if request.method == 'POST':
