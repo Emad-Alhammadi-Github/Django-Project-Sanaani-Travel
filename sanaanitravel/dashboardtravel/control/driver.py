@@ -6,20 +6,20 @@ from django.contrib.auth.decorators import login_required
 
 #####################################  ادارة السواقين ##################################################################
 
-@login_required(login_url='login')
+@login_required(login_url='loginadmin')
 def driver_list(request):
     query = request.GET.get('q', '')
     drivers = Driver.objects.filter(Q(name__icontains=query) | Q(phone__icontains=query))
     nationalities = Nationality.objects.all() 
     return render(request,'dashboard/Drivers.html', {'drivers': drivers,'nationalities': nationalities, 'query': query})
 
-@login_required(login_url='login')
+@login_required(login_url='loginadmin')
 def driver_detail(request, driver_id):
     driver = Driver.objects.get(id=driver_id)
     return render(request, 'dashboard/Drivers_detail.html', {'driver': driver})
 
 
-@login_required(login_url='login')
+@login_required(login_url='loginadmin')
 def add_driver(request):
     if request.method == 'POST':
         nationality_id = request.POST.get('nationality') 
@@ -46,7 +46,7 @@ def add_driver(request):
 
 
 
-@login_required(login_url='login')
+@login_required(login_url='loginadmin')
 def edit_driver(request,driver_id):
     driver = get_object_or_404(Driver, id=driver_id)
 
@@ -79,7 +79,7 @@ def edit_driver(request,driver_id):
     return render(request, 'dashboard/Drivers.html', {'driver': driver})
 
 
-@login_required(login_url='login')
+@login_required(login_url='loginadmin')
 def delete_driver(request,driver_id):
     driver = get_object_or_404(Driver, id=driver_id)
     if request.method == 'POST':
