@@ -6,19 +6,19 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
 #####################################  ادارة الموظفين ##################################################################
-@login_required(login_url='login')
+@login_required(login_url='loginadmin')
 def employee_list(request):
     query = request.GET.get('q', '')
     employees = Employee.objects.filter(Q(name__icontains=query) | Q(phone__icontains=query))
     nationalities = Nationality.objects.all() 
     return render(request, 'dashboard/Employee.html', {'employees': employees,'nationalities': nationalities, 'query': query})
 
-@login_required(login_url='login')
+@login_required(login_url='loginadmin')
 def employee_detail(request, employee_id):
     employee = Employee.objects.get(id=employee_id)
     return render(request, 'dashboard/Employee_detail.html', {'employee': employee})
 
-@login_required(login_url='login')
+@login_required(login_url='loginadmin')
 def add_employee(request):
     if request.method == 'POST':
         nationality_id = request.POST.get('nationality')
@@ -39,7 +39,8 @@ def add_employee(request):
             salary=request.POST['salary'],
             gender=request.POST['gender'],
             nationality=nationality,
-            image=request.FILES['image']
+            image=request.FILES['image'],
+            user_type=request.POST['user_type'],
         )
         new_employee.save()
         return redirect('employee_list') 
@@ -48,7 +49,7 @@ def add_employee(request):
 
 
 
-@login_required(login_url='login')
+@login_required(login_url='loginadmin')
 def edit_employee(request, employee_id):
     employee = get_object_or_404(Employee, id=employee_id)
     nationality_id = request.POST.get('nationality')
@@ -76,7 +77,7 @@ def edit_employee(request, employee_id):
     return render(request, 'dashboard/Employee.html', {'employee': employee,'nationalities': nationalities,})
 
 
-@login_required(login_url='login')
+@login_required(login_url='loginadmin')
 def delete_employee(request, employee_id):
     employee = get_object_or_404(Employee, id=employee_id)
     if request.method == 'POST':
