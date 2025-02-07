@@ -24,25 +24,6 @@ def home(request):
 
 
 
-
-# def home(request):
-#     trips = Trip.objects.all() 
-#     cities=City.objects.all()
-#     travel_types=TravelType.objects.all()
-#     trip_category=TripCategory.objects.all()
-#     print(f"Trips: {trips}")
-#     if not trips.exists():
-#         context = {"message": "لا توجد رحلات متاحة حاليًا."}
-#     else:
-#         context = {"trips": trips}
-#     # context = {
-#     # 'trips': trips,
-#     # 'cities': cities,
-#     # 'travel_types': travel_types,
-#     # 'trip_category': trip_category
-#     # }
-#     return render(request, 'home/home.html', {'context': context,'cities':cities,'travel_types':travel_types,'trip_category':trip_category})
-
 def search_trips(request):
     departure_city = request.POST.get('departure_city')
     destination_city = request.POST.get('destination_city')
