@@ -5,16 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch, Q
 #####################################  ادارة الفواتير ##################################################################
 
-# @login_required(login_url='login')
-# def invoice_list(request):
-#     query = request.GET.get('q', '')
-#     invoices = Invoice.objects.filter(Q(passenger__name__icontains=query))
-#     trips = Trip.objects.all() 
-#     return render(request, 'dashboard/Bills.html', {'invoices': invoices,'trips': trips, 'query': query})
-
-
-
-@login_required(login_url='login')
+@login_required(login_url='loginadmin')
 def invoice_list(request):
     query = request.GET.get('q', '')
 
@@ -44,7 +35,7 @@ def invoice_list(request):
 
 
 
-@login_required(login_url='login')
+@login_required(login_url='loginadmin')
 def add_invoice(request):
     if request.method == 'POST':
         invoice = Invoice(
@@ -68,7 +59,7 @@ def add_invoice(request):
 
 
 
-@login_required(login_url='login')
+@login_required(login_url='loginadmin')
 def edit_invoice(request, invoice_id):
     invoice = get_object_or_404(Invoice, id=invoice_id)
     if request.method == 'POST':
@@ -87,7 +78,7 @@ def edit_invoice(request, invoice_id):
 
 
 
-@login_required(login_url='login')
+@login_required(login_url='loginadmin')
 def delete_invoice(request, invoice_id):
     invoice = get_object_or_404(Invoice, id=invoice_id)
     if request.method == 'POST':
