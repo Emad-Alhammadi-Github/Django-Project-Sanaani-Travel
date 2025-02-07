@@ -11,7 +11,7 @@ from django.contrib.auth.decorators import login_required
 #     services = Service.objects.filter(Q(name__icontains=query))
 #     return render(request, 'trips/service_list.html', {'services': services, 'query': query})
 
-@login_required(login_url='login')
+@login_required(login_url='loginadmin')
 def add_service(request):
     if request.method == 'POST':
         service = Service(
