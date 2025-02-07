@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 #####################################  ادارة المسافرين ##################################################################
 
-@login_required(login_url='login')
+@login_required(login_url='loginadmin')
 def passenger_list(request):
     query = request.GET.get('q', '')
     passengers = Passenger.objects.filter(Q(name__icontains=query) | Q(phone__icontains=query) | Q(paid_amount__icontains=query) | Q(remaining_amount__icontains=query) | Q(trip_date__icontains=query))
@@ -16,20 +16,18 @@ def passenger_list(request):
     nationalities = Nationality.objects.all() 
     return render(request, 'dashboard/Passenger.html', {'passengers': passengers, 'trips': trips,'nationalities': nationalities, 'query': query})
 
-@login_required(login_url='login')
+@login_required(login_url='loginadmin')
 def passenger_detail(request, passenger_id):
     passenger = Passenger.objects.get(id=passenger_id)
     return render(request, 'dashboard/Passenger_detail.html', {'passenger': passenger})
 
 
 
-@login_required(login_url='login')
+@login_required(login_url='loginadmin')
 def add_passenger(request):
     if request.method == 'POST':
         nationality_id = request.POST.get('nationality') 
-        # trip_location_id = request.POST.get('trip_location')
         nationality = get_object_or_404(Nationality, id=nationality_id)
-        # trip_location = get_object_or_404(Nationality, id=nationality_id) 
         name = request.POST.get('name')
         id_number = request.POST.get('id_number')
         passport_number = request.POST.get('passport_number')
@@ -82,7 +80,7 @@ def add_passenger(request):
     return render(request, 'dashboard/Passenger.html', {'trips': trips,'nationalities': nationalities}) 
 
 
-@login_required(login_url='login')
+@login_required(login_url='loginadmin')
 def edit_passenger(request,passenger_id):
     passenger = get_object_or_404(Passenger, id=passenger_id)
     nationality_id = request.POST.get('nationality') 
@@ -99,9 +97,7 @@ def edit_passenger(request,passenger_id):
         image = request.FILES.get('image') 
         identify_img = request.FILES.get('identify_img')
         date_of_birth=request.POST.get('date_of_birth')
-        # additional_payment = request.POST.get('additional_payment')
         print("111111111111111111111111111")
-        # print(additional_payment)
         print("111111111111111111111111111")
 
         trip = Trip.objects.get(id=trip_location_id)
@@ -169,31 +165,8 @@ def transction_payment_passenger(request, passenger_id):
 
 
 
-# Edit Passenger
-# def edit_passenger(request, passenger_id):
-#     passenger = get_object_or_404(Passenger, id=passenger_id)
-#     if request.method == 'POST':
-#         passenger.name = request.POST['name']
-#         passenger.id_number = request.POST['id_number']
-#         passenger.passport_number = request.POST['passport_number']
-#         passenger.phone = request.POST['phone']
-#         passenger.trip_location = Trip.objects.get(id=request.POST['trip'])
-#         passenger.paid_amount = request.POST['paid_amount']
-#         passenger.remaining_amount = request.POST['remaining_amount']
-#         passenger.trip_date = request.POST['trip_date']
-#         passenger.gender = request.POST['gender']
-#         passenger.nationality = request.POST['nationality']
-#         if 'image' in request.FILES:
-#             passenger.image = request.FILES['image']
-#         passenger.save()
-#         return redirect('passenger_list')
-#     trips = Trip.objects.all()
-#     return render(request, 'trips/edit_passenger.html', {'passenger': passenger, 'trips': trips})
 
-
-
-
-@login_required(login_url='login')
+@login_required(login_url='loginadmin')
 def delete_passenger(request, passenger_id):
     passenger = get_object_or_404(Passenger, id=passenger_id)
     if request.method == 'POST':
