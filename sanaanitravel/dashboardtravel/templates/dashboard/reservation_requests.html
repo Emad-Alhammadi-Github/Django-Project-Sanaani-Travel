@@ -20,9 +20,11 @@
                     <th class="px-4 py-2 text-right border-b border-[#000000]">رقم الطلب</th>
                     <th class="px-4 py-2 text-right border-b border-[#000000]">اسم العميل</th>
                     <th class="px-4 py-2 text-right border-b border-[#000000]">تاريخ الحجز</th>
+                    <th class="px-4 py-2 text-right border-b border-[#000000]">المدفوع</th>
                     <th class="px-4 py-2 text-right border-b border-[#000000]">المتبقي</th>
                     <th class="px-4 py-2 text-right border-b border-[#000000]">الرحلة</th>
                     <th class="px-4 py-2 text-right border-b border-[#000000]">تاريخ الرحلة</th>
+                    <th class="px-4 py-2 text-right border-b border-[#000000]"> سعر مقعد الرحلة </th>
                     <th class="px-4 py-2 text-center border-b border-[#000000]">الإجراءات</th>
                 </tr>
             </thead>
@@ -32,9 +34,11 @@
                   <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ reservation.id }}</td>
                     <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ reservation.passenger.name }}</td>
                     <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ reservation.request_date }}</td>
+                    <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ reservation.passenger.paid_amount }}</td>
                     <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ reservation.passenger.remaining_amount }}</td>
                     <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ reservation.passenger.trip_location.departure }} إلى {{ reservation.passenger.trip_location.destination }}</td>
                     <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ reservation.passenger.trip_date }}</td>
+                    <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ reservation.passenger.trip_location.seat_price }}</td>
                     <td class="px-1 py-2 border-b border-[#F5F0F1] flex flex-row gap-2 justify-center">
                         <form method="post" action="{% url 'approve_reservation' reservation.id %}">
                             {% csrf_token %}
