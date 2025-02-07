@@ -160,6 +160,7 @@
                   <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ passenger.trip_location.departure }} إلى {{ passenger.trip_location.destination }}</td>
                   <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ passenger.trip_date }}</td>
                   <td class="px-1 py-2 border-b border-[#F5F0F1] flex flex-row gap-2 justify-center">
+                    {% if request.session.user_type == "admin" %}
                     <button class="bg-[#4278FF] text-[#16151C] rounded-lg w-[80px] flex items-center gap-1 justify-center" onclick="openEditDialog('{{ passenger.id }}')">
                       <img src="{% static 'assetstravelers/image/img/icons/edit.svg' %}" alt /><h6>تعديل</h6>
                   </button>
@@ -167,7 +168,7 @@
                       <button onclick="window.location.href='{% url 'passenger_detail' passenger.id %}'" class="bg-[#94FF42] rounded-lg w-[80px] flex items-center gap-1 justify-center">
                         <img class="" src="{% static 'assetstravelers/image/img/icons/view.svg' %}" alt />
                     </button>
-
+                    {% endif %}
                     <button onclick="openDialog('transction{{ passenger.id }}')" class="bg-[#80cb47] rounded-lg w-[80px] flex items-center gap-1 justify-center">
                         <h6 class="text-[12px]">تعديل معاملة</h6>                    
                     </button>
