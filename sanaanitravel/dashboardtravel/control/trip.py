@@ -8,7 +8,7 @@ from datetime import datetime
 from django.db.models import Count
 #####################################  ادارة الرحلات ##################################################################
 
-@login_required(login_url='login')
+@login_required(login_url='loginadmin')
 def trip_list(request):
     query = request.GET.get('q', '')
     trips = Trip.objects.filter(Q(departure__name__icontains=query) | Q(destination__name__icontains=query))
@@ -48,43 +48,14 @@ def trip_filter(request):
 
 
 
-# def trip_filter(request):
-#     print("Entering the trip_filter view")
-
-#     trips = Trip.objects.all()
-#     print(f"Total trips before filtering: {len(trips)}")
-
-
-#     if request.method == 'POST':
-#         if 'new_trips' in request.POST:
-#             trips = trips.filter(date__gte=datetime.today())
-#         if 'highest_price' in request.POST:
-#             trips = trips.order_by('-seat_price')
-#         if 'lowest_price' in request.POST:
-#             trips = trips.order_by('seat_price')
-#         if 'specific_date' in request.POST:
-#             specific_date = request.POST.get('specific_date')
-#             trips = trips.filter(date=specific_date)
-#         if 'most_booked' in request.POST:
-#             trips = trips.annotate(booking_count=Count('passengers')).order_by('-booking_count')
-
-#     trips_list = list(trips.values())
-#     return JsonResponse({'trips': trips_list})
-
-
-
-
-
-
-
-@login_required(login_url='login')
+@login_required(login_url='loginadmin')
 def trip_detail(request, trip_id):
     trip = Trip.objects.get(id=trip_id)
     return render(request, 'dashboard/Trips_detail.html', {'trip': trip})
 
 
 
-@login_required(login_url='login')
+@login_required(login_url='loginadmin')
 def add_trip(request):
     if request.method == 'POST':
         city_id_from= request.POST.get('departure') 
@@ -117,7 +88,7 @@ def add_trip(request):
     return render(request, 'dashboard/Trips.html')
 
 
-@login_required(login_url='login')
+@login_required(login_url='loginadmin')
 def edit_trip(request):
     if request.method == 'POST':
         trip_id = request.POST.get('id')
@@ -156,7 +127,7 @@ def edit_trip(request):
     return render(request, 'dashboard/Trips.html', {'trip': trip})
 
 
-@login_required(login_url='login')
+@login_required(login_url='loginadmin')
 def delete_trip(request):
     if request.method == 'POST':
         trip_id = request.POST.get('id')
