@@ -7,12 +7,16 @@
       <div class="w-[95%] mb-[50px] bg-[#f0efef] mx-auto mt-7 flex-col flex items-center">
       
       
-      <h1 class="text-[50px] font-bold text-[#3b3b3b]"> عذرا لايوجد مقاعد متاحة !</h1>
+      <h1 class="text-[50px] font-bold text-[#3b3b3b]"> عذرا   {{ request.session.passenger_name }}  لايوجد مقاعد متاحة !</h1>
       <p>
       </p>
 
     </div>
     </div>
   </div>
-
+  <script>
+    setTimeout(function() {
+        window.location.href = "{% url 'home' %}"; 
+    }, 3000); 
+</script>
 {% endblock %}
