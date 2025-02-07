@@ -13,11 +13,13 @@ from dashboardtravel.control.home_dashboard import *
 from dashboardtravel.control.login_register import *
 from dashboardtravel.control.checkOut import *
 from dashboardtravel.control.reservation import *
+from dashboardtravel.control.login_admin import *
 
 urlpatterns = [
 #####################################   الرئيسية ##################################################################
     path('', home, name='home'),
-    path('dashboard', home_dashboard, name='home_dashboard'),
+    path('dashboar', home_dashboard, name='home_dashboard'),
+    path('dashboard', home_dashboardtt, name='home_dashboardtt'),
     path('checkout/<int:trip_id>/', checkout, name='checkout'),
     path('success/', success_page, name='success_page'),
     path('error_checkOut/', error_checkOut, name='error_checkOut'),
@@ -30,12 +32,20 @@ urlpatterns = [
 
 #####################################   التسجيل / تسجيل الدخول ##################################################################
 
-    path('register/', register, name='register'),
+
+
+    # path('register/', register, name='register'),
     path('login/', login_view, name='login'),
     path('forgot-password/', forgot_password, name='forgot_password'),
     path('verify-otp/', verify_otp, name='verify_otp'),
     path('reset-password/', reset_password, name='reset_password'),
     path('logout/', logout_view, name='logout'),
+
+
+    # path('register-admin/', register_admin, name='registeradmin'),
+    path('login-admin/', login_view_admin, name='loginadmin'),
+    path('logout-admin/', logout_view_admin, name='logoutadmin'),
+
 
 
 #####################################   التسجيل / تسجيل الدخول النهاية ##################################################################
@@ -76,8 +86,11 @@ urlpatterns = [
 
 #####################################  ادارة الطلبات ##################################################################
     path('reservation-requests/', reservation_requests, name='reservation_requests'),
+    path('approve-reservation/', approve_reservation_list, name='approve_reservation_list'),
+    path('reject-reservation/', reject_reservation_list, name='reject_reservation_list'),
     path('approve-reservation/<int:reservation_id>/', approve_reservation, name='approve_reservation'),
     path('reject-reservation/<int:reservation_id>/', reject_reservation, name='reject_reservation'),
+    path('reject-reservation-delete/<int:reservation_id>/', reject_reservation_delete, name='reject_reservation_delete'),
 #####################################  ادارة الطلبات النهاية##################################################################
 
 
@@ -134,6 +147,7 @@ urlpatterns = [
 
 #####################################  ادارة التقارير ##################################################################
     path('report/', report_view, name='report'),
+    path('get-cities/', get_cities, name='get_cities'),
 
 
 #####################################  ادارة التقارير النهاية ##################################################################
