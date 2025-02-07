@@ -7,13 +7,25 @@
       <div class="w-[95%] mb-[50px] bg-[#f0efef] mx-auto mt-7 flex-col flex items-center">
       
       
-      <h1 class="text-[50px] font-bold text-[#3b3b3b]"> شكرًا لك على حجزك!</h1>
+      <h1 class="text-[50px] font-bold text-[#3b3b3b]"> شكرًا {{ request.session.passenger_name }} على حجزك!</h1>
       <p>
         تم استلام طلبك بنجاح ونحن سعداء بكونك جزءًا من رحلتنا القادمة. نود أن نعلمك أن طلب حجزك في قيد المراجعة الآن
       </p>
+
+      <div class="mt-5 p-4">
+        <h2 class="text-[30px] font-semibold text-[#3c487b]">تفاصيل الحجز</h2>
+        <p class="text-lg"><strong>اسم المسافر:</strong> {{ request.session.passenger_name }}</p>
+        <p class="text-lg"><strong>المبلغ المدفوع:</strong> {{ request.session.paid_amount }} ريال</p>
+        <p class="text-lg"><strong>المبلغ المتبقي:</strong> {{ request.session.remaining_amount }} ريال</p>
+    </div>
 
     </div>
     </div>
   </div>
 
+  <script>
+    setTimeout(function() {
+        window.location.href = "{% url 'home' %}"; 
+    }, 3000); 
+</script>
 {% endblock %}
