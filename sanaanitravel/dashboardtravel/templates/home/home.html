@@ -99,6 +99,12 @@
 
           <div class="h-2/3">
             <img src="{{ trip.image.url }}" alt class="w-full h-full object-contain" />
+
+            {% comment %} {% if trip.image %}
+                  <img src="{{ trip.image.url }}" alt="" class="w-full h-full object-contain" />
+              {% else %}
+                  <img src="path/to/default/image.jpg" alt="Default Image" class="w-full h-full object-contain" />
+              {% endif %} {% endcomment %}
           </div>
         
           <div class="h-2/3 flex flex-col justify-between p-4">
