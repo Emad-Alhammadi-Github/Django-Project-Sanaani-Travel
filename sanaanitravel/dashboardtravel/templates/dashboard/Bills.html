@@ -74,19 +74,13 @@
                 {% endfor %}
                   </select>
                   
-                  {% comment %} <input type="text" name="trip" class="custom-input" placeholder="رقم الرحلة" /> {% endcomment %}
                   <input
                     type="text"
                     name="seat_number"
                     class="custom-input"
                     placeholder="رقم المقعد"
                   />
-                  <select name="type_vehicle" class="custom-input flex-1" id>
-                    <option value>نوع السيارة</option>
-                    {% for vehicle in vehicles %}
-                    <option value="{{ vehicle.id }}" >{{ vehicle.name }}</option>
-                {% endfor %}
-                </select>
+   
                 </div>
                 <div>
 
@@ -116,9 +110,7 @@
 
           
                   <div class="flex gap-1">
-                    <input type="date" name="trip_date" class="custom-input flex-1" placeholder="تاريخ السفر" />
           
-                    <input type="time" name="time" class="custom-input flex-1" placeholder="وقت السفر" />
           
                   </div>
 
@@ -178,7 +170,7 @@
                     <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ invoice.passenger.remaining_amount }}</td>
                     <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ invoice.trip.departure.name }} الى {{ invoice.trip.destination.name }}</td>
                     <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ invoice.seat_number }}</td>
-                    <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ invoice.trip_date }}</td>
+                    <td class="px-4 py-2 border-b border-[#F5F0F1]">في الوقت {{ invoice.trip.date }}  {{ invoice.trip.time }}</td>
 
                     <td class="px-1 py-2 border-b border-[#F5F0F1] flex flex-row gap-2 justify-center">
                         <button onclick="openDialog('print-reportu')" class="bg-[#4278FF]  text-[#ffffff] rounded-lg w-[100px] flex items-center gap-1 justify-center"><h6>اصدار فاتورة</h6> </button>
@@ -243,7 +235,7 @@
                                       <h5 >{{ invoice.passenger.id_number }}</h5>
                                       <h5>{{ invoice.trip.id }}</h5>
                                       <h5>{{ invoice.seat_number }}</h5>
-                                      <h5>{{ invoice.type_vehicle.vehicle_type }}</h5>
+                                      <h5>{{ invoice.trip.vehicle_type.vehicle_type }}</h5>
                                       <h5>{{ invoice.paid_amount }}</h5>
                                       <h5>{{ invoice.remaining_amount }}</h5>
                                     </div>
@@ -258,7 +250,7 @@
                                     </div>
                                     <div>
                                       <h5>{{ invoice.reservation_date|date:"Y-m-d" }}</h5>
-                                      <h5>{{ invoice.trip_date }}</h5>
+                                      <h5>{{ invoice.trip.date|date:"Y-m-d" }} وقت {{ invoice.trip.time }}</h5>
                       
                                     </div>
                                   </div>
