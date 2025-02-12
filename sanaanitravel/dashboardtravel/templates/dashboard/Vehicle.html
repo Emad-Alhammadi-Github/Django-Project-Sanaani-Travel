@@ -74,7 +74,7 @@
                     <option value="2021">2021</option>
                     <option value="2022">2022</option>
                   </select>
-                  <input type="date" name="date_added" class="custom-input" placeholder="سنة الاصدار" />
+                  {% comment %} <input type="date" name="date_added" class="custom-input" placeholder="سنة الاصدار" /> {% endcomment %}
                   <select name="status" class="custom-input">
                     <option value>الحالة</option>
                     <option value="new">جديد</option>
@@ -131,7 +131,7 @@
                     <option value="للشركة اخرى">للشركة اخرى</option>
                     <option value="لسواق">لسواق</option>
                   </select>
-                  <textarea name="description" class="custom-input" rows="7"></textarea>
+                  <textarea name="description" class="custom-input" rows="5"></textarea>
                 </div>
 
                 <div class="flex flex-col items-center pt-2">
@@ -301,7 +301,7 @@
               <option value="2022" {% if vehicle.model == "2022" %}selected{% endif %}>2022</option>
 
             </select>
-            <input type="date" name="date_added" value="{{ vehicle.date_added|date:'Y-m-d'}}" class="custom-input" placeholder="سنة الاصدار" />
+            {% comment %} <input type="date" name="date_added" value="{{ vehicle.date_added|date:'Y-m-d'}}" class="custom-input" placeholder="سنة الاصدار" /> {% endcomment %}
             <select name="status" class="custom-input">
               <option value>الحالة</option>
               <option value="new" {% if vehicle.status == "new" %}selected{% endif %}>جديد</option>
@@ -362,7 +362,7 @@
               <option value="للشركة اخرى" {% if vehicle.owner == "للشركة اخرى" %}selected{% endif %}>للشركة اخرى</option>
               <option value="لسواق" {% if vehicle.owner == "لسواق" %}selected{% endif %}>لسواق</option>
             </select>
-            <textarea name="description" class="custom-input" rows="7">{{ vehicle.description }}</textarea>
+            <textarea name="description" class="custom-input" rows="5">{{ vehicle.description }}</textarea>
           </div>
           
 
