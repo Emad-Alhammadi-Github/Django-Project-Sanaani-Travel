@@ -32,10 +32,9 @@ def login_view(request):
                 messages.error(request, "البريد الإلكتروني مستخدم بالفعل")
             else:
                 user = User.objects.create_user(username=username, email=email, password=password)
-                                # إنشاء سجل الموظف ببيانات افتراضية
                 Employee.objects.create(
                     user=user,
-                    nationality=Nationality.objects.first(),  # تحديد أول جنسية في قاعدة البيانات
+                    nationality=Nationality.objects.first(), 
                 
                 )
                 user.save()
@@ -46,39 +45,6 @@ def login_view(request):
 
 
 
-# def register(request):
-#     return render(request, 'home/Register.html')
-
-
-
-# def login_view(request):
-#     if request.method == 'POST':
-#         username = request.POST.get('username')
-#         password = request.POST.get('password')
-        
-#         user = authenticate(request, username=username, password=password)
-        
-#         if user is not None:
-#             login(request, user)
-            
-#             try:
-#                 employee = user.employee 
-#                 request.session['user_type'] = employee.user_type
-#                 request.session['user_id'] = user.id
-#                 if employee.user_type == 'admin':
-#                     return redirect('trip_list') 
-#                 else:
-#                     return redirect('home')
-                
-#             except Employee.DoesNotExist:
-#                 messages.error(request, "المستخدم ليس موظفًا مسجلًا في النظام.")
-#                 return redirect('login')
-                
-#         else:
-#             messages.error(request, "اسم المستخدم أو كلمة المرور غير صحيحة.")
-#             return redirect('login')
-#     else:
-#         return render(request, 'home/Register.html')
 
 
 
