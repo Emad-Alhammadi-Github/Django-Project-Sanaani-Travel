@@ -117,7 +117,7 @@
                         </div>
                         <div class="w-full flex">
                             <div
-                                class="w-1/2 border rounded-md border-black m-2 flex p-1 gap-2">
+                                class="{% if is_yemeni_trip %}w-full{% else %}w-1/2{% endif %} border rounded-md border-black m-2 flex p-1 gap-2">
                                 <img
                                     src="{% static 'assetstravelers/image/img/icons8_identification_documents_50px 1.svg'%}"
                                     alt />
@@ -127,6 +127,7 @@
                                     placeholder="رقم البطاقة الشخصية"
                                     class="border-none text-sm flex-1" />
                             </div>
+                            {% if not is_yemeni_trip %}
                             <div
                                 class="w-1/2 border rounded-md border-black m-2 flex p-1 gap-2">
                                 <img
@@ -138,6 +139,7 @@
                                     placeholder=" رقم الجواز"
                                     class="border-none text-sm flex-1" />
                             </div>
+                            {% endif %}
                         </div>
                         <div class="w-full flex">
                             <div
