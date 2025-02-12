@@ -211,6 +211,7 @@
                     <th class="px-4 py-2 text-right border-b border-[#000000]">الوقت</th>
                     <th class="px-4 py-2 text-right border-b border-[#000000]">عدد المقاعد</th>
                     <th class="px-4 py-2 text-right border-b border-[#000000]">سعر المقعد</th>
+                    <th class="px-4 py-2 text-right border-b border-[#000000]">نوع الرحلة</th>
                     <th class="px-4 py-2 text-center border-b border-[#000000]">العمليـــــــــــــات</th>
                 </tr>
             </thead>
@@ -225,6 +226,7 @@
                     <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ trip.time }}</td>
                     <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ trip.seat_count }}</td>
                     <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ trip.seat_price }}</td>
+                    <td class="px-4 py-2 border-b border-[#F5F0F1]">{% if trip.is_internal %}داخلية{% else %}خارجية{% endif %}</td>
                     <td class="px-1 py-2 border-b border-[#F5F0F1] flex flex-row gap-2 justify-center">
                         <button onclick="openEditDialogrr('{{ trip.id }}')" class="bg-[#4278FF] text-[#16151C] rounded-lg w-[80px] flex items-center gap-1 justify-center">
                             <img class="" src="{% static 'assetstravelers/image/img/icons/edit.svg' %}" alt />
@@ -393,7 +395,7 @@
         seat_count: '{{ trip.seat_count }}',
         seat_price: '{{ trip.seat_price|floatformat:2}}',
         details: '{{ trip.details }}',
-        image: '{{ trip.image.url }}',
+        image: '{{ trip.image.url }}',        
     },
     {% endfor %}
 ];
@@ -453,7 +455,7 @@
 
 
     document.getElementById("filterForm").addEventListener("submit", function(event) {
-        event.preventDefault();  // منع إرسال النموذج بشكل تقليدي
+        event.preventDefault();  
     
         var formData = new FormData(this);
     
@@ -461,11 +463,10 @@
             method: 'POST',
             body: formData,
             headers: {
-                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value  // إضافة CSRF Token
+                'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value 
             }
         })
         .then(response => {
-            // تحقق من نوع المحتوى في الاستجابة
             if (!response.ok) {
                 throw new Error('Failed to load trips');
             }
@@ -474,7 +475,7 @@
         .then(data => {
             var trips = data.trips;
             var tableBody = document.querySelector("table tbody");
-            tableBody.innerHTML = '';  // مسح الجدول الحالي
+            tableBody.innerHTML = '';  
     
             trips.forEach(trip => {
                 var row = `
