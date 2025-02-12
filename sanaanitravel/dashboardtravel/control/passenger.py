@@ -11,7 +11,7 @@ from django.http import JsonResponse
 @login_required(login_url='loginadmin')
 def passenger_list(request):
     query = request.GET.get('q', '')
-    passengers = Passenger.objects.filter(Q(name__icontains=query) | Q(phone__icontains=query) | Q(paid_amount__icontains=query) | Q(remaining_amount__icontains=query) | Q(trip_date__icontains=query))
+    passengers = Passenger.objects.filter(Q(name__icontains=query) | Q(phone__icontains=query) | Q(paid_amount__icontains=query) | Q(remaining_amount__icontains=query) | Q(date_added__icontains=query))
     trips = Trip.objects.all()  
     nationalities = Nationality.objects.all() 
     return render(request, 'dashboard/Passenger.html', {'passengers': passengers, 'trips': trips,'nationalities': nationalities, 'query': query})
@@ -34,7 +34,6 @@ def add_passenger(request):
         phone = request.POST.get('phone')
         trip_location_id = request.POST.get('trip_location')
         paid_amount = request.POST.get('paid_amount')
-        trip_date = request.POST.get('trip_date')
         gender = request.POST.get('gender')
         image = request.FILES.get('image')
         identify_img = request.FILES.get('identify_img')
@@ -64,7 +63,6 @@ def add_passenger(request):
             trip_location_id=trip_location_id,
             paid_amount=paid_amount_decimal,
             remaining_amount=remaining_amount,
-            trip_date=trip_date,
             seat_number=seat_number,
             gender=gender,
             nationality=nationality,
@@ -92,7 +90,6 @@ def edit_passenger(request,passenger_id):
         phone = request.POST.get('phone')
         trip_location_id = request.POST.get('trip_location')
         paid_amount = request.POST.get('paid_amount')
-        trip_date = request.POST.get('trip_date')
         gender = request.POST.get('gender')
         image = request.FILES.get('image') 
         identify_img = request.FILES.get('identify_img')
@@ -108,10 +105,7 @@ def edit_passenger(request,passenger_id):
 
         remaining_amount = seat_price - Decimal(paid_amount)
 
-        # if additional_payment:
-        #     paid_amo=passenger.paid_amount + Decimal(additional_payment)
-        #     remaining_amo=passenger.remaining_amount - Decimal(additional_payment)
-        #     # remaining_amount -= Decimal(additional_payment)
+
 
 
         passenger.name = name
@@ -121,7 +115,6 @@ def edit_passenger(request,passenger_id):
         passenger.trip_location_id = trip_location_id
         passenger.paid_amount = paid_amount
         passenger.remaining_amount = remaining_amount
-        passenger.trip_date = trip_date
         passenger.gender = gender
         passenger.nationality = nationality
         passenger.date_of_birth = date_of_birth
