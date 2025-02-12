@@ -44,7 +44,6 @@ def add_invoice(request):
             remaining_amount=request.POST['remaining_amount'],
             trip=Trip.objects.get(id=request.POST['trip']),
             seat_number=request.POST['seat_number'],
-            trip_date=request.POST['trip_date'],
             total_amount=request.POST['total_amount'],
             payment_method=request.POST['payment_method'],
             status=request.POST['status'],
@@ -68,7 +67,6 @@ def edit_invoice(request, invoice_id):
         invoice.remaining_amount = request.POST['remaining_amount']
         invoice.trip = Trip.objects.get(id=request.POST['trip'])
         invoice.seat_number = request.POST['seat_number']
-        invoice.trip_date = request.POST['trip_date']
         invoice.total_amount = request.POST['total_amount']
         invoice.save()
         return redirect('invoice_list')
