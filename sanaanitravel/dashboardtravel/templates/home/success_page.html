@@ -14,9 +14,9 @@
 
       <div class="mt-5 p-4">
         <h2 class="text-[30px] font-semibold text-[#3c487b]">تفاصيل الحجز</h2>
-        <p class="text-lg"><strong>اسم المسافر:</strong> {{ request.session.passenger_name }}</p>
-        <p class="text-lg"><strong>المبلغ المدفوع:</strong> {{ request.session.paid_amount }} ريال</p>
-        <p class="text-lg"><strong>المبلغ المتبقي:</strong> {{ request.session.remaining_amount }} ريال</p>
+        <p class="text-lg"><strong> شكرًا :</strong> {{ request.session.passenger_name }} <strong> لقد دفعت :</strong> {{ request.session.paid_amount }} ريال   <strong> المتبقي عندك:</strong> {{ request.session.remaining_amount }} ريال</p>
+        {% comment %} <p class="text-lg"><strong>المبلغ المدفوع:</strong> {{ request.session.paid_amount }} ريال</p>
+        <p class="text-lg"><strong>المبلغ المتبقي:</strong> {{ request.session.remaining_amount }} ريال</p> {% endcomment %}
     </div>
 
     </div>
