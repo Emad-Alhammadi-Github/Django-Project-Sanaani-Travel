@@ -6,8 +6,7 @@ from ..models import Employee,User
 import random
 
 
-# def register_admin(request):
-#     return render(request, 'dashboard/Register.html')
+
 
 
 
