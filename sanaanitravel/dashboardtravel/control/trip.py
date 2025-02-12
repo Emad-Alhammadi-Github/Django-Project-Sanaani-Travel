@@ -70,6 +70,7 @@ def add_trip(request):
         trip_category = get_object_or_404(TripCategory, id=trip_category_id) 
         vehicle_type = get_object_or_404(Vehicle, id=vehicle_type_id) 
 
+        is_internal = departure.nationality == destination.nationality
         trip = Trip(
             departure=departure,
             destination=destination,
@@ -81,7 +82,8 @@ def add_trip(request):
             seat_count=request.POST['seat_count'],
             seat_price=request.POST['seat_price'],
             details=request.POST['details'],
-            image=request.FILES['image']
+            image=request.FILES['image'],
+            is_internal=is_internal
         )
         trip.save()
         return redirect('trip_list')
