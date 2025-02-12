@@ -61,7 +61,7 @@
                     </select>
                         <input type="number" name="paid_amount" class="custom-input" placeholder="العربون" required oninput="updateRemainingAmount()" />
                         <input type="text" name="remaining_amount" id="remaining_amount" class="custom-input" placeholder="المتبقي" disabled />
-                        <input type="date" name="trip_date" class="custom-input" placeholder="التاريخ" required />
+                        {% comment %} <input type="date" name="trip_date" class="custom-input" placeholder="التاريخ" required /> {% endcomment %}
         
                         <div class="flex gap-1">
                             <select name="gender" class="custom-input flex-1" required>
@@ -158,7 +158,7 @@
                   <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ passenger.paid_amount }}</td>
                   <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ passenger.remaining_amount }}</td>
                   <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ passenger.trip_location.departure }} إلى {{ passenger.trip_location.destination }}</td>
-                  <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ passenger.trip_date }}</td>
+                  <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ passenger.trip_location.date }}</td>
                   <td class="px-1 py-2 border-b border-[#F5F0F1] flex flex-row gap-2 justify-center">
                     {% if request.session.user_type == "admin" %}
                     <button class="bg-[#4278FF] text-[#16151C] rounded-lg w-[80px] flex items-center gap-1 justify-center" onclick="openEditDialog('{{ passenger.id }}')">
@@ -218,7 +218,7 @@
 
                       <input type="number" name="paid_amount" value="{{ passenger.paid_amount|floatformat }}" class="custom-input" placeholder="العربون" required oninput="updateRemainingAmount()" />
                       <input type="text" name="remaining_amount"  id="remaining_amount" class="custom-input" placeholder="المتبقي" disabled />
-                      <input type="date" name="trip_date" value="{{ passenger.trip_date|date:'Y-m-d' }}" id="editTripDate" class="custom-input" placeholder="التاريخ" />
+                      {% comment %} <input type="date" name="trip_date" value="{{ passenger.trip_date|date:'Y-m-d' }}" id="editTripDate" class="custom-input" placeholder="التاريخ" /> {% endcomment %}
 
                       <div class="flex gap-1">
                           <select name="gender" class="custom-input flex-1" id>
