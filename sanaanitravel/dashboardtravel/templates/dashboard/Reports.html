@@ -12,8 +12,9 @@
     </div>
 
 
-    <div class="flex flex-row justify-end gap-10 mx-7 my-4">
+    <div class="flex flex-row justify-between gap-10 mx-7 my-4">
 
+        <div>
         <div class="my-4">
             <label for="trip-type">نوع الرحلة:</label>
             <select id="trip-type" class="border rounded px-2 py-1">
@@ -48,14 +49,14 @@
                 <option value="">اختر المحافظة</option>
             </select>
         </div>
+     </div>
 
-
-
-        <form method="get" action="">
-            <input type="number" name="year" placeholder="اختر السنة" class="border rounded px-2 py-1">
-            <button type="submit" class="bg-blue-500 text-white px-4 py-1 rounded">تحديث</button>
-        </form>
-
+    <div class="my-4">
+            <form method="get" action="">
+                <input type="date" name="year" placeholder="اختر السنة" class="border rounded px-2 py-1">
+                <button type="submit" class="bg-blue-500 text-white px-4 py-1 rounded">تحديث</button>
+            </form>
+        </div>
 
         <button id="print-btn" class="flex gap-[2px] bg-[#4278FF] mx-2 mt-3 mb-3 justify-center py-2 rounded-lg w-[300px]">
             <h5 class="text-white pr-2">طباعة</h5>
@@ -72,14 +73,18 @@
             <h5 class="text-xl font-bold">التقارير السنوي</h5>
 
 
-            <h5 class="text-xl font-bold">{{ selected_year }}</h5>
+            <h5 class="text-xl font-bold">{% if selected_date %}
+                {{ selected_date }}
+            {% else %}
+                {{ selected_year }}  
+            {% endif %}</h5>
             <img src="../../static/assetstravelers/image/img/Group 1171275883.svg" width="80" alt />
 
         </div>
 
         <div class="bg-[#A2A1A80D] rounded-xl w-[90%] mx-auto mt-4">
             <div class="overflow-hidden rounded-lg bg-transparent mb-5">
-                <h2 class="text-start text-xl font-bold p-4">تقرير مالي</h2>
+                <h2 class="text-start text-xl font-bold p-4">تقرير مالي كامل</h2>
                 <table class="min-w-full border border-black border-collapse">
                     <tbody>
                         <tr>
@@ -97,6 +102,30 @@
                         <tr>
                             <td class="px-4 py-2 border border-black text-right">المجموع المالي الكلي</td>
                             <td class="px-4 py-2 border border-black">{{ total_income }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="overflow-hidden rounded-lg bg-transparent mb-5">
+                <h2 class="text-start text-xl font-bold p-4">تقرير مالي</h2>
+                <table class="min-w-full border border-black border-collapse">
+                    <tbody>
+                        <tr>
+                            <td class="px-4 py-2 border w-[30%] border-black text-right">الدخل اليومي للرحلات الداخلية</td>
+                            <td class="px-4 py-2 border border-black">{{ is_yemeni_trip }}</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 border w-[30%] border-black text-right">الدخل اليومي للرحلات الخارجية</td>
+                            <td class="px-4 py-2 border border-black">{{ is_no_yemeni_trip }}</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 border w-[30%] border-black text-right">الدخل اليومي للرحلات الخاصة</td>
+                            <td class="px-4 py-2 border border-black">{{ is_private_trip }}</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 border w-[30%] border-black text-right">الدخل اليومي للرحلات العامة</td>
+                            <td class="px-4 py-2 border border-black">{{ is_truck_trip }}</td>
                         </tr>
                     </tbody>
                 </table>
@@ -119,7 +148,7 @@
                             <td class="px-4 py-2 border border-black">{{ private_trips }}</td>
                         </tr>
                         <tr>
-                            <td class="px-4 py-2 border border-black text-right">الشاحنات</td>
+                            <td class="px-4 py-2 border border-black text-right">العامة</td>
                             <td class="px-4 py-2 border border-black">{{ truck_trips }}</td>
                         </tr>
                     </tbody>
@@ -146,9 +175,101 @@
                             <td class="px-4 py-2 border border-black text-right">أكثر استخداماً</td>
                             <td class="px-4 py-2 border border-black">{{ most_used_vehicle }}</td>
                         </tr>
+                        <tr>
+                            <td class="px-4 py-2 border border-black text-right">المركبات للرحلات الداخلية</td>
+                            <td class="px-4 py-2 border border-black">{{ vehicles_internal }}</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 border border-black text-right">المركبات للرحلات الخارجية</td>
+                            <td class="px-4 py-2 border border-black">{{ vehicles_external }}</td>
+                        </tr>
                     </tbody>
                 </table>
-            </div>      
+            </div> 
+            
+            
+
+        <!-- تقرير المسافرين -->
+        <div class="overflow-hidden rounded-lg bg-transparent mb-5">
+            <h2 class="text-start text-xl font-bold p-4">المسافرين</h2>
+            <table class="min-w-full border border-black border-collapse">
+                <tbody>
+                    <tr>
+                        <td class="px-4 py-2 border w-[30%] border-black text-right">مسافرو الرحلات الداخلية</td>
+                        <td class="px-4 py-2 border border-black">{{ total_passengers_internal }}</td>
+                    </tr>
+                    <tr>
+                        <td class="px-4 py-2 border border-black text-right">مسافرو الرحلات الخارجية</td>
+                        <td class="px-4 py-2 border border-black">{{ total_passengers_external }}</td>
+                    </tr>
+                    <tr>
+                        <td class="px-4 py-2 border border-black text-right">مسافرو الرحلات الخاصة</td>
+                        <td class="px-4 py-2 border border-black">{{ total_passengers_private }}</td>
+                    </tr>
+                    <tr>
+                        <td class="px-4 py-2 border border-black text-right">مسافرو الرحلات العامة</td>
+                        <td class="px-4 py-2 border border-black">{{ total_passengers_public }}</td>
+                    </tr>
+                     <tr>
+                        <td class="px-4 py-2 border border-black text-right"> طلبات السفر المقبولة</td>
+                        <td class="px-4 py-2 border border-black">{{ accepted_reservations }}</td>
+                    </tr>
+                     <tr>
+                        <td class="px-4 py-2 border border-black text-right"> طلبات السفر المرفوضة</td>
+                        <td class="px-4 py-2 border border-black">{{ rejected_reservations }}</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+
+
+        <div class="overflow-hidden rounded-lg bg-transparent mb-5">
+            <h2 class="text-start text-xl font-bold p-4">التقرير حسب الدول</h2>
+            <table class="min-w-full border border-black border-collapse">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2 border border-black text-right">الدولة</th>
+                        <th class="px-4 py-2 border border-black text-right">عدد الرحلات</th>
+                        <th class="px-4 py-2 border border-black text-right">عدد المسافرين</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for report in nationality_report %}
+                    <tr>
+                        <td class="px-4 py-2 border border-black text-right">{{ report.name }}</td>
+                        <td class="px-4 py-2 border border-black">{{ report.trips }}</td>
+                        <td class="px-4 py-2 border border-black">{{ report.passengers }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="overflow-hidden rounded-lg bg-transparent mb-5">
+            <h2 class="text-start text-xl font-bold p-4">التقرير حسب المحافظة</h2>
+            <table class="min-w-full border border-black border-collapse">
+                <thead>
+                    <tr>
+                        <th class="px-4 py-2 border border-black text-right">المحافظة</th>
+                        <th class="px-4 py-2 border border-black text-right">عدد الرحلات</th>
+                        <th class="px-4 py-2 border border-black text-right">عدد المسافرين</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for city in city_report %}
+                    <tr>
+                        <td class="px-4 py-2 border border-black text-right">{{ city.city_name  }}</td>
+                        <td class="px-4 py-2 border border-black">{{ city.trip_count }}</td>
+                        <td class="px-4 py-2 border border-black">{{ city.passenger_count }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+
+
 
     </div>
     
@@ -159,29 +280,43 @@
 
     <script>
 
-        document.addEventListener('DOMContentLoaded', function () {
-            const { jsPDF } = window.jspdf;
+document.addEventListener('DOMContentLoaded', function () {
+    const { jsPDF } = window.jspdf;
 
-            document.getElementById('print-btn').addEventListener('click', function () {
-                const doc = new jsPDF({
-                    orientation: "portrait",
-                    unit: "mm",
-                    format: "a4"
-                });
-
-                const content = document.getElementById('report-content');
-
-                html2canvas(content, {
-                    scale: 3, 
-                }).then(function (canvas) {
-                    const imgData = canvas.toDataURL('image/png');
-
-                    doc.addFont('Arial', 'Arial', 'normal');
-                    doc.addImage(imgData, 'PNG', 10, 10, 190, 0); 
-                    doc.save('report.pdf'); 
-                });
-            });
+    document.getElementById('print-btn').addEventListener('click', function () {
+        const doc = new jsPDF({
+            orientation: "portrait",
+            unit: "mm",
+            format: "a4"
         });
+
+        const content = document.getElementById('report-content');
+
+        html2canvas(content, {
+            scale: 3, 
+            useCORS: true, 
+            logging: true, 
+        }).then(function (canvas) {
+            const imgData = canvas.toDataURL('image/png');
+            const imgWidth = 190; 
+            const imgHeight = (canvas.height * imgWidth) / canvas.width; 
+
+            const pageHeight = 280; 
+            let position = 0; 
+
+            while (position < imgHeight) {
+                doc.addImage(imgData, 'PNG', 10, 10 - position, imgWidth, imgHeight);
+                position += pageHeight; 
+
+                if (position < imgHeight) {
+                    doc.addPage(); 
+                }
+            }
+
+            doc.save('report.pdf'); 
+        });
+    });
+});
 
         document.addEventListener('DOMContentLoaded', function () {
             const tripTypeSelect = document.getElementById('trip-type');
@@ -227,3 +362,6 @@
         
     </div>
 {% endblock %}
+
+
+
