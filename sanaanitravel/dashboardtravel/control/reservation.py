@@ -33,13 +33,11 @@ def approve_reservation(request, reservation_id):
 
     invoice = Invoice.objects.create(
         passenger=passenger,
-        type_vehicle=vtt, 
         paid_amount=passenger.paid_amount,
         remaining_amount=passenger.remaining_amount,
         trip=passenger.trip_location,
         seat_number=passenger.seat_number,
-        trip_date=passenger.trip_date,
-        time=passenger.trip_location.time,  
+ 
         total_amount=passenger.paid_amount + passenger.remaining_amount,  
     )
 
