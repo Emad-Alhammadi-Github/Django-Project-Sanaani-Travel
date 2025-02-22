@@ -159,12 +159,5 @@ To deploy this project on a production server:
 4. **Serve Static and Media Files**:
    Use `collectstatic` to gather all static files and serve them via Nginx.
 
-5. **Secure the Application**:
-   Use SSL certificates for secure HTTPS connections.
 
----
 
-## Support
-For issues or inquiries, please contact:
-- **Email**: support@dashboardtravel.com
-- **Website**: [Dashboard Travel](http://dashboardtravel.com)
