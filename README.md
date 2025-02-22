@@ -1,4 +1,3 @@
-# Django-Project-Sanaani-Travel
 # Dashboard Travel - Django Project
 
 ## Overview
