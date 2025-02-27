@@ -14,3 +14,5 @@ sqlparse==0.5.3
 tinycss2==1.4.0
 tzdata==2024.2
 webencodings==0.5.1
+requests==2.32.3
+faker==35.2.0
