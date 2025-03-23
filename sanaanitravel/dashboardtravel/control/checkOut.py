@@ -6,7 +6,7 @@ from datetime import datetime
 
 
 
-
+#صفحة الدفع
 def checkout(request, trip_id):
     trip = get_object_or_404(Trip, id=trip_id)
     nationalities = Nationality.objects.all() 
@@ -21,7 +21,7 @@ def checkout(request, trip_id):
         paid_amount = request.POST.get('paid_amount')
         gender = request.POST.get('gender')
         image = request.FILES.get('image')
-        date_of_birth=request.POST.get('date_of_birth')
+        # date_of_birth=request.POST.get('date_of_birth')
 
 
 
@@ -50,7 +50,7 @@ def checkout(request, trip_id):
             gender=gender,
             nationality=nationality,
             image=image,
-            date_of_birth=date_of_birth,
+            # date_of_birth=date_of_birth,
 
         )
         passenger.save()

@@ -4,7 +4,7 @@
 <div class="flex-col h-[70%]">
 
     <div class="flex flex-row items-center gap-2 mx-2">
-        <h1 class="text-2xl font-bold">ادارة الرحلات</h1>
+        <h1 class="text-2xl font-bold">ادارة الرحلات العامة</h1>
         <div class="w-[80%] h-[5px] bg-[#F5F0F1] mt-4 rounded-lg"></div>
     </div>
 
@@ -126,74 +126,6 @@
 </div>
 <!-- Dialog 5 end -->
 
-
-<div>
-          <a href="{% url 'public_trip_list'%}" class="flex text-white text-[13px] bg-[#4278FF] mx-2 mt-3 mb-3 items-center rounded-lg w-[100px]">
-            الرحلات العامة
-        </a>
-        <a href="{% url 'private_trip_list'%}" class="flex text-white text-[13px]  bg-[#4278FF] mx-2 mt-3 mb-3 items-center  rounded-lg w-[100px]">
-            الرحلات الخاصة
-        </a>  
-</div>
-
-
-
-        <button onclick="openDialog('Dialog7')" class="flex gap-[2px] bg-[#4278FF] mx-2 mt-3 mb-3 items-center py-2 rounded-lg w-[170px]">
-            <h5 class="text-white pr-2">اضافة خدمة جديده</h5>
-            <img class="" src="{% static 'assetstravelers/image/img/icons/add-circle.svg' %}" alt />
-        </button>
-        <!-- Dialog 7 اضافة خدمة-->
-        <div id="Dialog7" class="custom-dialog" style="direction: rtl">
-            <div class="w-full bg-primaryDialog flex items-center px-[25px] py-[10px]">
-                <h5 class="text-[30px] text-white ml-2">اضافة خدمة</h5>
-                <div class="flex-1 h-[2px] bg-white"></div>
-                <button class="text-3xl mx-2" onclick="openDialog('Dialog7')">X</button>
-            </div>
-            <form action="{% url 'add_service'%}" method="POST" class="flex flex-col p-4" enctype="multipart/form-data">
-                {% csrf_token %}
-                <div class="grid grid-cols-2 gap-2 ">
-                    <div>
-                        <input type="text" name="name" class="custom-input" placeholder=" اسم الخدمة" />
-                        <select name="service_type" class="custom-input">
-                            <option value>نوع  الخدمة</option>
-                            <option value="vip">VIP</option>
-                            <option value="priv">خاصة</option>
-                            <option value="fami">عائلية</option>
-                        </select>
-                        <textarea name="description" class="custom-input" rows="14" placeholder="تفاصيل الخدمة"></textarea>
-                    </div>
-                    {% comment %} <div class="flex flex-col items-center pt-2">
-                        <img id="service-image" 
-                             src="../../static/assetstravelers/image/img/icons8_collaborator_male_60px 2.png" 
-                             width="70%" height="90%" alt="service Image" />
-                        
-                        <label for="file-input">
-                          <input id="file-input" type="file" name="image" style="display: none" onchange="previewImage(event, 'service-image')" />
-                          <button class="custom-input w-[200px]" type="button" onclick="document.getElementById('file-input').click();">اختار صورة</button>
-                        </label>
-                      </div> {% endcomment %}
-
-                     <div class="flex flex-col items-center pt-2">
-                        <img src="{% static 'assetstravelers/image/img/icons8_collaborator_male_60px 2.png' %}" width="90%" height="90%" alt />
-                        <label for="file-input">
-                            <input id="file-input" type="file" name="image"  />
-                        </label>
-                    </div> 
-
-                    
-                </div>
-                <div class="w-full flex-row">
-                    <button type="submit" class="w-[74%] py-1 text-white font-bold bg-primaryDialog rounded-md text-ellipsiswhite">
-                        حفــــــــــــــــظ
-                    </button>
-                    <button type="button" class="w-1/4 py-1 border font-bold border-primaryDialog rounded-md text-primaryDialog" onclick="openDialog('Dialog7')">
-                        الغاء
-                    </button>
-                </div>
-            </form>
-        </div>
-
-        <!-- Dialog 7 end  -->
 
         <form method="GET">
             <div class="bg-[#F5F0F1] border border-gray-300 h-min flex flex-row mx-auto py-2 px-7 rounded-3xl gap-3 items-center">

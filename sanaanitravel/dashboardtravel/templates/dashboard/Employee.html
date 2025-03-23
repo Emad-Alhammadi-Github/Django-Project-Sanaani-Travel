@@ -106,6 +106,9 @@
                     <select name="user_type" class="custom-input flex-2">
                       <option>نوع المستخدم</option>
                       <option value="admin">أدمن</option>
+                      <option value="manger">مدير</option>
+                      <option value="mangertrip">مسوول الرحلات</option>
+                      <option value="mangerpassenger">مسوول المسافرين</option>
                       <option value="employee">موظف</option>
                     </select>
                   </div>
@@ -281,7 +284,10 @@
 
                                         <select name="user_type" class="custom-input flex-1">
                                           <option value="admin" {% if employee.user_type == "admin" %}selected{% endif %}>أدمن</option>
+                                          <option value="manger" {% if employee.user_type == "manger" %}selected{% endif %}>مدير</option>
                                           <option value="employee" {% if employee.user_type == "employee" %}selected{% endif %}>موظف</option>
+                                          <option value="mangertrip" {% if employee.user_type == "mangertrip" %}selected{% endif %}>مسوول الرحلات</option>
+                                           <option value="mangerpassenger" {% if employee.user_type == "mangerpassenger" %}selected{% endif %}>مسوول المسافرين</option>
                                         </select>
 
                                         </div>

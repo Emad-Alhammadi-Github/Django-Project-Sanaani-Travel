@@ -1,0 +1,22 @@
+{% extends 'basehome.html' %}
+{% load static %}
+{% block ttyy %}
+<div class="bg-gray-100">
+    <header class="bg-gray-600 text-white py-5">
+        <div class="container mx-auto text-center">
+            <h1 class="text-3xl font-bold">تواصل معنا</h1>
+        </div>
+    </header>
+    <main class="container mx-auto p-5">
+        <section class="bg-gray-600 rounded-lg shadow-lg p-6 mt-5">
+            <h2 class="text-xl font-semibold">أخبرنا برأيك</h2>
+            <form method="POST" class="mt-4">
+                {% csrf_token %}
+                {{ form.as_p }}
+                <button type="submit" class="bg-blue-600 text-white py-2 px-4 rounded">إرسال</button>
+            </form>
+        </section>
+    </main>
+</div>
+
+{% endblock %}

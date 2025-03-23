@@ -1,0 +1,95 @@
+{% extends 'basehome.html' %}
+{% load static %}
+{% block ttyy %}
+<div class="bg-gray-100">
+    <!-- section Travel today 2 -->
+    <div
+      class="w-[95%] mb-[50px] bg-[#f0efef] mx-auto mt-7 flex-col flex items-center">
+      <!-- Title -->
+      <h5 class="text-[50px] font-bold text-[#3b3b3b]">الرحلات </h5>
+      <!-- Card Serves -->
+      <div
+        class="w-[80%] h-min justify-center mt-5 items-center grid grid-cols-3 gap-[50px]">
+        <!-- Card 1  -->
+      {% if trips %}
+        {% for trip in trips %}
+        <div
+          class="relative shadow-md bg-white h-full w-full flex flex-col rounded-2xl overflow-hidden">
+          
+
+          <div class="h-2/3">
+            <img src="{{ trip.image.url }}" alt class="w-full h-full object-contain" />
+
+            {% comment %} {% if trip.image %}
+                  <img src="{{ trip.image.url }}" alt="" class="w-full h-full object-contain" />
+              {% else %}
+                  <img src="path/to/default/image.jpg" alt="Default Image" class="w-full h-full object-contain" />
+              {% endif %} {% endcomment %}
+          </div>
+        
+          <div class="h-2/3 flex flex-col justify-between p-4">
+            <div class="absolute flex flex-col items-center left-[5px] top-[30%]">
+              <div
+                class="w-[80px] h-[80px] mb-[30px] shadow-2xl p-[2px] bg-white rounded-md">
+                <img
+
+                  src="{{trip.vehicle_type.image.url}}"
+                  
+                  class="w-full h-full object-cover " />
+              </div>
+              <h5 class="text-[20px] font-extrabold">{{trip.seat_price }}</h5>
+              <h5 class="text-[20px] font-extrabold">الف</h5>
+            </div>
+        
+            <div class="flex mt-5 gap-2 w-5/6 mx-auto">
+              <div
+                class="bg-[#9eefd9] py-2 px-1 h-[170px] flex flex-col justify-around rounded-lg">
+                <img src="../../static/assetstravelers/image/img/location.svg copy.svg" width="24" />
+                <img src="../../static/assetstravelers/image/img/location.svg copy.svg" width="24" />
+                <img src="../../static/assetstravelers/image/img/image 1575.svg" width="24" />
+                <img src="../../static/assetstravelers/image/img/calendar-check.svg" width="24" />
+              </div>
+              <div
+                class="bg-[#9eefd9] py-2 items-center px-2 h-[170px] flex flex-col justify-around rounded-lg">
+                <h5 class="text-[#07002c] font-bold text-[16px]">مــــــن</h5>
+                <h5 class="text-[#07002c] font-bold text-[16px]">إلــــــى</h5>
+                <h5 class="text-[#07002c] font-bold text-[16px]">الوقت</h5>
+                <h5 class="text-[#07002c] font-bold text-[16px]">التاريخ</h5>
+              </div>
+              <div
+                class="py-2 items-center px-2 h-[170px] flex flex-col justify-around rounded-lg">
+                <h5 class="text-black font-bold text-[16px]">{{ trip.departure }}</h5>
+                <h5 class="text-black font-bold text-[16px]">{{ trip.destination }}</h5>
+                <h5 class="text-black font-bold text-[16px]">{{ trip.time }}</h5>
+                <h5 class="text-black font-bold text-[16px]">{{ trip.date }}</h5>
+              </div>
+            </div>
+        
+            {% if user.is_authenticated %}
+            <button
+              onclick="window.location.href='{% url 'checkout' trip.id %}'"
+              class="bg-[#33387f] mx-auto mt-3 mb-3 text-white rounded-lg w-5/6 py-2">
+              احجز مقعدك الان
+            </button>
+           {% else %}
+            <button
+              onclick="alert('يرجى تسجيل الدخول أولاً'); window.location.href='{% url 'login' %}'"
+              class="bg-[#33387f] mx-auto mt-3 mb-3 text-white rounded-lg w-5/6 py-2">
+              احجز مقعدك الان
+            </button>
+          {% endif %}
+          
+          </div>
+        </div>
+        {% endfor %}
+        {% else  %}
+        <p class="flex justify-center  items-center text-center text-gray-500 mt-4">{{context.message}}</p>
+     {% endif %}
+
+
+
+      </div>
+    </div>
+</div>
+
+{% endblock %}

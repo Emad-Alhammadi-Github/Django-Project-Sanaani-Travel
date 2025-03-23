@@ -14,8 +14,9 @@
   <!-- Card -->
   <div class="flex flex-col mt-[70px]">
     <div class="flex flex-row">
+      <button class="bg-[#f0efef] px-[35px] py-1 text-[22px] rounded-tr-md border-l border-gray-600 category-button" onclick="filterTrips('كل')">كل الرحلات</button>
       {% for trip_categorys in trip_category %}
-      <button class="bg-[#f0efef] px-[35px] py-1 text-[22px] rounded-tr-md border-l border-gray-600 category-button" onclick="selectCategory(this)">{{ trip_categorys.name }}</button>
+      <button class="bg-[#f0efef] px-[35px] py-1 text-[22px] rounded-tr-md border-l border-gray-600 category-button" onclick="filterTrips('{{ trip_categorys.name }}')">{{ trip_categorys.name }}</button>
       {% endfor %}
     </div>
 
@@ -91,80 +92,51 @@
       <div
         class="w-[80%] h-min justify-center mt-5 items-center grid grid-cols-3 gap-[50px]">
         <!-- Card 1  -->
-      {% if trips %}
-        {% for trip in trips %}
-        <div
-          class="relative shadow-md bg-white h-full w-full flex flex-col rounded-2xl overflow-hidden">
-          
-
+    {% if trips %}
+      {% for trip in trips %}
+        <div class="trip-card relative shadow-md bg-white h-full w-full flex flex-col rounded-2xl overflow-hidden" data-category="{{ trip.trip_category.name }}">
           <div class="h-2/3">
             <img src="{{ trip.image.url }}" alt class="w-full h-full object-contain" />
-
-            {% comment %} {% if trip.image %}
-                  <img src="{{ trip.image.url }}" alt="" class="w-full h-full object-contain" />
-              {% else %}
-                  <img src="path/to/default/image.jpg" alt="Default Image" class="w-full h-full object-contain" />
-              {% endif %} {% endcomment %}
           </div>
-        
           <div class="h-2/3 flex flex-col justify-between p-4">
             <div class="absolute flex flex-col items-center left-[5px] top-[30%]">
-              <div
-                class="w-[80px] h-[80px] mb-[30px] shadow-2xl p-[2px] bg-white rounded-md">
-                <img
-
-                  src="{{trip.vehicle_type.image.url}}"
-                  
-                  class="w-full h-full object-cover " />
+              <div class="w-[80px] h-[80px] mb-[30px] shadow-2xl p-[2px] bg-white rounded-md">
+                <img src="{{trip.vehicle_type.image.url}}" class="w-full h-full object-cover" />
               </div>
               <h5 class="text-[20px] font-extrabold">{{trip.seat_price }}</h5>
               <h5 class="text-[20px] font-extrabold">الف</h5>
             </div>
-        
             <div class="flex mt-5 gap-2 w-5/6 mx-auto">
-              <div
-                class="bg-[#9eefd9] py-2 px-1 h-[170px] flex flex-col justify-around rounded-lg">
+              <div class="bg-[#9eefd9] py-2 px-1 h-[170px] flex flex-col justify-around rounded-lg">
                 <img src="../../static/assetstravelers/image/img/location.svg copy.svg" width="24" />
                 <img src="../../static/assetstravelers/image/img/location.svg copy.svg" width="24" />
                 <img src="../../static/assetstravelers/image/img/image 1575.svg" width="24" />
                 <img src="../../static/assetstravelers/image/img/calendar-check.svg" width="24" />
               </div>
-              <div
-                class="bg-[#9eefd9] py-2 items-center px-2 h-[170px] flex flex-col justify-around rounded-lg">
+              <div class="bg-[#9eefd9] py-2 items-center px-2 h-[170px] flex flex-col justify-around rounded-lg">
                 <h5 class="text-[#07002c] font-bold text-[16px]">مــــــن</h5>
                 <h5 class="text-[#07002c] font-bold text-[16px]">إلــــــى</h5>
                 <h5 class="text-[#07002c] font-bold text-[16px]">الوقت</h5>
                 <h5 class="text-[#07002c] font-bold text-[16px]">التاريخ</h5>
               </div>
-              <div
-                class="py-2 items-center px-2 h-[170px] flex flex-col justify-around rounded-lg">
+              <div class="py-2 items-center px-2 h-[170px] flex flex-col justify-around rounded-lg">
                 <h5 class="text-black font-bold text-[16px]">{{ trip.departure }}</h5>
                 <h5 class="text-black font-bold text-[16px]">{{ trip.destination }}</h5>
                 <h5 class="text-black font-bold text-[16px]">{{ trip.time }}</h5>
                 <h5 class="text-black font-bold text-[16px]">{{ trip.date }}</h5>
               </div>
             </div>
-        
             {% if user.is_authenticated %}
-            <button
-              onclick="window.location.href='{% url 'checkout' trip.id %}'"
-              class="bg-[#33387f] mx-auto mt-3 mb-3 text-white rounded-lg w-5/6 py-2">
-              احجز مقعدك الان
-            </button>
-           {% else %}
-            <button
-              onclick="alert('يرجى تسجيل الدخول أولاً'); window.location.href='{% url 'login' %}'"
-              class="bg-[#33387f] mx-auto mt-3 mb-3 text-white rounded-lg w-5/6 py-2">
-              احجز مقعدك الان
-            </button>
-          {% endif %}
-          
+            <button onclick="window.location.href='{% url 'checkout' trip.id %}'" class="bg-[#33387f] mx-auto mt-3 mb-3 text-white rounded-lg w-5/6 py-2">احجز مقعدك الان</button>
+            {% else %}
+            <button onclick="alert('يرجى تسجيل الدخول أولاً'); window.location.href='{% url 'login' %}'" class="bg-[#33387f] mx-auto mt-3 mb-3 text-white rounded-lg w-5/6 py-2">احجز مقعدك الان</button>
+            {% endif %}
           </div>
         </div>
-        {% endfor %}
-        {% else  %}
-        <p class="flex justify-center  items-center text-center text-gray-500 mt-4">{{context.message}}</p>
-     {% endif %}
+      {% endfor %}
+    {% else %}
+      <p class="flex justify-center items-center text-center text-gray-500 mt-4">{{context.message}}</p>
+    {% endif %}
 
 
 
@@ -305,6 +277,22 @@
           selectCategory(firstButton);
         }
       };
+
+
+function filterTrips(category) {
+  const trips = document.querySelectorAll('.trip-card');
+  trips.forEach(trip => {
+    if (category === 'كل' || trip.getAttribute('data-category') === category) {
+      trip.style.display = 'flex'; // عرض الرحلة
+    } else {
+      trip.style.display = 'none'; // إخفاء الرحلة
+    }
+  });
+
+  // تحقق إذا كانت هناك رحلات مرئية
+  const visibleTrips = Array.from(trips).filter(trip => trip.style.display === 'flex');
+  document.getElementById('no-trips-message').style.display = visibleTrips.length === 0 ? 'block' : 'none';
+}
     </script>
 
 {% endblock %}

@@ -21,9 +21,15 @@ urlpatterns = [
     path('dashboar', home_dashboard, name='home_dashboard'),
     path('dashboard', home_dashboardtt, name='home_dashboardtt'),
     path('checkout/<int:trip_id>/', checkout, name='checkout'),
+    
+    path('add_invoice/', add_invoice, name='add_invoice'),
     path('success/', success_page, name='success_page'),
     path('error_checkOut/', error_checkOut, name='error_checkOut'),
     path('search/', search_trips, name='search_trips'),
+     path('about/', about_view, name='about'),
+    path('contact/', contact_view, name='contact'),
+     path('thank-you/', thank_you_view, name='thank_you'),
+     path('trip/home/', tripshome, name='tripshome'),
 
 #####################################   الرئيسية النهاية ##################################################################
 
@@ -60,6 +66,17 @@ urlpatterns = [
     path('edit_trip/', edit_trip, name='edit_trip'),
     path('trip_detail/<int:trip_id>/', trip_detail, name='trip_detail'),
     path('delete_trip/', delete_trip, name='delete_trip'),
+
+
+    path('trips/public/', public_trip_list, name='public_trip_list'),
+    path('trips/private/', private_trip_list, name='private_trip_list'),
+    # path('tripgloble/', tripgloble_list, name='tripgloble_list'),
+    # path('tripgloble/filter/', tripgloble_filter, name='tripgloble_filter'),
+    # path('tripsgloble/add/', add_tripgloble, name='add_tripgloble'),
+    # path('edit_tripgloble/', edit_tripgloble, name='edit_tripgloble'),
+    # path('delete_tripgloble/', delete_tripgloble, name='delete_tripgloble'),
+
+
     # path('trips/edit/<int:trip_id>/', edit_trip, name='edit_trip'),
     # path('trips/delete/<int:trip_id>/', delete_trip, name='delete_trip'),
 
@@ -86,6 +103,7 @@ urlpatterns = [
 
 #####################################  ادارة الطلبات ##################################################################
     path('reservation-requests/', reservation_requests, name='reservation_requests'),
+    path('reservation-requests-priv/', reservation_requests_priveit, name='reservation_requests_priveit'),
     path('approve-reservation/', approve_reservation_list, name='approve_reservation_list'),
     path('reject-reservation/', reject_reservation_list, name='reject_reservation_list'),
     path('approve-reservation/<int:reservation_id>/', approve_reservation, name='approve_reservation'),

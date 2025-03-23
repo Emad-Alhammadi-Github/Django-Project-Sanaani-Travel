@@ -5,6 +5,7 @@ from django.contrib.auth.decorators import login_required
 from django.db.models import Prefetch, Q
 #####################################  ادارة الفواتير ##################################################################
 
+#صفحة عرض الفواتير
 @login_required(login_url='loginadmin')
 def invoice_list(request):
     query = request.GET.get('q', '')
@@ -20,6 +21,7 @@ def invoice_list(request):
     )
 
     trips = Trip.objects.all()
+    passengers = Passenger.objects.all()
 
     for invoice in invoices:
         if invoice.passenger.approved_reservations:
@@ -29,12 +31,13 @@ def invoice_list(request):
     return render(request, 'dashboard/Bills.html', {
         'invoices': invoices,
         'trips': trips,
+        'passengers': passengers,
         'query': query,
     })
 
 
 
-
+#صفحة اضافة فاتورة
 @login_required(login_url='loginadmin')
 def add_invoice(request):
     if request.method == 'POST':
@@ -43,6 +46,7 @@ def add_invoice(request):
             paid_amount=request.POST['paid_amount'],
             remaining_amount=request.POST['remaining_amount'],
             trip=Trip.objects.get(id=request.POST['trip']),
+            
             seat_number=request.POST['seat_number'],
             total_amount=request.POST['total_amount'],
             payment_method=request.POST['payment_method'],
@@ -54,7 +58,7 @@ def add_invoice(request):
     passengers = Passenger.objects.all()
     vehicles = Vehicle.objects.all()
     trips = Trip.objects.all()
-    return render(request, 'trips/add_invoice.html', {'passengers': passengers, 'trips': trips, 'vehicles': vehicles})
+    return render(request, 'dashboard/Bills.html', {'passengers': passengers, 'trips': trips, 'vehicles': vehicles})
 
 
 

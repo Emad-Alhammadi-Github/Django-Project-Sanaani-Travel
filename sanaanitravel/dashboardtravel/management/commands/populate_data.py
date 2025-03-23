@@ -124,47 +124,47 @@ class Command(BaseCommand):
             user_type='admin',
             nationality=yemen_nationality,
         )
-        employee_user = User.objects.create(
-            username='emp',
-            email='emp@gmail.com', 
-            password='emp123'
-        )
+        # employee_user = User.objects.create(
+        #     username='emp',
+        #     email='emp@gmail.com', 
+        #     password='emp123'
+        # )
 
-        admin_user.is_active = True
-        admin_user.save()
+        # admin_user.is_active = True
+        # admin_user.save()
 
-        Employee.objects.create(
-            user=employee_user,
-            name='Employee', 
-            job_title='موظف', 
-            phone='12345',
-            id_number='123450',
-            salary=10000,
-            gender='1',
-            user_type='employee',
-            nationality=yemen_nationality,
-        )
+        # Employee.objects.create(
+        #     user=employee_user,
+        #     name='Employee', 
+        #     job_title='موظف', 
+        #     phone='12345',
+        #     id_number='123450',
+        #     salary=10000,
+        #     gender='1',
+        #     user_type='employee',
+        #     nationality=yemen_nationality,
+        # )
 
-        manmonay_user = User.objects.create(
-            username='manmon',
-            email='manmon@gmail.com', 
-            password='manmon123'
-        )
+        # manmonay_user = User.objects.create(
+        #     username='manmon',
+        #     email='manmon@gmail.com', 
+        #     password='manmon123'
+        # )
 
-        admin_user.is_active = True
-        admin_user.save()
+        # admin_user.is_active = True
+        # admin_user.save()
 
-        Employee.objects.create(
-            user=manmonay_user,
-            name='Manmonay', 
-            job_title='مسوول مالي', 
-            phone='1234567',
-            id_number='12345670',
-            salary=10000,
-            gender='1',
-            user_type='manmonay',
-            nationality=yemen_nationality,
-        )
+        # Employee.objects.create(
+        #     user=manmonay_user,
+        #     name='Manmonay', 
+        #     job_title='مسوول مالي', 
+        #     phone='1234567',
+        #     id_number='12345670',
+        #     salary=10000,
+        #     gender='1',
+        #     user_type='manmonay',
+        #     nationality=yemen_nationality,
+        # )
 
 
     #     fake = Faker()

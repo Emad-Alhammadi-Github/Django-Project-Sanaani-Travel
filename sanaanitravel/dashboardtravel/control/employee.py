@@ -6,18 +6,19 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 
 #####################################  ادارة الموظفين ##################################################################
+#صفحة عرض الموظفين
 @login_required(login_url='loginadmin')
 def employee_list(request):
     query = request.GET.get('q', '')
     employees = Employee.objects.filter(Q(name__icontains=query) | Q(phone__icontains=query))
     nationalities = Nationality.objects.all() 
     return render(request, 'dashboard/Employee.html', {'employees': employees,'nationalities': nationalities, 'query': query})
-
+#صفحة تفاصيل الموظف
 @login_required(login_url='loginadmin')
 def employee_detail(request, employee_id):
     employee = Employee.objects.get(id=employee_id)
     return render(request, 'dashboard/Employee_detail.html', {'employee': employee})
-
+#صفحة اضافة موظف
 @login_required(login_url='loginadmin')
 def add_employee(request):
     if request.method == 'POST':
@@ -48,7 +49,7 @@ def add_employee(request):
     return render(request, 'dashboard/Employee.html')
 
 
-
+#صفحة تعديل موظف
 @login_required(login_url='loginadmin')
 def edit_employee(request, employee_id):
     employee = get_object_or_404(Employee, id=employee_id)
@@ -76,7 +77,7 @@ def edit_employee(request, employee_id):
     nationalities = Nationality.objects.all()
     return render(request, 'dashboard/Employee.html', {'employee': employee,'nationalities': nationalities,})
 
-
+#صفحة حذف موظف
 @login_required(login_url='loginadmin')
 def delete_employee(request, employee_id):
     employee = get_object_or_404(Employee, id=employee_id)

@@ -31,21 +31,22 @@ class TripCategory(models.Model):
 
 #### السواقين
 class Driver(models.Model):
+    driver_type= models.CharField(max_length=20, choices=[('tocompany', 'تابع لشركة'), ('tobe', 'تابع لجهه'), ('drivername', 'سواق')], default='drivername')
     name = models.CharField(max_length=100)  # الاسم
-    experience_years = models.IntegerField()  # سنوات الخبرة
-    phone = models.CharField(max_length=15)  # الهاتف
+    experience_years = models.IntegerField(null=True, blank=True)  # سنوات الخبرة
+    phone = models.CharField(max_length=15,null=True)  # الهاتف
     license_type = models.CharField(max_length=50,null=True)  # نوع رخصة القيادة
-    license_number = models.CharField(max_length=50)  # رقم رخصة القيادة
+    license_number = models.CharField(max_length=50,null=True)  # رقم رخصة القيادة
     license_img = models.ImageField(upload_to='driver/license_img/', null=True, blank=True)  # مسار صورة رخصة القيادة للسائق
 
-    id_number = models.CharField(max_length=50)  # رقم البطاقة الشخصية
+    id_number = models.CharField(max_length=50,null=True)  # رقم البطاقة الشخصية
     identify_img =models.ImageField(upload_to='driver/identify_img/', null=True, blank=True)   # مسار صورة الهوية الوطنية للسائق
 
     passport_number = models.CharField(max_length=50,null=True)  # رقم جواز السفر
     gender = models.CharField(max_length=10,null=True)  # الجنس
-    nationality = models.ForeignKey(Nationality, on_delete=models.CASCADE, related_name='cities_driver')  #   الجنسية
+    nationality = models.ForeignKey(Nationality, on_delete=models.CASCADE, related_name='cities_driver',null=True)  #   الجنسية
     image = models.ImageField(upload_to='driver/driver_images/', null=True, blank=True)  # صورة
-    date_of_birth = models.DateField(null=True)  # تاريخ ميلاد السائق
+    date_of_birth = models.DateField(null=True, blank=True)  # تاريخ ميلاد السائق
     date_added = models.DateTimeField(auto_now_add=True)  # التاريخ والوقت
     date_add = models.DateField(auto_now_add=True) # التاريخ انشاء السواق
 
@@ -111,7 +112,7 @@ class Employee(models.Model):
     gender = models.CharField(max_length=10,null=True)  # الجنس
     nationality = models.ForeignKey(Nationality, on_delete=models.CASCADE, related_name='cities_employee')  #   الجنسية
     image = models.ImageField(upload_to='employee_images/', null=True, blank=True)  # صورة
-    user_type = models.CharField(max_length=10, choices=[('admin', 'أدمن'), ('employee', 'موظف'), ('manmonay', 'المسوول المالي'),  ('customer', 'عميل')], default='customer')
+    user_type = models.CharField(max_length=20, choices=[('admin', 'أدمن'), ('manger', 'مدير'), ('employee', 'موظف'), ('mangertrip', 'مسوول الرحلات'),('mangerpassenger', 'مسوول المسافرين'),('manmonay', 'المسوول المالي'),  ('customer', 'عميل')], default='customer')
     date_added = models.DateTimeField(auto_now_add=True)  # التاريخ والوقت
     date_add = models.DateField(auto_now_add=True) # التاريخ انشاء الموظف
 
@@ -133,7 +134,7 @@ class Passenger(models.Model):
     gender = models.CharField(max_length=10,null=True)  # الجنس
     nationality = models.ForeignKey(Nationality, on_delete=models.CASCADE, related_name='cities_passenger')  #  الجنسية
     image = models.ImageField(upload_to='passenger/passenger_images/', null=True, blank=True)  # صورة
-    date_of_birth = models.DateField(null=True)  # تاريخ ميلاد الراكب
+    # date_of_birth = models.DateField(null=True)  # تاريخ ميلاد الراكب
     date_added = models.DateTimeField(auto_now_add=True)  # التاريخ والوقت
     date_add = models.DateField(auto_now_add=True) # التاريخ انشاء المسافر
     def __str__(self):
@@ -189,7 +190,14 @@ class Payment(models.Model):
     verified = models.BooleanField(default=False)  # حالة التحقق من الدفع
 
 
+class Contact(models.Model):
+    name = models.CharField(max_length=100)
+    email = models.EmailField()
+    message = models.TextField()
 
+    def __str__(self):
+        return self.name
+    
 ### الخدمات
 class Service(models.Model):
     name = models.CharField(max_length=100)  # الاسم

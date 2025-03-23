@@ -29,7 +29,105 @@
 
 
           <!-- Dialog 4 اضافة سواق -->
-          <div id="Dialog4" class="custom-dialog" style="direction: rtl">
+<div id="Dialog4" class="custom-dialog" style="direction: rtl">
+    <div class="w-full bg-primaryDialog flex items-center px-[25px] py-[10px]">
+        <h5 class="text-[30px] text-white ml-2">اضافة سواق</h5>
+        <div class="flex-1 h-[2px] bg-white"></div>
+        <button class="text-3xl mx-2" onclick="openDialog('Dialog4')">X</button>
+    </div>
+
+
+    <form action="{% url 'add_driver' %}" method="POST" class="flex flex-col p-4" enctype="multipart/form-data">
+        {% csrf_token %}
+    <select name="driver_type" class="custom-input flex-1" id="driver_type" onchange="toggleFields()">
+    <option value>من هو</option>
+    <option value="tocompany">تابع لشركة</option>
+    <option value="tobe">تابع لجهه</option>
+    <option value="drivername">سواق</option>
+    </select>
+
+        <div class="grid grid-cols-4 gap-2">
+            <div>
+
+                <input type="text" name="name" class="custom-input" id="name_field" placeholder="الاسم" />
+                <select name="experience_years" class="custom-input flex-1" id="experience_field">
+                    <option value>سنين خبرة العمل</option>
+                    <option value="1">1</option>
+                    <option value="2">2</option>
+                    <option value="3">3</option>
+                    <option value="4">4</option>
+                    <option value="5">5</option>
+                </select>
+                <input type="text" name="phone" class="custom-input" id="phone_field" placeholder="رقم الهاتف 1" />
+                <input type="text" class="custom-input" id="phone2_field" placeholder="رقم الهاتف 2" />
+            </div>
+            <div>
+                <select name="license_type" class="custom-input flex-1" id="license_type_field">
+                    <option value>نوع رخصة القيادة</option>
+                    <option value="6 ركاب">6 ركاب</option>
+                    <option value="12 راكب">12 راكب</option>
+                    <option value="16 راكب">16 راكب</option>
+                </select>
+                <input type="text" name="license_number" class="custom-input" id="license_number_field" placeholder="رقم رخصة القيادة " />
+               
+               
+<div class="flex flex-col items-center pt-1">
+    <img id="license_img-image" src="../../static/assetstravelers/image/img/icons8_collaborator_male_60px 2.png" width="70%" height="90%" alt="license_img Image" />
+    <label for="license_img-file-input">
+        <input id="license_img-file-input" type="file" name="license_img" style="display: none" onchange="previewImage(event, 'license_img-image')" />
+        <button class="custom-input w-[180px]" type="button" id="license_img-button" onclick="document.getElementById('license_img-file-input').click();">اختار صورة رخصة القيادة</button>
+    </label>
+</div>
+            </div>
+            <div>
+                <input type="text" name="id_number" class="custom-input" id="id_number_field" placeholder="رقم البطاقة الشخصية" />
+                <input type="text" name="passport_number" class="custom-input" id="passport_number_field" placeholder="رقم الجواز" />
+<div class="flex flex-col items-center pt-2">
+    <img id="identify_img-image" src="../../static/assetstravelers/image/img/icons8_collaborator_male_60px 2.png" width="70%" height="90%" alt="identify_img Image" />
+    <label for="identify_img-file-input">
+        <input id="identify_img-file-input" type="file" name="identify_img" style="display: none" onchange="previewImage(event, 'identify_img-image')" />
+        <button class="custom-input w-[140px]" type="button" id="identify_img-button" onclick="document.getElementById('identify_img-file-input').click();">اختار صورة الهوية</button>
+    </label>
+</div>
+            </div>
+            <div>
+                <input type="date" name="date_of_birth" class="custom-input flex-1" id="date_of_birth_field"  />
+                <div class="flex gap-1">
+                    <select name="gender" class="custom-input flex-1" id="gender_field">
+                        <option value>الجنس</option>
+                        <option value="1">ذكر</option>
+                        <option value="0">أنثئ</option>
+                    </select>
+                    <select name="nationality" class="custom-input flex-1" id="nationality_field">
+                        <option value>الجنسية</option>
+                        {% for nationality in nationalities %}
+                        <option value="{{ nationality.id }}">{{ nationality.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+<div class="flex flex-col items-center pt-2">
+    <img id="driver-image" src="../../static/assetstravelers/image/img/icons8_collaborator_male_60px 2.png" width="70%" height="90%" alt="Driver Image" />
+    <label for="file-input">
+        <input id="file-input" type="file" name="image" style="display: none" onchange="previewImage(event, 'driver-image')" />
+        <button class="custom-input w-[140px]" type="button" id="driver_image-button" onclick="document.getElementById('file-input').click();">اختار صورة</button>
+    </label>
+</div>
+            </div>
+        </div>
+        <div class="w-full flex-row">
+            <button type="submit" class="w-[74%] py-1 text-white font-bold bg-primaryDialog rounded-md">حفــــــــــــــــظ</button>
+            <button type="button" class="w-1/4 py-1 border font-bold border-primaryDialog rounded-md text-primaryDialog" onclick="openDialog('Dialog4')">الغاء</button>
+        </div>
+    </form>
+</div>
+
+
+
+
+
+
+
+          {% comment %} <div id="Dialog4" class="custom-dialog" style="direction: rtl">
             <div
               class="w-full bg-primaryDialog flex items-center px-[25px] py-[10px]"
             >
@@ -43,11 +141,17 @@
 
 
                 <div>
+                  <select name="driver_type" class="custom-input flex-1" id>
+                    <option value>من هو</option>
+                    <option value="tocompany">تابع لشركة</option>
+                    <option value="tobe">تابع لجهه</option>
+                    <option value="drivername">سواق</option>
+                  </select>
                   <input
                     type="text"
                     name="name"
                     class="custom-input"
-                    placeholder="الاسم الرباعي"
+                    placeholder="الاسم"
                   />
           
                   <select name="experience_years" class="custom-input flex-1" id>
@@ -61,9 +165,6 @@
 
                   </select>
           
-                  {% comment %} <select name="" class="custom-input flex-1" id>
-                    <option value>نوع السيارة للرحلة</option>
-                  </select> {% endcomment %}
                   <input
                     type="text"
                     name="phone"
@@ -177,7 +278,7 @@
               </div>
             </form>
             
-          </div>
+          </div> {% endcomment %}
 
 
 
@@ -209,18 +310,51 @@
             <tbody>
               {% for driver in drivers %}
               <tr>
-                <td class="px-4 py-2 border-b border-[#F5F0F1]"><img src="{{ driver.image.url }}" alt width="70"  /></td>
+                <td class="px-4 py-2 border-b border-[#F5F0F1]">
+                      {% if driver.image %} 
+        <img src="{{ driver.image.url }}" alt width="70" />
+    {% else %}
+        <span>لا توجد صورة</span>  
+    {% endif %}
+                </td>
                   <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ driver.name }}</td>
-                  <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ driver.phone }}</td>
-                  <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ driver.id_number }}</td>
+                  <td class="px-4 py-2 border-b border-[#F5F0F1]">
+                    {% if driver.phone %} 
+                    {{ driver.phone }}
+                    {% else %}
+                      <span>لا توجد رقم هاتف</span>  
+                  {% endif %}
+                  </td>
+                  <td class="px-4 py-2 border-b border-[#F5F0F1]">
+                    {% if driver.id_number %} 
+                    {{ driver.id_number }}
+                    {% else %}
+                      <span>لا توجد رقم</span>  
+                  {% endif %}
+                    
+                    {% comment %} {{ driver.id_number }} {% endcomment %}
+                  
+                  </td>
                   <td class="px-4 py-2 border-b border-[#F5F0F1]">    
                     {% if driver.gender == "1" %}
                         ذكر
-                    {% else %}
+                    {% elif driver.gender == "0"  %}
                        أنثى
+
+                       {%else%}
+                       لايوجد
                     {% endif %}
                   </td>
-                  <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ driver.nationality.name }}</td>
+                  <td class="px-4 py-2 border-b border-[#F5F0F1]">
+                    {% if driver.nationality.name %} 
+                   {{ driver.nationality.name }}
+
+                    {% else %}
+                      <span>لا توجد جنسية</span>  
+                  {% endif %}
+                    
+                  
+                  </td>
                   <td class="px-1 py-2 border-b border-[#F5F0F1] flex flex-row gap-2 justify-center">
                     <button onclick="openEditDialog('{{ driver.id }}')" class="bg-[#4278FF] text-[#16151C] rounded-lg w-[80px] flex items-center gap-1 justify-center">
                       <img src="{% static 'assetstravelers/image/img/icons/edit.svg' %}" alt /><h6>تعديل</h6>
@@ -257,6 +391,12 @@
         {% csrf_token %}
         <div class="grid grid-cols-4 gap-2">
           <div>
+            <select name="driver_type" class="custom-input flex-1" id>
+                    <option value>من هو</option>
+                    <option value="tocompany" {% if driver.driver_type == tocompany %}selected{% endif %}>تابع لشركة</option>
+                    <option value="tobe"{% if driver.driver_type == tobe %}selected{% endif %}>تابع لجهه</option>
+                    <option value="drivername"{% if driver.driver_type == drivername %}selected{% endif %}>سواق</option>
+              </select>
             <input
               type="text"
               name="name"
@@ -305,13 +445,24 @@
 
 
             <div class="flex flex-col items-center pt-1">
-              <img 
-                id="editImage{{ driver.id }}" 
-                src="{{ driver.license_img.url }}" 
-                alt="صورة الرخصة" 
-                style="max-width: 200px; max-height: 400px;" 
-                onerror="this.onerror=null; this.src='{% static 'assetstravelers/image/img/icons8_collaborator_male_60px 2.png' %}'" 
-              />
+    {% if driver.license_img %}  
+        <img 
+            id="editImage{{ driver.id }}" 
+            src="{{ driver.license_img.url }}" 
+            alt="صورة الرخصة" 
+            style="max-width: 200px; max-height: 400px;" 
+            onerror="this.onerror=null; this.src='{% static 'assetstravelers/image/img/icons8_collaborator_male_60px 2.png' %}'" 
+        />
+    {% else %}
+        <img 
+            id="editImage{{ driver.id }}" 
+            src="{% static 'assetstravelers/image/img/icons8_collaborator_male_60px 2.png' %}" 
+            alt="صورة الرخصة" 
+            style="max-width: 200px; max-height: 400px;" 
+        />
+    {% endif %}
+
+
               <label 
                 for="license_img-file-input-{{ driver.id }}" 
                 class="custom-upload-button text-center"
@@ -334,6 +485,8 @@
             <input type="text" name="id_number" value="{{ driver.id_number }}" class="custom-input" placeholder="رقم البطاقة الشخصية" />
             <input type="text" name="passport_number" value="{{ driver.passport_number }}" class="custom-input" placeholder="رقم الجواز" />
             <div class="flex flex-col items-center pt-1">
+
+    {% if driver.identify_img %}  
               <img 
                 id="editImage{{ driver.id }}" 
                 src="{{ driver.identify_img.url }}" 
@@ -341,6 +494,16 @@
                 style="max-width: 200px; max-height: 400px;" 
                 onerror="this.onerror=null; this.src='{% static 'assetstravelers/image/img/icons8_collaborator_male_60px 2.png' %}'" 
               />
+    {% else %}
+        <img 
+            id="editImage{{ driver.id }}" 
+            src="{% static 'assetstravelers/image/img/icons8_collaborator_male_60px 2.png' %}" 
+            alt="صورة الهوية" 
+            style="max-width: 200px; max-height: 400px;" 
+        />
+    {% endif %}
+
+
               <label 
                 for="identify_img-file-input-{{ driver.id }}" 
                 class="custom-upload-button text-center"
@@ -382,6 +545,8 @@
 
 
             <div class="flex flex-col items-center pt-2">
+
+    {% if driver.image %}  
               <img 
                 id="editImage{{ driver.id }}" 
                 src="{{ driver.image.url }}" 
@@ -389,6 +554,16 @@
                 style="max-width: 200px; max-height: 400px;" 
                 onerror="this.onerror=null; this.src='{% static 'assetstravelers/image/img/icons8_collaborator_male_60px 2.png' %}'" 
               />
+    {% else %}
+        <img 
+            id="editImage{{ driver.id }}" 
+            src="{% static 'assetstravelers/image/img/icons8_collaborator_male_60px 2.png' %}" 
+            alt="صورة سواق" 
+            style="max-width: 200px; max-height: 400px;" 
+        />
+    {% endif %}
+              
+
               <label 
                 for="file-input-{{ driver.id }}" 
                 class="custom-upload-button text-center"
@@ -455,8 +630,62 @@
   {% endfor %}
 
 
+<script>
+    function toggleFields() {
+        const driverType = document.getElementById('driver_type').value;
+        const fieldsToShow = ['name_field'];
+        const fieldsToHide = [
+            'experience_field', 'phone_field', 'phone2_field', 'license_type_field', 
+            'license_number_field', 'id_number_field', 'passport_number_field', 
+            'date_of_birth_field', 'gender_field', 'nationality_field'
+        ];
+        const imageFields = ['license_img-button', 'identify_img-button', 'driver_image-button'];
+        const imageElements = ['license_img-image', 'identify_img-image', 'driver-image'];
 
-</div>
+        if (driverType === 'tocompany' || driverType === 'tobe') {
+            fieldsToHide.forEach(fieldId => {
+                document.getElementById(fieldId).style.display = 'none';
+            });
+            fieldsToShow.forEach(fieldId => {
+                document.getElementById(fieldId).style.display = 'block';
+            });
+            imageFields.forEach(fieldId => {
+                document.getElementById(fieldId).style.display = 'none';
+            });
+            imageElements.forEach(imageId => {
+                document.getElementById(imageId).style.display = 'none';
+            });
+        } else if (driverType === 'drivername') {
+            fieldsToShow.forEach(fieldId => {
+                document.getElementById(fieldId).style.display = 'block';
+            });
+            fieldsToHide.forEach(fieldId => {
+                document.getElementById(fieldId).style.display = 'block';
+            });
+            imageFields.forEach(fieldId => {
+                document.getElementById(fieldId).style.display = 'block';
+            });
+            imageElements.forEach(imageId => {
+                document.getElementById(imageId).style.display = 'block';
+            });
+        } else {
+            fieldsToShow.forEach(fieldId => {
+                document.getElementById(fieldId).style.display = 'none';
+            });
+            fieldsToHide.forEach(fieldId => {
+                document.getElementById(fieldId).style.display = 'none';
+            });
+            imageFields.forEach(fieldId => {
+                document.getElementById(fieldId).style.display = 'none';
+            });
+            imageElements.forEach(imageId => {
+                document.getElementById(imageId).style.display = 'none';
+            });
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', toggleFields);
+</script>
 {% endblock %}
 
 

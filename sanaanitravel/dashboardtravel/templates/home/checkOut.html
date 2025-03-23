@@ -82,7 +82,7 @@
                     <br>
                      سعر الرحلة: {{trip.seat_price}}
                      <br>
-                     سائق الرحلة: {{trip.vehicle_type.driver.name}}
+                     {% comment %} سائق الرحلة: {{trip.vehicle_type.driver.name}} {% endcomment %}
                      <br>
                      وصف الرحلة: {{trip.details}}
                 </p>
@@ -194,7 +194,6 @@
                         </div>
 
                         </div>
-                        <input type="date" name="date_of_birth" class="custom-input " placeholder="التاريخ" required />
 
                     </div>
 

@@ -48,10 +48,10 @@
         <div  id="header"
           class="flex items-center justify-around text-black text-[14px] font-bold  h-full mb-5-3xl   w-1/3  ">
           <img src="{% static 'assetstravelers/image/img/header back copy 2.png'%}" width="50%" class="absolute ">
-          <a class="   z-10">الرئيسية</a>
-          <a class="  z-10">رحلات</a>
-          <a class="  z-10">عنا</a>
-          <a class="  z-10">تواصل معنا</a>
+          <a href="{% url 'home'%}" class="   z-10">الرئيسية</a>
+          <a href="{% url 'tripshome'%}" class="  z-10">رحلات</a>
+          <a href="{% url 'about'%}" class="  z-10">عنا</a>
+          <a href="{% url 'contact'%}" class="  z-10">تواصل معنا</a>
         </div>
 
         {% if user.is_authenticated %}

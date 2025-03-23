@@ -42,23 +42,24 @@
                         <input type="text" name="name" class="custom-input" placeholder="الاسم الرباعي" required />
                         <input type="text" name="id_number" class="custom-input" placeholder="رقم البطاقة الشخصية" required />
 
-                        <input type="text" name="passport_number" class="custom-input" placeholder="رقم الجواز" required />
-                        <input type="text" name="phone" class="custom-input" placeholder="رقم الهاتف 1" required />
+            <input type="text" name="passport_number" id="passport_number" class="custom-input hidden" placeholder="رقم الجواز" required />     
+                               <input type="text" name="phone" class="custom-input" placeholder="رقم الهاتف 1" required />
                         <input type="text" name="phone2" class="custom-input" placeholder="رقم الهاتف 2" />
-                        <input type="date" name="date_of_birth" class="custom-input" placeholder="التاريخ" required />
 
                     </div>
 
 
                     <div>
-                      <select name="trip_location" class="custom-input flex-1" required>
-                        <option value="">الرحلة</option>
-                        {% for trip in trips %}
-                            <option value="{{ trip.id }}" data-price="{{ trip.seat_price }}">{{ trip.departure }} إلى {{ trip.destination }} ({{ trip.date }})</option>
-                        {% empty %}
-                            <option value="">لا توجد رحلات متاحة</option>
-                        {% endfor %}
-                    </select>
+            <select name="trip_location" id="trip_location" class="custom-input flex-1" required onchange="checkTripCities()">
+                <option value="">الرحلة</option>
+                {% for trip in trips %}
+                    <option value="{{ trip.id }}" data-departure="{{ trip.departure.nationality.id }}" data-destination="{{ trip.destination.nationality.id }}">
+                        {{ trip.departure }} إلى {{ trip.destination }} ({{ trip.date }})
+                    </option>
+                {% empty %}
+                    <option value="">لا توجد رحلات متاحة</option>
+                {% endfor %}
+            </select>
                         <input type="number" name="paid_amount" class="custom-input" placeholder="العربون" required oninput="updateRemainingAmount()" />
                         <input type="text" name="remaining_amount" id="remaining_amount" class="custom-input" placeholder="المتبقي" disabled />
                         {% comment %} <input type="date" name="trip_date" class="custom-input" placeholder="التاريخ" required /> {% endcomment %}
@@ -199,21 +200,19 @@
                   <div>
                       <input type="text" name="name" value="{{ passenger.name }}" class="custom-input" placeholder="الاسم الرباعي" required />
                       <input type="text" name="id_number" value="{{ passenger.id_number }}" class="custom-input" placeholder="رقم البطاقة الشخصية" required />
-                      <input type="text" name="passport_number" value="{{ passenger.passport_number }}" class="custom-input" placeholder="رقم الجواز" required />
+                      <input type="text" name="passport_number" id="edit_passport_number_{{ passenger.id }}" value="{{ passenger.passport_number }}" class="custom-input hidden" placeholder="رقم الجواز" required />
 
                       <input type="text" name="phone" value="{{ passenger.phone }}"  class="custom-input" placeholder="رقم الهاتف 1" required />
                       <input type="text" name="phone2" value="{{ passenger.phone }}" class="custom-input" placeholder="رقم الهاتف 2" />
-                      <input type="date" name="date_of_birth" class="custom-input" value="{{ passenger.date_of_birth|date:'Y-m-d' }}" placeholder="التاريخ" required />
 
                   </div>
                   <div>
-                      <select name="trip_location" id="editTripLocation" class="custom-input flex-1" required>
-                          <option value="">الرحلة</option>
-                          {% for trip_location in trips %}
-                              <option value="{{ trip_location.id }}" {% if passenger.trip_location.id == trip_location.id  %}selected{% endif %}  data-price="{{ trip_location.seat_price }}">{{ trip_location.departure }} إلى {{ trip_location.destination }} ({{ trip_location.date }})</option>
-
-                          {% endfor %}
-                      </select>
+                <select name="trip_location" id="editTripLocation{{ passenger.id }}" class="custom-input flex-1" required onchange="checkEditTripCities({{ passenger.id }})">
+                    <option value="">الرحلة</option>
+                    {% for trip_location in trips %}
+                        <option value="{{ trip_location.id }}" {% if passenger.trip_location.id == trip_location.id %}selected{% endif %} data-departure="{{ trip_location.departure.nationality.id }}" data-destination="{{ trip_location.destination.nationality.id }}">{{ trip_location.departure }} إلى {{ trip_location.destination }} ({{ trip_location.date }})</option>
+                    {% endfor %}
+                </select>
 
 
                       <input type="number" name="paid_amount" value="{{ passenger.paid_amount|floatformat }}" class="custom-input" placeholder="العربون" required oninput="updateRemainingAmount()" />
@@ -409,6 +408,42 @@
   }
 
 
+function checkTripCities() {
+    const tripSelect = document.getElementById('trip_location');
+    const selectedOption = tripSelect.options[tripSelect.selectedIndex];
+    const departureNationality = selectedOption.getAttribute('data-departure');
+    const destinationNationality = selectedOption.getAttribute('data-destination');
+
+    const passportInput = document.getElementById('passport_number');
+
+    if (departureNationality === destinationNationality) {
+        passportInput.classList.add('hidden');
+        passportInput.required = false;
+    } else {
+        passportInput.classList.remove('hidden');
+        passportInput.required = true; 
+    }
+}
+
+
+
+
+function checkEditTripCities(passengerId) {
+    const tripSelect = document.getElementById(`editTripLocation${passengerId}`);
+    const selectedOption = tripSelect.options[tripSelect.selectedIndex];
+    const departureNationality = selectedOption.getAttribute('data-departure');
+    const destinationNationality = selectedOption.getAttribute('data-destination');
+
+    const passportInput = document.getElementById(`edit_passport_number_${passengerId}`);
+
+    if (departureNationality === destinationNationality) {
+        passportInput.classList.add('hidden');
+        passportInput.required = false;
+    } else {
+        passportInput.classList.remove('hidden');
+        passportInput.required = true;
+    }
+}
 
       </script>
 

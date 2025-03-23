@@ -10,6 +10,10 @@ def reservation_requests(request):
     return render(request, 'dashboard/reservation_requests.html', {'reservations': reservations})
 
 @login_required(login_url='loginadmin')
+def reservation_requests_priveit(request):
+    reservations = ReservationRequest.objects.filter(status='pending')
+    return render(request, 'dashboard/reservation_requests_priveit.html', {'reservations': reservations})
+@login_required(login_url='loginadmin')
 def approve_reservation_list(request):
     reservations_approved = ReservationRequest.objects.filter(status='approved')
     return render(request, 'dashboard/approve_reservation.html', {'reservations_approved': reservations_approved})

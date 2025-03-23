@@ -1,0 +1,189 @@
+{% extends 'basehome.html' %}
+{% load  static %}
+{% block ttyy %}
+<div class="w-2/3 mx-auto mt-[60px] flex flex-col">
+  <!-- Card -->
+  <div class="flex flex-col mt-[70px]">
+    <div class="flex flex-row">
+      {% for trip_categorys in trip_category %}
+      <button class="bg-[#f0efef] px-[35px] py-1 text-[22px] rounded-tr-md border-l border-gray-600 category-button" onclick="selectCategory(this)">{{ trip_categorys.name }}</button>
+      {% endfor %}
+    </div>
+
+    <form method="post" action="{% url 'search_trips' %}">
+      {% csrf_token %}
+      <div class="bg-[#f0efef] rounded-b-md rounded-tl-md px-[20px] py-[50px]">
+        <div class="w-full h-full bg-white rounded-2xl px-5 py-4 flex justify-between items-center">
+          <!-- Button Search -->
+          <button type="submit" class="bg-black h-min flex flex-row py-3 px-7 rounded-3xl gap-3 items-center">
+            <h5 class="text-white w-[80px]">Search</h5>
+            <img src="{% static 'assetstravelers/image/img/SVG.svg' %}" alt />
+          </button>
+
+          <!-- From -->
+          <div class="flex flex-col gap-[5px] justify-start text-[#737373] border-l-[1px] border-[#737373] px-[6px]">
+            <h5 class="font-bold">من</h5>
+            <select id="departure_city" name="departure_city">
+              <option value=""></option>
+              {% for city in cities %}
+                <option value="{{ city.id }}">{{ city.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- To -->
+          <div class="flex flex-col gap-[5px] justify-start text-[#737373] border-l-[1px] border-[#737373] px-[6px]">
+            <h5 class="font-bold">إلى</h5>
+            <select id="destination_city" name="destination_city">
+              <option value=""></option>
+              {% for city in cities %}
+                <option value="{{ city.id }}">{{ city.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <!-- Date -->
+          <div class="flex flex-col gap-[5px] justify-start text-[#737373] border-l-[1px] border-[#737373] px-[6px]">
+            <h5 class="font-bold">التاريخ</h5>
+            <input type="date" id="trip_date" name="trip_date" class="border">
+          </div>
+
+          <!-- Travel Type -->
+          <div class="flex flex-col gap-[5px] justify-start text-[#737373] px-[6px]">
+            <h5 class="font-bold">النوع</h5>
+            <select id="travel_type" name="travel_type">
+              <option value=""></option>
+              {% for travel in travel_types %}
+                <option value="{{ travel.id }}">{{ travel.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+    </form>
+
+  </div>
+
+  <img src="{% static 'assetstravelers/image/img/header back copy.png'%}" width="50%" class="absolute bottom-0 -translate-x-1/2">
+</div>
+{% endblock %}
+
+
+{% block content %}
+
+
+
+    <!-- section Travel today 2 -->
+    <div
+      class="w-[95%] mb-[50px] bg-[#f0efef] mx-auto mt-7 flex-col flex items-center">
+      <!-- Title -->
+      <h5 class="text-[50px] font-bold text-[#3b3b3b]">الرحلات اليومية</h5>
+      <!-- Card Serves -->
+      <div
+        class="w-[80%] h-min justify-center mt-5 items-center grid grid-cols-3 gap-[50px]">
+        <!-- Card 1  -->
+      {% if trips %}
+        {% for trip in trips %}
+        <div
+          class="relative shadow-md bg-white h-full w-full flex flex-col rounded-2xl overflow-hidden">
+          
+
+          <div class="h-2/3">
+            <img src="{{ trip.image.url }}" alt class="w-full h-full object-contain" />
+
+          </div>
+        
+          <div class="h-2/3 flex flex-col justify-between p-4">
+            <div class="absolute flex flex-col items-center left-[5px] top-[30%]">
+              <div
+                class="w-[80px] h-[80px] mb-[30px] shadow-2xl p-[2px] bg-white rounded-md">
+                <img
+
+                  src="{{trip.vehicle_type.image.url}}"
+                  
+                  class="w-full h-full object-cover " />
+              </div>
+              <h5 class="text-[20px] font-extrabold">{{trip.seat_price }}</h5>
+              <h5 class="text-[20px] font-extrabold">الف</h5>
+            </div>
+        
+            <div class="flex mt-5 gap-2 w-5/6 mx-auto">
+              <div
+                class="bg-[#9eefd9] py-2 px-1 h-[170px] flex flex-col justify-around rounded-lg">
+                <img src="../../static/assetstravelers/image/img/location.svg copy.svg" width="24" />
+                <img src="../../static/assetstravelers/image/img/location.svg copy.svg" width="24" />
+                <img src="../../static/assetstravelers/image/img/image 1575.svg" width="24" />
+                <img src="../../static/assetstravelers/image/img/calendar-check.svg" width="24" />
+              </div>
+              <div
+                class="bg-[#9eefd9] py-2 items-center px-2 h-[170px] flex flex-col justify-around rounded-lg">
+                <h5 class="text-[#07002c] font-bold text-[16px]">مــــــن</h5>
+                <h5 class="text-[#07002c] font-bold text-[16px]">إلــــــى</h5>
+                <h5 class="text-[#07002c] font-bold text-[16px]">الوقت</h5>
+                <h5 class="text-[#07002c] font-bold text-[16px]">التاريخ</h5>
+              </div>
+              <div
+                class="py-2 items-center px-2 h-[170px] flex flex-col justify-around rounded-lg">
+                <h5 class="text-black font-bold text-[16px]">{{ trip.departure }}</h5>
+                <h5 class="text-black font-bold text-[16px]">{{ trip.destination }}</h5>
+                <h5 class="text-black font-bold text-[16px]">{{ trip.time }}</h5>
+                <h5 class="text-black font-bold text-[16px]">{{ trip.date }}</h5>
+              </div>
+            </div>
+        
+            {% if user.is_authenticated %}
+            <button
+              onclick="window.location.href='{% url 'checkout' trip.id %}'"
+              class="bg-[#33387f] mx-auto mt-3 mb-3 text-white rounded-lg w-5/6 py-2">
+              احجز مقعدك الان
+            </button>
+           {% else %}
+            <button
+              onclick="alert('يرجى تسجيل الدخول أولاً'); window.location.href='{% url 'login' %}'"
+              class="bg-[#33387f] mx-auto mt-3 mb-3 text-white rounded-lg w-5/6 py-2">
+              احجز مقعدك الان
+            </button>
+          {% endif %}
+          
+          </div>
+        </div>
+        {% endfor %}
+        {% else  %}
+        <p class="flex justify-center  items-center text-center text-gray-500 mt-4">{{context.message}}</p>
+     {% endif %}
+
+
+
+      </div>
+    </div>
+
+
+
+
+
+
+
+    </div>
+    <script>
+      function selectCategory(button) {
+        const buttons = document.querySelectorAll('.category-button');
+        buttons.forEach(btn => {
+          btn.classList.remove('bg-[#f0efef]');
+          btn.classList.add('bg-[#e5e3e3]');
+          btn.classList.remove('rounded-tr-md');
+          btn.classList.add('rounded-tl-md');
+        });
+        button.classList.remove('bg-[#e5e3e3]');
+        button.classList.add('bg-[#f0efef]');
+        button.classList.add('rounded-tr-md');
+        button.classList.remove('rounded-tl-md');
+      }
+      window.onload = function() {
+        const firstButton = document.querySelector('.category-button');
+        if (firstButton) {
+          selectCategory(firstButton);
+        }
+      };
+    </script>
+
+{% endblock %}

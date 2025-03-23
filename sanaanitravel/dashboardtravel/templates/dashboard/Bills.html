@@ -48,7 +48,8 @@
               <div class="flex-1 h-[2px] bg-white"></div>
               <button class="text-3xl mx-2" onclick="openDialog('Dialog6')">X</button>
             </div>
-            <form action method="POST" class="flex flex-col p-4" enctype="multipart/form-data">
+            <form action="{% url 'add_invoice' %}" method="POST" class="flex flex-col p-4" enctype="multipart/form-data">
+              {% csrf_token %}
               <div class="grid grid-cols-2 gap-2">
                 <div>
 
@@ -195,6 +196,7 @@
                                     طباعة
                                   </button>
                                   <button
+                                  onclick="shareInvoice()"
                                     class="w-full py-1 text-primaryDialog mt-2 font-bold text-[24px] border border-primaryDialog text-ellipsiswhite"
                                   >
                                     مشاركة
@@ -213,7 +215,7 @@
                                 
                                 
                                   <img src="{% static 'assetstravelers/image/img/Group 1171275882.png'%}" width="250px" />
-                                  <h4 class="text-black font-bold text-[24px]">صنعاني للرحلات</h4>
+                                  <h4 class="text-black font-bold text-[24px]">سفريتي للرحلات</h4>
                                   <div class="grid grid-cols-2 w-full">
                                       <h5>رقم الفاتورة:   </h5>
                                       <h5>{{ invoice.id }}</h5>
@@ -328,6 +330,24 @@
           const remainingAmount = seatPrice - paidAmount;
           remainingAmountInput.value = remainingAmount >= 0 ? remainingAmount.toFixed(2) : '0.00';
       }
+
+
+
+function shareInvoice() {
+    const invoiceDetails = {
+        title: 'فاتورة الرحلة',
+        text: `تفاصيل الفاتورة:\nرقم الفاتورة: {{ invoice.id }}\nاسم المسافر: {{ invoice.passenger.name }}\nرقم الرحلة: {{ invoice.trip.id }}`,
+        url: window.location.href 
+    };
+
+    if (navigator.share) {
+        navigator.share(invoiceDetails)
+            .then(() => console.log('تمت المشاركة بنجاح'))
+            .catch((error) => console.error('خطأ في المشاركة:', error));
+    } else {
+        alert('مشاركة غير مدعومة في هذا المتصفح.');
+    }
+}
 
 
     </script>

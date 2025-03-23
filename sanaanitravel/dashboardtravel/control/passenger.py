@@ -8,6 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 #####################################  ادارة المسافرين ##################################################################
 
+#صفحة عرض المسافرين
 @login_required(login_url='loginadmin')
 def passenger_list(request):
     query = request.GET.get('q', '')
@@ -15,14 +16,14 @@ def passenger_list(request):
     trips = Trip.objects.all()  
     nationalities = Nationality.objects.all() 
     return render(request, 'dashboard/Passenger.html', {'passengers': passengers, 'trips': trips,'nationalities': nationalities, 'query': query})
-
+#صفحة تفاصيل المسافر
 @login_required(login_url='loginadmin')
 def passenger_detail(request, passenger_id):
     passenger = Passenger.objects.get(id=passenger_id)
     return render(request, 'dashboard/Passenger_detail.html', {'passenger': passenger})
 
 
-
+#صفحة اضافة مسافر
 @login_required(login_url='loginadmin')
 def add_passenger(request):
     if request.method == 'POST':
@@ -37,7 +38,6 @@ def add_passenger(request):
         gender = request.POST.get('gender')
         image = request.FILES.get('image')
         identify_img = request.FILES.get('identify_img')
-        date_of_birth=request.POST.get('date_of_birth')
         print(image)
 
         trip = Trip.objects.get(id=trip_location_id)
@@ -68,7 +68,6 @@ def add_passenger(request):
             nationality=nationality,
             image=image,
             identify_img=identify_img,
-            date_of_birth=date_of_birth,
         )
         passenger.save()
         return redirect('passenger_list')
@@ -77,7 +76,7 @@ def add_passenger(request):
     nationalities = Nationality.objects.all()
     return render(request, 'dashboard/Passenger.html', {'trips': trips,'nationalities': nationalities}) 
 
-
+#صفحة تعديل مسافر
 @login_required(login_url='loginadmin')
 def edit_passenger(request,passenger_id):
     passenger = get_object_or_404(Passenger, id=passenger_id)
@@ -93,7 +92,6 @@ def edit_passenger(request,passenger_id):
         gender = request.POST.get('gender')
         image = request.FILES.get('image') 
         identify_img = request.FILES.get('identify_img')
-        date_of_birth=request.POST.get('date_of_birth')
         print("111111111111111111111111111")
         print("111111111111111111111111111")
 
@@ -117,7 +115,6 @@ def edit_passenger(request,passenger_id):
         passenger.remaining_amount = remaining_amount
         passenger.gender = gender
         passenger.nationality = nationality
-        passenger.date_of_birth = date_of_birth
         
         if image:
             if passenger.image:
@@ -140,7 +137,7 @@ def edit_passenger(request,passenger_id):
     return render(request, 'dashboard/Passenger.html', {'passenger': passenger,'nationalities': nationalities,})
 
 
-
+#صفحة تعديل معاملة مالية لمسافر
 def transction_payment_passenger(request, passenger_id):
     passenger = get_object_or_404(Passenger, id=passenger_id)
     if request.method == 'POST':
@@ -158,7 +155,7 @@ def transction_payment_passenger(request, passenger_id):
 
 
 
-
+#حذف مسافر
 @login_required(login_url='loginadmin')
 def delete_passenger(request, passenger_id):
     passenger = get_object_or_404(Passenger, id=passenger_id)

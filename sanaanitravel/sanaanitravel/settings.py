@@ -86,7 +86,7 @@ DATABASES = {
 
     'default': {
     'ENGINE': 'django.db.backends.mysql',
-    'NAME': 'sanaanitravelproject',
+    'NAME': 'safretytravelproject',
     'USER': 'root',
     'PASSWORD': '',
     'HOST': 'localhost',
