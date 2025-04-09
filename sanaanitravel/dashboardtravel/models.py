@@ -61,7 +61,7 @@ class Vehicle(models.Model):
     plate_number = models.CharField(max_length=20)  # رقم اللوحة
     status = models.CharField(max_length=20,null=True)  # الحالة
     price = models.DecimalField(max_digits=10, decimal_places=2,null=True)  # سعر السيارة
-    owner = models.CharField(max_length=100,null=True)  # لمن تابعة
+    # owner = models.CharField(max_length=100,null=True)  # لمن تابعة
     passenger_capacity = models.IntegerField()  # عدد الركاب
     date_added = models.DateTimeField(auto_now_add=True)  # التاريخ والوقت
     fuel_capacity = models.DecimalField(max_digits=10, decimal_places=2,null=True)  # سعة البنزين
@@ -157,10 +157,10 @@ class ReservationRequest(models.Model):
 ### الفواتير
 class Invoice(models.Model):
     STATUS_CHOICES = [
-        ('pending', 'Pending'),          # قيد الانتظار
-        ('paid', 'Paid'),                # مدفوعة
-        ('overdue', 'Overdue'),          # متأخرة
-        ('cancelled', 'Cancelled'),      # ملغاة
+        ('pending', 'Pending'),          
+        ('paid', 'Paid'),                
+        ('overdue', 'Overdue'),        
+        ('cancelled', 'Cancelled'),      
      ]
     passenger = models.ForeignKey(Passenger, on_delete=models.CASCADE)  # المسافر
     # reservationrequest = models.ForeignKey(ReservationRequest, on_delete=models.CASCADE)  # المسافر
@@ -179,7 +179,74 @@ class Invoice(models.Model):
     date_add = models.DateField(auto_now_add=True) # التاريخ انشاء الفاتورة
 
 
-# # نموذج المدفوعات يمثل المدفوعات المرتبطة بالفواتير
+
+
+class PrivateTripRequest(models.Model):
+    STATUS_CHOICES = [
+        ('pending', 'قيد الانتظار'),
+        ('approved', 'تم الموافقة'),
+        ('rejected', 'تم الرفض'),
+        ('completed', 'مكتملة'),
+    ]
+    
+    customer = models.ForeignKey(User, on_delete=models.CASCADE, related_name='private_trips')
+    trip_type = models.ForeignKey(TravelType, on_delete=models.CASCADE)
+    departure = models.ForeignKey(City, on_delete=models.CASCADE, related_name='private_departures')
+    destination = models.ForeignKey(City, on_delete=models.CASCADE, related_name='private_destinations')
+    vehicle_type = models.ForeignKey(Vehicle, on_delete=models.SET_NULL, null=True, blank=True)
+    passenger_count = models.IntegerField()
+    trip_date = models.DateField()
+    trip_time = models.TimeField()
+    special_requests = models.TextField(null=True, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='pending')
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    
+    customer_name = models.CharField(max_length=100)
+    customer_id_number = models.CharField(max_length=50) 
+    identify_img = models.ImageField(upload_to='passenger/identify_img/', null=True, blank=True)
+    customer_passport_number = models.CharField(max_length=50,null=True) 
+    customer_phone = models.CharField(max_length=15)
+    customer_email = models.EmailField(null=True, blank=True)
+    customer_nationality = models.ForeignKey(Nationality, on_delete=models.SET_NULL, null=True)
+    
+    def __str__(self):
+        return f"رحلة خاصة من {self.departure.name} إلى {self.destination.name} - {self.get_status_display()}"
+
+class PrivateTripApproval(models.Model):
+    trip_request = models.OneToOneField(PrivateTripRequest, on_delete=models.CASCADE, related_name='approval')
+    approved_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+    approved_at = models.DateTimeField(auto_now_add=True)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
+    notes = models.TextField(null=True, blank=True)
+    
+    def __str__(self):
+        return f"موافقة على الرحلة {self.trip_request.id}"
+
+class PrivateTripPayment(models.Model):
+    PAYMENT_STATUS = [
+        ('pending', 'قيد الانتظار'),
+        ('paid', 'تم الدفع'),
+        ('failed', 'فشل الدفع'),
+    ]
+    
+    trip_request = models.ForeignKey(PrivateTripRequest, on_delete=models.CASCADE, related_name='payments')
+    amount = models.DecimalField(max_digits=10, decimal_places=2)
+    payment_method = models.CharField(max_length=50)
+    transaction_id = models.CharField(max_length=100, null=True, blank=True)
+    status = models.CharField(max_length=20, choices=PAYMENT_STATUS, default='pending')
+    payment_date = models.DateTimeField(auto_now_add=True)
+    
+    def __str__(self):
+        return f"دفع {self.amount} لرحلة {self.trip_request.id}"
+
+
+
+
+
+
+
+
 class Payment(models.Model):
     invoice = models.ForeignKey(Invoice, on_delete=models.CASCADE)  # الفاتورة المرتبطة بالدفع
     payment_date = models.DateTimeField(auto_now_add=True)  # تاريخ الدفع

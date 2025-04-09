@@ -1,0 +1,54 @@
+{% extends 'basehome.html' %}
+{% load static %}
+{% block ttyy %}
+
+<div id="paymentModal" class=" fixed inset-0 overflow-y-auto z-50">
+    <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 transition-opacity" aria-hidden="true">
+            <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
+        </div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div class="inline-block align-bottom bg-white rounded-lg text-right overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div class="flex flex-row gap-2">
+                 <strong>رقم الرحلة:</strong> {{ trip.id }}
+                 <strong>المبلغ المستحق:</strong> {{ trip.approval.price }} ريال
+
+            </div>
+            
+            <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                <h3 class="text-lg leading-6 font-medium text-gray-900 mb-4">إتمام عملية الدفع</h3>
+                <form method="post" action="{% url 'make_payment' trip.id %}">
+                    {% csrf_token %}
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-1">المبلغ المطلوب</label>
+                        <input type="text" class="bg-gray-50 border border-gray-300 text-gray-700 rounded-md w-full py-2 px-3" value="{{ trip.approval.price }} ر.ي" readonly>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-1">طريقة الدفع</label>
+                        <select class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" name="payment_method" required>
+                            <option value="">اختر طريقة الدفع</option>
+                            <option value="credit_card">بطاقة ائتمان</option>
+                            <option value="bank_transfer">حوالة بنكية</option>
+                            <option value="cash">نقداً</option>
+                        </select>
+                    </div>
+                    <div class="mb-4">
+                        <label class="block text-gray-700 text-sm font-medium mb-1">رقم المرجع/المعاملة (إن وجد)</label>
+                        <input type="text" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500" name="transaction_id">
+                    </div>
+                    <div class="mt-5 sm:mt-6 sm:grid sm:grid-cols-2 sm:gap-3 sm:grid-flow-row-dense">
+                        <button type="button" onclick="document.getElementById('paymentModal').classList.add('hidden')" class="w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 sm:col-start-1 sm:text-sm">
+                            إلغاء
+                        </button>
+                        <button type="submit" class="w-full inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-indigo-600 text-base font-medium text-white hover:bg-indigo-700 sm:col-start-2 sm:text-sm">
+                            تأكيد الدفع
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% endblock %}

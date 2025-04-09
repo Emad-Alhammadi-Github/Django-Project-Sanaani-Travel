@@ -125,12 +125,12 @@
                     id
                     placeholder="سعر المركبة"
                   />
-                  <select name="owner" id class="custom-input">
+                  {% comment %} <select name="owner" id class="custom-input">
                     <option value>تبعية المركبة</option>
                     <option value="تابعة للشركة">تابعة للشركة</option>
                     <option value="للشركة اخرى">للشركة اخرى</option>
                     <option value="لسواق">لسواق</option>
-                  </select>
+                  </select> {% endcomment %}
                   <textarea name="description" class="custom-input" rows="5"></textarea>
                 </div>
 
@@ -356,12 +356,12 @@
               value="{{ vehicle.price|floatformat  }}"
               placeholder="سعر المركبة"
             />
-            <select name="owner" id class="custom-input">
+            {% comment %} <select name="owner" id class="custom-input">
               <option value>تبعية المركبة</option>
               <option value="تابعة للشركة" {% if vehicle.owner == "تابعة للشركة" %}selected{% endif %}>تابعة للشركة</option>
               <option value="للشركة اخرى" {% if vehicle.owner == "للشركة اخرى" %}selected{% endif %}>للشركة اخرى</option>
               <option value="لسواق" {% if vehicle.owner == "لسواق" %}selected{% endif %}>لسواق</option>
-            </select>
+            </select> {% endcomment %}
             <textarea name="description" class="custom-input" rows="5">{{ vehicle.description }}</textarea>
           </div>
           

@@ -39,7 +39,7 @@ def add_vehicle(request):
             plate_number=request.POST['plate_number'],
             status=request.POST['status'],
             price=request.POST['price'],
-            owner=request.POST['owner'],
+            # owner=request.POST['owner'],
             passenger_capacity=request.POST['passenger_capacity'],
             motor_type=request.POST['motor_type'],
             fuel_capacity=request.POST['fuel_capacity'],
@@ -65,7 +65,7 @@ def edit_vehicle(request, vehicle_id):
         vehicle.plate_number = request.POST['plate_number']
         vehicle.status = request.POST['status']
         vehicle.price = request.POST['price']
-        vehicle.owner = request.POST['owner']
+        # vehicle.owner = request.POST['owner']
         vehicle.passenger_capacity = request.POST['passenger_capacity']
         vehicle.motor_type = request.POST['motor_type']
         vehicle.fuel_capacity = request.POST['fuel_capacity']

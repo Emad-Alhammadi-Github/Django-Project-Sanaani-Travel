@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load  static %}
+{% block content %}
+<div class="container mt-5">
+    <div class="card">
+        <div class="card-header">
+            <h4>موافقة على رحلة خاصة</h4>
+        </div>
+        <div class="card-body">
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <strong>العميل:</strong> {{ trip.customer_name }}
+                </div>
+                <div class="col-md-6">
+                    <strong>رقم الهاتف:</strong> {{ trip.customer_phone }}
+                </div>
+            </div>
+            
+            <div class="row mb-4">
+                <div class="col-md-6">
+                    <strong>المسار:</strong> {{ trip.departure.name }} → {{ trip.destination.name }}
+                </div>
+                <div class="col-md-6">
+                    <strong>التاريخ والوقت:</strong> {{ trip.trip_date }} - {{ trip.trip_time }}
+                </div>
+            </div>
+            
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="id_price" class="form-label">السعر</label>
+                    {{ form.price }}
+                </div>
+                
+                <div class="mb-3">
+                    <label for="id_notes" class="form-label">ملاحظات</label>
+                    {{ form.notes }}
+                </div>
+                
+                <button type="submit" class="btn btn-primary">تأكيد الموافقة</button>
+                <a href="{% url 'manage_private_trips' %}" class="btn btn-secondary">إلغاء</a>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -52,6 +52,56 @@
           <a href="{% url 'tripshome'%}" class="  z-10">رحلات</a>
           <a href="{% url 'about'%}" class="  z-10">عنا</a>
           <a href="{% url 'contact'%}" class="  z-10">تواصل معنا</a>
+
+    {% if user.is_authenticated %}
+<div class="flex flex-col gap-2">
+
+        <!-- زر طلب رحلة جديدة -->
+        <a href="{% url 'request_private_trip' %}" 
+           class="z-10 flex items-center px-1 py-1 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors duration-300 shadow-md">
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg>
+            طلب رحلة خاصة
+        </a>
+        
+        <!-- زر حالة الرحلات -->
+        <a href="{% url 'my_private_trips'%}" 
+           class="z-10 flex items-center px-1 py-1 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-colors duration-300 shadow-md">
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"></path>
+            </svg>
+            حالة رحلتي
+        </a>
+</div>
+    {% else %}
+        <!-- رسالة للمستخدمين غير المسجلين -->
+        <div class="flex items-center px-2 py-2 bg-gray-200 text-gray-700 rounded-lg cursor-pointer" >
+                      <a onclick="alert('يرجى تسجيل الدخول أولاً'); window.location.href='{% url 'login' %}'" class="  z-10">طلب رحلة خاصة</a>
+
+            <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+            </svg> 
+            
+        </div>
+    {% endif %}
+
+            {% comment %} {% if user.is_authenticated %}
+            <a href="{% url 'request_private_trip'%}" class="  z-10">طلب رحلة خاصة</a>
+
+            {% else %}
+            <a onclick="alert('يرجى تسجيل الدخول أولاً'); window.location.href='{% url 'login' %}'" class="  z-10">طلب رحلة خاصة</a>
+            {% endif %} {% endcomment %}
+
+
+            {% comment %} {% if user.is_authenticated %}
+    <a href="{% url 'request_private_trip'%}" class="inline-flex items-center px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors duration-300 z-10">
+        عرض الطلبات الخاصة بي
+        <svg class="w-4 h-4 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+        </svg>
+    </a>
+{% endif %} {% endcomment %}
         </div>
 
         {% if user.is_authenticated %}

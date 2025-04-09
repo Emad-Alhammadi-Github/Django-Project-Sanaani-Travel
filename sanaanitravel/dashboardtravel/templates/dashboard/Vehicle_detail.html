@@ -32,7 +32,7 @@
                 <h6 class="text-[16px] border-t border-[#16151C]">رقم اللوحة : {{ vehicle.plate_number }}</h6>
                 <h6 class="text-[16px] border-t border-[#16151C]">عدد الركاب : {{ vehicle.passenger_capacity }}</h6>
                 <h6 class="text-[16px] border-t border-[#16151C]"> نوع المحرك: {{ vehicle.motor_type }}</h6>
-                <h6 class="text-[16px] border-t border-[#16151C]"> المركبة لاي جهه تابعة: {{ vehicle.owner }}</h6>
+                {% comment %} <h6 class="text-[16px] border-t border-[#16151C]"> المركبة لاي جهه تابعة: {{ vehicle.owner }}</h6> {% endcomment %}
 
                   <h6 class="text-[16px] border-t border-[#16151C]">اسم السواق : {{ vehicle.driver.name }}</h6>
                   <h6 class="text-[16px] border-t border-[#16151C]">رقم هاتف السواق : {{ vehicle.driver.phone }}</h6>

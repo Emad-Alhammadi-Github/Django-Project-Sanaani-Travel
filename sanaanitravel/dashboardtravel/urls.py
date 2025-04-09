@@ -14,6 +14,7 @@ from dashboardtravel.control.login_register import *
 from dashboardtravel.control.checkOut import *
 from dashboardtravel.control.reservation import *
 from dashboardtravel.control.login_admin import *
+from dashboardtravel.control.private_trip import *
 
 urlpatterns = [
 #####################################   الرئيسية ##################################################################
@@ -33,10 +34,19 @@ urlpatterns = [
 
 #####################################   الرئيسية النهاية ##################################################################
 
+    path('private-trip/request/', request_private_trip, name='request_private_trip'),
+    path('private-trip/status/<int:trip_id>/', private_trip_status, name='private_trip_status'),
+    path('my-private-trips/', my_private_trips, name='my_private_trips'),
+    path('private-trip/payment/<int:trip_id>/', make_payment, name='make_payment'),
+    # path('payment/confirmation/<int:payment_id>/', payment_confirmation, name='payment_confirmation'),
+    
 
+    path('private-trips/', manage_private_trips, name='manage_private_trips'),
+    path('private-trip/approve/<int:trip_id>/', approve_private_trip, name='approve_private_trip'),
+    path('private-trip/reject/<int:trip_id>/', reject_private_trip, name='reject_private_trip'),
 
-
-#####################################   التسجيل / تسجيل الدخول ##################################################################
+    path('api/private-trips/<int:trip_id>/invoice/', views.private_trip_invoice, name='private_trip_invoice'),
+    #####################################   التسجيل / تسجيل الدخول ##################################################################
 
 
 
@@ -70,13 +80,6 @@ urlpatterns = [
 
     path('trips/public/', public_trip_list, name='public_trip_list'),
     path('trips/private/', private_trip_list, name='private_trip_list'),
-    # path('tripgloble/', tripgloble_list, name='tripgloble_list'),
-    # path('tripgloble/filter/', tripgloble_filter, name='tripgloble_filter'),
-    # path('tripsgloble/add/', add_tripgloble, name='add_tripgloble'),
-    # path('edit_tripgloble/', edit_tripgloble, name='edit_tripgloble'),
-    # path('delete_tripgloble/', delete_tripgloble, name='delete_tripgloble'),
-
-
     # path('trips/edit/<int:trip_id>/', edit_trip, name='edit_trip'),
     # path('trips/delete/<int:trip_id>/', delete_trip, name='delete_trip'),
 

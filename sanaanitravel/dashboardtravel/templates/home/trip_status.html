@@ -1,0 +1,82 @@
+{% extends 'basehome.html' %}
+{% load static %}
+{% block ttyy %}
+<div class="bg-white shadow rounded-lg overflow-hidden mt-[30px]">
+    <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+        <h2 class="text-2xl font-bold text-gray-800">رحلاتي الخاصة</h2>
+        <a href="{% url 'request_private_trip' %}" class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700">
+            <i class="fas fa-plus ml-2"></i> طلب رحلة جديدة
+        </a>
+    </div>
+    
+    <div class="px-6 py-4">
+        {% if trips %}
+            <div class="overflow-x-auto">
+                <table class="min-w-full divide-y divide-gray-200">
+                    <thead class="bg-gray-50">
+                        <tr>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الرحلة</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">النوع</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">من</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">إلى</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">التاريخ</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">عدد الركاب</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الحالة</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">طلبات خاصة</th>
+                            <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody class="bg-white divide-y divide-gray-200">
+                        {% for trip in trips %}
+                            <tr class="hover:bg-gray-50">
+                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">{{ trip.id }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ trip.trip_type.name }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ trip.departure.name }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ trip.destination.name }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ trip.trip_date|date:"Y-m-d" }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ trip.passenger_count }}</td>
+                                <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                    <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full status-{{ trip.status }}">
+                                        {{ trip.get_status_display }}
+                                    </span>
+                                </td>
+                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ trip.special_requests }}</td>
+                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
+                            
+                                                            {% if trip.status == 'approved' and trip.approval %}
+                                    <div class="alert alert-success">
+                                        <h5>تمت الموافقة على طلبك!</h5>
+                                        <p>السعر: {{ trip.approval.price }} ريال</p>
+                                        {% if not trip.payments.exists or not trip.payments.first.status == 'paid' %}
+                                        <a href="{% url 'make_payment' trip.id %}" class="btn btn-success">دفع الآن</a>
+                                        {% endif %}
+                                    </div>
+                                    {% elif trip.status == 'rejected' %}
+                                    <div class="alert alert-danger">
+                                        <h5>تم رفض طلبك</h5>
+                                        <p>يمكنك تقديم طلب جديد إذا كنت ترغب في ذلك</p>
+                                    </div>
+                                    {% else %}
+                                    <div class="alert alert-info">
+                                        <p>طلبك قيد المراجعة من قبل الإدارة</p>
+                                    </div>
+                                    {% endif %}
+                        </td>
+
+
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="text-center py-8">
+                <i class="fas fa-calendar-times text-4xl text-gray-400 mb-4"></i>
+                <h3 class="text-lg font-medium text-gray-900">لا توجد لديك أي رحلات مسجلة حتى الآن</h3>
+                <p class="mt-1 text-sm text-gray-500">يمكنك طلب رحلة جديدة بالضغط على الزر أعلاه</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
