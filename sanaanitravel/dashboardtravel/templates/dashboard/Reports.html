@@ -1,4 +1,1690 @@
 {% extends 'base.html' %}
+{% load static %}
+{% load humanize %}
+
+{% block content %}
+<div class="container mx-auto px-4 py-8">
+
+    <div class="bg-white rounded-lg shadow p-6 mb-8 search-filter-section">
+        <h1 class="text-3xl font-bold text-gray-800 mb-6">التقارير الشاملة</h1>
+        
+        <form method="get" class="grid grid-cols-1 md:grid-cols-3 gap-6">
+ 
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">بحث عام</label>
+                <input type="text" name="search" value="{{ search_query }}"
+                       class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                       placeholder="ابحث في جميع البيانات...">
+            </div>
+            
+  
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">من تاريخ</label>
+                <input type="date" name="start_date" value="{{ start_date }}"
+                       class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            
+            <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">إلى تاريخ</label>
+                <input type="date" name="end_date" value="{{ end_date }}"
+                       class="w-full border rounded-lg px-4 py-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+            
+            <div class="md:col-span-3 flex justify-end">
+                <button type="submit" 
+                        class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition duration-300">
+                    تطبيق الفلاتر
+                </button>
+                <a href="{% url 'report' %}"
+                   class="ml-4 bg-gray-200 hover:bg-gray-300 text-gray-800 px-6 py-2 rounded-lg transition duration-300">
+                    إعادة تعيين
+                </a>
+            </div>
+        </form>
+    </div>
+
+ 
+    <div class="flex flex-wrap justify-end gap-4 mb-6 print-hide">
+        <button onclick="printFullReport()" 
+                class="flex items-center gap-2 bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg ">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M5 4v3H4a2 2 0 00-2 2v3a2 2 0 002 2h1v2a2 2 0 002 2h6a2 2 0 002-2v-2h1a2 2 0 002-2V9a2 2 0 00-2-2h-1V4a2 2 0 00-2-2H7a2 2 0 00-2 2zm8 0H7v3h6V4zm0 8H7v4h6v-4z" clip-rule="evenodd" />
+            </svg>
+            طباعة التقرير كاملاً
+        </button>
+    </div>
+
+
+    <div class="space-y-8">
+
+        <div id="financial-report" class="bg-white rounded-lg shadow overflow-hidden print-section">
+            <div class="flex justify-between items-center border-b border-gray-200 px-6 py-4">
+                <h2 class="text-xl font-bold text-gray-800">التقرير المالي</h2>
+                <button onclick="printSection('financial-report')" 
+                        class="flex items-center gap-1 bg-blue-500 text-white px-3 py-1 rounded text-sm print-button">
+                    طباعة
+                </button>
+            </div>
+            
+            <div class="p-6">
+
+                <div class="mb-8">
+                    <h3 class="text-lg font-semibold mb-4">ملخص مالي</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                        <div class="bg-blue-50 p-4 rounded-lg border border-blue-100">
+                            <p class="text-sm text-blue-600">إجمالي المدفوع</p>
+                            <p class="text-2xl font-bold">{{ stats.financial_summary.total_invoices.total_paid|default:0|intcomma }} ر.ي</p>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-lg border border-green-100">
+                            <p class="text-sm text-green-600">إجمالي المتبقي</p>
+                            <p class="text-2xl font-bold">{{ stats.financial_summary.total_invoices.total_remaining|default:0|intcomma }} ر.ي</p>
+                        </div>
+                        <div class="bg-purple-50 p-4 rounded-lg border border-purple-100">
+                            <p class="text-sm text-purple-600">إجمالي الفواتير</p>
+                            <p class="text-2xl font-bold">{{ stats.financial_summary.total_invoices.total_amount|default:0|intcomma }} ر.ي</p>
+                        </div>
+                    </div>
+                </div>
+                
+   
+                <div class="mb-8">
+                    <h3 class="text-lg font-semibold mb-4">الأداء المالي الشهري</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">الشهر</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">عدد الفواتير</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">المدفوع</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">المتبقي</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for month in stats.financial_summary.monthly_financial %}
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">{{ month.date_add__year }}/{{ month.date_add__month }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">{{ month.count }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">{{ month.total_paid|default:0|intcomma }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">{{ month.total_remaining|default:0|intcomma }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+      
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">طرق الدفع</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">طريقة الدفع</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">عدد الفواتير</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">القيمة الإجمالية</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for method in stats.financial_summary.payment_methods %}
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">{{ method.payment_method|default:"غير محدد" }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">{{ method.count }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">{{ method.total|default:0|intcomma }} ر.ي</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+        <div id="financialgg-report" class="bg-white rounded-lg shadow overflow-hidden print-section">
+    <div class="flex justify-between items-center border-b border-gray-200 px-6 py-4">
+        <h2 class="text-xl font-bold text-gray-800">تقرير مالي كامل</h2>
+        <button onclick="printSection('financialgg-report')" 
+                class="flex items-center gap-1 bg-blue-500 text-white px-3 py-1 rounded text-sm print-button">
+            طباعة
+        </button>
+    </div>
+    <div class="p-6">
+    {% if financial_report.is_annual_report %}
+        <h3 class="text-lg font-bold text-blue-600">التقرير المالي السنوي {{ filter_year }}</h3>
+    {% else %}
+        <h3 class="text-lg font-bold text-blue-600">التقرير المالي لسنة {{ filter_year }}</h3>
+    {% endif %}
+            <div class="overflow-hidden rounded-lg bg-transparent mb-5">
+                <table class="min-w-full border border-black border-collapse">
+                    <tbody>
+                        <tr>
+                            <td class="px-4 py-2 border w-[30%] border-black text-right">متوسط دخل الشهر</td>
+                            <td class="px-4 py-2 border border-black">{{ financial_report.monthly_income|intcomma }}</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 border border-black text-right">متوسط دخل نصف السنة</td>
+                            <td class="px-4 py-2 border border-black">{{ financial_report.mid_year_income|intcomma }}</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 border border-black text-right">متوسط دخل سنة كاملة</td>
+                            <td class="px-4 py-2 border border-black">{{ financial_report.full_year_income|intcomma }}</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 border border-black text-right">المجموع المالي الكلي</td>
+                            <td class="px-4 py-2 border border-black">{{ financial_report.total_income }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+    </div>
+</div>
+
+
+
+
+        <div id="financialgk-report" class="bg-white rounded-lg shadow overflow-hidden print-section">
+    <div class="flex justify-between items-center border-b border-gray-200 px-6 py-4">
+        <h2 class="text-xl font-bold text-gray-800">تقرير مالي</h2>
+        <button onclick="printSection('financialgk-report')" 
+                class="flex items-center gap-1 bg-blue-500 text-white px-3 py-1 rounded text-sm print-button">
+            طباعة
+        </button>
+    </div>
+    <div class="p-6">
+
+            <div class="overflow-hidden rounded-lg bg-transparent mb-5">
+                <h2 class="text-start text-xl font-bold p-4">تقرير مالي</h2>
+                <table class="min-w-full border border-black border-collapse">
+                    <tbody>
+                         <tr>
+                            <td class="px-4 py-2 border w-[30%] border-black text-right">الدخل </td>
+                            <td class="px-4 py-2 border border-black">{{ daily_income|intcomma }}</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 border w-[30%] border-black text-right">الدخل  للرحلات الداخلية</td>
+                            <td class="px-4 py-2 border border-black">{{ is_yemeni_trip|intcomma }}</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 border w-[30%] border-black text-right">الدخل  للرحلات الخارجية</td>
+                            <td class="px-4 py-2 border border-black">{{ is_no_yemeni_trip|intcomma }}</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 border w-[30%] border-black text-right">الدخل  للرحلات الخاصة</td>
+                            <td class="px-4 py-2 border border-black">{{ is_private_trip }}</td>
+                        </tr>
+                        <tr>
+                            <td class="px-4 py-2 border w-[30%] border-black text-right">الدخل  للرحلات العامة</td>
+                            <td class="px-4 py-2 border border-black">{{ is_truck_trip }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+    </div>
+</div>
+
+
+
+        <div id="financialgpp-report" class="bg-white rounded-lg shadow overflow-hidden print-section">
+    <div class="flex justify-between items-center border-b border-gray-200 px-6 py-4">
+        <h2 class="text-xl font-bold text-gray-800">تقرير مالي</h2>
+        <button onclick="printSection('financialgpp-report')" 
+                class="flex items-center gap-1 bg-blue-500 text-white px-3 py-1 rounded text-sm print-button">
+            طباعة
+        </button>
+    </div>
+    <div class="p-6">
+            {% if start_date == end_date %}
+        <h3 class="text-lg font-bold text-blue-600">التقرير المالي ليوم {{ start_date|date:"Y-m-d" }}</h3>
+    {% else %}
+        <h3 class="text-lg font-bold text-blue-600">التقرير المالي {{ today|date:"Y-m-d" }} </h3>
+    {% endif %}
+            <div class="overflow-hidden rounded-lg bg-transparent mb-5">
+                <h2 class="text-start text-xl font-bold p-4">تقرير مالي</h2>
+                <table class="min-w-full border border-black border-collapse">
+      <thead class="bg-gray-50">
+        <tr>
+          <th scope="col" class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">
+            نوع الرحلات
+          </th>
+          <th scope="col" class="px-6 py-3 text-center text-xs font-medium text-gray-500 uppercase ">
+            عدد الفواتير/الدفعات
+          </th>
+          <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">
+            إجمالي الدخل
+          </th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4 whitespace-nowrap text-right">
+            <div class="flex items-center">
+              <div class="flex-shrink-0 h-10 w-10 bg-green-100 rounded-full flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-green-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6" />
+                </svg>
+              </div>
+              <div class="mr-4">
+                <div class="text-sm font-medium text-gray-900">رحلات داخلية</div>
+                <div class="text-sm text-gray-500">فواتير</div>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-center">
+            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-green-100 text-green-800">
+              {{ internal_invoices_count }}
+            </span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium text-gray-900">
+            {{ internal_income }} ريال
+          </td>
+        </tr>
+
+
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4 whitespace-nowrap text-right">
+            <div class="flex items-center">
+              <div class="flex-shrink-0 h-10 w-10 bg-blue-100 rounded-full flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7h12m0 0l-4-4m4 4l-4 4m0 6H4m0 0l4 4m-4-4l4-4" />
+                </svg>
+              </div>
+              <div class="mr-4">
+                <div class="text-sm font-medium text-gray-900">رحلات خارجية</div>
+                <div class="text-sm text-gray-500">فواتير</div>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-center">
+            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-blue-100 text-blue-800">
+              {{ external_invoices_count }}
+            </span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium text-gray-900">
+            {{ external_income }} ريال
+          </td>
+        </tr>
+
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4 whitespace-nowrap text-right">
+            <div class="flex items-center">
+              <div class="flex-shrink-0 h-10 w-10 bg-purple-100 rounded-full flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-purple-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                </svg>
+              </div>
+              <div class="mr-4">
+                <div class="text-sm font-medium text-gray-900">رحلات خاصة</div>
+                <div class="text-sm text-gray-500">فواتير + دفعات</div>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-center">
+            <div class="flex justify-center space-x-1">
+              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                {{ private_invoices_count }}
+              </span>
+              <span class="text-gray-500">+</span>
+              <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-purple-100 text-purple-800">
+                {{ private_trip_payments_count }}
+              </span>
+            </div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium text-gray-900">
+            {{ private_income }} ريال
+          </td>
+        </tr>
+
+
+        <tr class="hover:bg-gray-50">
+          <td class="px-6 py-4 whitespace-nowrap text-right">
+            <div class="flex items-center">
+              <div class="flex-shrink-0 h-10 w-10 bg-yellow-100 rounded-full flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path d="M9 17a2 2 0 11-4 0 2 2 0 014 0zM19 17a2 2 0 11-4 0 2 2 0 014 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1M5 17a2 2 0 104 0m-4 0a2 2 0 114 0m6 0a2 2 0 104 0m-4 0a2 2 0 114 0" />
+                </svg>
+              </div>
+              <div class="mr-4">
+                <div class="text-sm font-medium text-gray-900">رحلات عامة</div>
+                <div class="text-sm text-gray-500">فواتير</div>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-center">
+            <span class="px-2 inline-flex text-xs leading-5 font-semibold rounded-full bg-yellow-100 text-yellow-800">
+              {{ public_invoices_count }}
+            </span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-medium text-gray-900">
+            {{ public_income }} ريال
+          </td>
+        </tr>
+
+
+        <tr class="bg-gray-50 hover:bg-gray-100">
+          <td class="px-6 py-4 whitespace-nowrap text-right">
+            <div class="flex items-center">
+              <div class="flex-shrink-0 h-10 w-10 bg-indigo-100 rounded-full flex items-center justify-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-indigo-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2" />
+                </svg>
+              </div>
+              <div class="mr-4">
+                <div class="text-sm font-bold text-gray-900">المجموع الكلي</div>
+              </div>
+            </div>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-center">
+            <span class="px-2 inline-flex text-xs leading-5 font-bold rounded-full bg-indigo-100 text-indigo-800">
+              {{ internal_invoices_count|add:external_invoices_count|add:private_invoices_count|add:public_invoices_count|add:private_trip_payments_count }}
+            </span>
+          </td>
+          <td class="px-6 py-4 whitespace-nowrap text-left text-sm font-bold text-indigo-600">
+            {{ total_income }} ريال
+          </td>
+        </tr>
+      </tbody>
+                </table>
+            </div>
+    </div>
+</div>
+
+
+
+<div id="private-trips-status-report" class="bg-white rounded-lg shadow overflow-hidden print-section" >
+    <div class="flex justify-between items-center border-b border-gray-200 px-6 py-4">
+        <h2 class="text-xl font-bold text-gray-800">حالة الرحلات الخاصة</h2>
+        <button onclick="printSection('private-trips-status-report')" 
+                class="flex items-center gap-1 bg-blue-500 text-white px-3 py-1 rounded text-sm print-button">
+            طباعة
+        </button>
+    </div>
+    <div class="p-6">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">الحالة</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">عدد الرحلات</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for status in stats.private_trips_stats.by_status %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            {% if status.status == 'pending' %}قيد الانتظار
+                            {% elif status.status == 'approved' %}تم الموافقة
+                            {% elif status.status == 'rejected' %}تم الرفض
+                            {% elif status.status == 'completed' %}مكتملة
+                            {% else %}{{ status.status }}{% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ status.count }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="2" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<div id="trips-by-city-report" class="bg-white rounded-lg shadow overflow-hidden mt-8 print-section">
+    <div class="flex justify-between items-center border-b border-gray-200 px-6 py-4">
+        <h2 class="text-xl font-bold text-gray-800">الرحلات حسب المحافظة</h2>
+        <button onclick="printSection('trips-by-city-report')" 
+                class="flex items-center gap-1 bg-blue-500 text-white px-3 py-1 rounded text-sm print-button">
+            طباعة
+        </button>
+    </div>
+    <div class="p-6">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">المحافظة</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">عدد الرحلات</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for city in stats.trips_stats.by_route %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ city.departure__name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ city.count }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="2" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<div id="trips-details-report" class="bg-white rounded-lg shadow overflow-hidden mt-8 print-section">
+    <div class="flex justify-between items-center border-b border-gray-200 px-6 py-4">
+        <h2 class="text-xl font-bold text-gray-800">تفاصيل الرحلات</h2>
+
+        <div>
+
+
+        <button onclick="printSection('trips-details-report')" 
+                class="flex items-center gap-1 bg-blue-500 text-white px-3 py-1 rounded text-sm print-button">
+            طباعة
+        </button>
+
+        <span class="text-gray-600">{{ stats.trips_stats.total }} رحلة</span>
+    </div>
+    </div>
+    <div class="p-6">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">الوجهة</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">نوع الرحلة</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">التاريخ</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">عدد المقاعد</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for trip in querysets.trips|slice:":10" %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ trip.departure.name }} - {{ trip.destination.name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ trip.travel_type.name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ trip.date }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ trip.seat_count }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد نتائج</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<div id="invoices-details-report" class="bg-white rounded-lg shadow overflow-hidden mt-8 print-section">
+    <div class="flex justify-between items-center border-b border-gray-200 px-6 py-4">
+        <h2 class="text-xl font-bold text-gray-800">تفاصيل الفواتير</h2>
+
+<div>
+
+                <button onclick="printSection('invoices-details-report')" 
+                class="flex items-center gap-1 bg-blue-500 text-white px-3 py-1 rounded text-sm print-button">
+            طباعة
+        </button>
+        <span class="text-gray-600">{{ stats.financial_summary.total_invoices.count }} فاتورة</span>
+    </div>
+    </div>
+
+    <div class="p-6">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">المسافر</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">الرحلة</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">المبلغ المدفوع</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">المبلغ المتبقي</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">تاريخ الفاتورة</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for invoice in querysets.invoices|slice:":10" %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ invoice.passenger.name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ invoice.trip.departure.name }} - {{ invoice.trip.destination.name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ invoice.paid_amount|default:0|intcomma }} ر.س</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ invoice.remaining_amount|default:0|intcomma }} ر.س</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ invoice.date_added|date:"Y-m-d" }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد نتائج</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+
+<div id="private-trips-details-report" class="bg-white rounded-lg shadow overflow-hidden mt-8 print-section">
+    <div class="flex justify-between items-center border-b border-gray-200 px-6 py-4">
+        <h2 class="text-xl font-bold text-gray-800">تفاصيل الرحلات الخاصة</h2>
+
+        <div>
+                <button onclick="printSection('invoices-details-report')" 
+                class="flex items-center gap-1 bg-blue-500 text-white px-3 py-1 rounded text-sm print-button">
+            طباعة
+        </button>
+
+        <span class="text-gray-600">{{ stats.private_trips_stats.by_status|length }} رحلة</span>
+    </div>
+    </div>
+
+    <div class="p-6">
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">العميل</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">الوجهة</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">عدد الركاب</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">تاريخ الرحلة</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">الحالة</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for trip in querysets.private_trips|slice:":10" %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ trip.customer_name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ trip.departure.name }} - {{ trip.destination.name }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ trip.passenger_count }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ trip.trip_date }}</td>
+                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                            {% if trip.status == 'pending' %}قيد الانتظار
+                            {% elif trip.status == 'approved' %}تم الموافقة
+                            {% elif trip.status == 'rejected' %}تم الرفض
+                            {% elif trip.status == 'completed' %}مكتملة
+                            {% else %}{{ trip.status }}{% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد نتائج</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+        <div id="trips-report" class="bg-white rounded-lg shadow overflow-hidden print-section">
+            <div class="flex justify-between items-center border-b border-gray-200 px-6 py-4">
+                <h2 class="text-xl font-bold text-gray-800">تقرير الرحلات</h2>
+                <button onclick="printSection('trips-report')" 
+                        class="flex items-center gap-1 bg-blue-500 text-white px-3 py-1 rounded text-sm print-button">
+                    طباعة
+                </button>
+            </div>
+            
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">حسب نوع الرحلة</h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">النوع</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">العدد</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">النسبة</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">متوسط المقاعد</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">متوسط السعر</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    {% for type in stats.trips_stats.by_type %}
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ type.travel_type__name }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ type.count }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ type.percentage|floatformat:2 }}%</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ type.avg_seats|floatformat:1 }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ type.avg_price|floatformat:2 }} ر.س</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">حسب فئة الرحلة</h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">الفئة</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">العدد</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">النسبة</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    {% for cat in stats.trips_stats.by_category %}
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ cat.trip_category__name }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ cat.count }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ cat.percentage|floatformat:2 }}%</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+
+                <div class="mb-8">
+                    <h3 class="text-lg font-semibold mb-4">أشهر المسارات</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">مسار الرحلة</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">عدد الرحلات</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for route in stats.trips_stats.by_route %}
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">{{ route.departure__name }} → {{ route.destination__name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">{{ route.count }}</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="2" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">حسب المركبة</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">المركبة</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">العدد</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">النسبة</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for vehicle in stats.trips_stats.by_vehicle %}
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">{{ vehicle.vehicle_type__name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">{{ vehicle.count }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">{{ vehicle.percentage|floatformat:2 }}%</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+        <div id="passengers-report" class="bg-white rounded-lg shadow overflow-hidden print-section">
+            <div class="flex justify-between items-center border-b border-gray-200 px-6 py-4">
+                <h2 class="text-xl font-bold text-gray-800">تقرير المسافرين</h2>
+                <button onclick="printSection('passengers-report')" 
+                        class="flex items-center gap-1 bg-blue-500 text-white px-3 py-1 rounded text-sm print-button">
+                    طباعة
+                </button>
+            </div>
+            
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">حسب الجنسية</h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">الجنسية</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">العدد</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">النسبة</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    {% for nation in stats.passengers_stats.by_nationality %}
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ nation.nationality__name }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ nation.count }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ nation.percentage|floatformat:2 }}%</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">حسب الجنس</h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">الجنس</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">العدد</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">النسبة</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    {% for gender in stats.passengers_stats.by_gender %}
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                            {% if gender.gender == 'male' %}ذكر
+                                            {% elif gender.gender == 'female' %}أنثى
+                                            {% else %}{{ gender.gender }}{% endif %}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ gender.count }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ gender.percentage|floatformat:2 }}%</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+
+                <div class="mb-8">
+                    <h3 class="text-lg font-semibold mb-4">حسب محافظة المغادرة</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">المحافظة</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">الدولة</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">عدد المسافرين</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">النسبة</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for city in stats.passengers_stats.by_departure_city %}
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">{{ city.trip_location__departure__name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">{{ city.trip_location__departure__nationality__name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">{{ city.count }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">{{ city.percentage|floatformat:2 }}%</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                
+
+                <div>
+                    <h3 class="text-lg font-semibold mb-4">حسب محافظة الوصول</h3>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-gray-200">
+                            <thead class="bg-gray-50">
+                                <tr>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">المحافظة</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">الدولة</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">عدد المسافرين</th>
+                                    <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">النسبة</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y divide-gray-200">
+                                {% for city in stats.passengers_stats.by_arrival_city %}
+                                <tr>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">{{ city.trip_location__destination__name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">{{ city.trip_location__destination__nationality__name }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">{{ city.count }}</td>
+                                    <td class="px-6 py-4 whitespace-nowrap text-sm">{{ city.percentage|floatformat:2 }}%</td>
+                                </tr>
+                                {% empty %}
+                                <tr>
+                                    <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+                <div id="passengerswq-report" class="bg-white rounded-lg shadow overflow-hidden print-section">
+            <div class="flex justify-between items-center border-b border-gray-200 px-6 py-4">
+                <h2 class="text-xl font-bold text-gray-800">تقرير المسافرين</h2>
+                <button onclick="printSection('passengerswq-report')" 
+                        class="flex items-center gap-1 bg-blue-500 text-white px-3 py-1 rounded text-sm print-button">
+                    طباعة
+                </button>
+            </div>
+            
+            <div class="p-6">
+                <div class="grid grid-cols-1  gap-6 mb-8">
+
+                <div class="bg-white shadow rounded-lg p-6 mb-8">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6">قائمة المسافرين (إجمالي: {{ stats.passengers_stats.total }})</h2>
+        <div class="overflow-x-auto">
+            <table class="min-w-full divide-y divide-gray-200">
+                <thead class="bg-gray-50">
+                    <tr>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الاسم</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الهوية</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الجنسية</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الجنس</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">مكان المغادرة</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الوجهة</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">تاريخ الإضافة</th>
+                    </tr>
+                </thead>
+                <tbody class="bg-white divide-y divide-gray-200">
+                    {% for passengerwq in stats.passengers_stats.all_passengers %}
+                    <tr>
+                        <td class="px-6 py-4 whitespace-nowrap text-right">
+                            <div class="flex items-center">
+                  
+                                    <div class="text-sm font-medium text-gray-900">{{ passengerwq.name }}</div>
+                                    <div class="text-sm text-gray-500">{{ passengerwq.phone }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                            {{ passengerwq.id_number }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                            {{ passengerwq.nationality.name }}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                            {% if passengerwq.gender == 'male' %}ذكر{% else %}أنثى{% endif %}
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                            {{ passengerwq.trip_location.departure.name }}
+                            <span class="text-xs text-gray-400">({{ passengerwq.trip_location.departure.nationality.name }})</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                            {{ passengerwq.trip_location.destination.name }}
+                            <span class="text-xs text-gray-400">({{ passengerwq.trip_location.destination.nationality.name }})</span>
+                        </td>
+                        <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                            {{ passengerwq.date_added|date:"Y-m-d" }}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+            </div>
+        </div>
+        </div>
+
+
+        <div id="vehicles-report" class="bg-white rounded-lg shadow overflow-hidden print-section">
+            <div class="flex justify-between items-center border-b border-gray-200 px-6 py-4">
+                <h2 class="text-xl font-bold text-gray-800">تقرير المركبات</h2>
+                <button onclick="printSection('vehicles-report')" 
+                        class="flex items-center gap-1 bg-blue-500 text-white px-3 py-1 rounded text-sm print-button">
+                    طباعة
+                </button>
+            </div>
+            
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">حسب النوع</h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">النوع</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">العدد</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">متوسط السعة</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    {% for type in stats.vehicles_stats.by_type %}
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ type.vehicle_type }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ type.count }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ type.avg_capacity|floatformat:1 }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">حسب الحالة</h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">الحالة</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">العدد</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    {% for status in stats.vehicles_stats.by_status %}
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ status.status }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ status.count }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="2" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">أكثر السائقين</h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">السائق</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">عدد المركبات</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    {% for driver in stats.vehicles_stats.by_driver %}
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ driver.driver__name }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ driver.count }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="2" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+                <div id="vehiclesqq-report" class="bg-white rounded-lg shadow overflow-hidden print-section">
+            <div class="flex justify-between items-center border-b border-gray-200 px-6 py-4">
+                <h2 class="text-xl font-bold text-gray-800">تقرير المركبات</h2>
+                <button onclick="printSection('vehiclesqq-report')" 
+                        class="flex items-center gap-1 bg-blue-500 text-white px-3 py-1 rounded text-sm print-button">
+                    طباعة
+                </button>
+            </div>
+            
+            <div class="p-6">
+                <div class="grid grid-cols-1  gap-6">
+
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">حسب الاسم</h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">الاسم</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">النوع</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    {% for typewq in stats.vehicles_stats.all_vehicles %}
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ typewq.name }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ typewq.vehicle_type }}</td>
+
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+
+                </div>
+            </div>
+        </div>
+
+        <div id="drivers-report" class="bg-white rounded-lg shadow overflow-hidden print-section">
+            <div class="flex justify-between items-center border-b border-gray-200 px-6 py-4">
+                <h2 class="text-xl font-bold text-gray-800">تقرير السائقين</h2>
+                <button onclick="printSection('drivers-report')" 
+                        class="flex items-center gap-1 bg-blue-500 text-white px-3 py-1 rounded text-sm print-button">
+                    طباعة
+                </button>
+            </div>
+            
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">حسب النوع</h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">النوع</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">العدد</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    {% for type in stats.drivers_stats.by_type %}
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                            {% if type.driver_type == 'tocompany' %}تابع لشركة
+                                            {% elif type.driver_type == 'tobe' %}تابع لجهة
+                                            {% elif type.driver_type == 'drivername' %}سواق
+                                            {% else %}{{ type.driver_type }}{% endif %}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ type.count }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="2" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">حسب الجنسية</h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">الجنسية</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">العدد</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    {% for nation in stats.drivers_stats.by_nationality %}
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ nation.nationality__name }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ nation.count }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="2" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">حسب سنوات الخبرة</h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">سنوات الخبرة</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">العدد</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    {% for exp in stats.drivers_stats.by_experience %}
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ exp.experience_years }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ exp.count }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="2" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+                <div id="driversqq-report" class="bg-white rounded-lg shadow overflow-hidden print-section">
+            <div class="flex justify-between items-center border-b border-gray-200 px-6 py-4">
+                <h2 class="text-xl font-bold text-gray-800">تقرير السائقين</h2>
+                <button onclick="printSection('driversqq-report')" 
+                        class="flex items-center gap-1 bg-blue-500 text-white px-3 py-1 rounded text-sm print-button">
+                    طباعة
+                </button>
+            </div>
+            
+            <div class="p-6">
+                <div class="grid grid-cols-1  gap-6">
+      
+                    <div>
+                        <h3 class="text-lg font-semibold mb-4">حسب الاسم</h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">الاسم</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">الهاتف</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    {% for typeqq in stats.drivers_stats.all_drivers %}
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ typeqq.name }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ typeqq.phone }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="2" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+
+                </div>
+            </div>
+        </div>
+
+
+
+        <div id="employees-report" class="bg-white rounded-lg shadow overflow-hidden print-section">
+            <div class="flex justify-between items-center border-b border-gray-200 px-6 py-4">
+                <h2 class="text-xl font-bold text-gray-800">تقرير الموظفين</h2>
+                <button onclick="printSection('employees-report')" 
+                        class="flex items-center gap-1 bg-blue-500 text-white px-3 py-1 rounded text-sm print-button">
+                    طباعة
+                </button>
+            </div>
+            
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6" style="break-inside: avoid;">
+
+                    <div style="break-inside: avoid;">
+                        <h3 class="text-lg font-semibold mb-4">حسب المسمى الوظيفي</h3>
+                        <div class="overflow-x-auto" >
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">المسمى</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">العدد</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">متوسط الراتب</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    {% for pos in stats.employees_stats.by_position %}
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ pos.job_title }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ pos.count }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ pos.avg_salary|default:0|intcomma }} ر.ي</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+
+                    <div style="break-inside: avoid;">
+                        <h3 class="text-lg font-semibold mb-4">حسب الجنسية</h3>
+                        <div class="overflow-x-auto" >
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">الجنسية</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">العدد</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    {% for nation in stats.employees_stats.by_nationality %}
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ nation.nationality__name }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ nation.count }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="2" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+
+                    <div style="break-inside: avoid;">
+                        <h3 class="text-lg font-semibold mb-4">حسب الجنس</h3>
+                        <div class="overflow-x-auto">
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">الجنس</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">العدد</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    {% for gender in stats.employees_stats.by_gender %}
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">
+                                            {% if gender.gender == 'male' %}ذكر
+                                            {% elif gender.gender == 'female' %}أنثى
+                                            {% else %}{{ gender.gender }}{% endif %}
+                                        </td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ gender.count }}</td>
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="2" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+
+                <div id="employeesqq-report" class="bg-white rounded-lg shadow overflow-hidden print-section">
+            <div class="flex justify-between items-center border-b border-gray-200 px-6 py-4">
+                <h2 class="text-xl font-bold text-gray-800">تقرير الموظفين</h2>
+                <button onclick="printSection('employeesqq-report')" 
+                        class="flex items-center gap-1 bg-blue-500 text-white px-3 py-1 rounded text-sm print-button">
+                    طباعة
+                </button>
+            </div>
+            
+            <div class="p-6">
+                <div class="grid grid-cols-1  gap-6" style="break-inside: avoid;">
+         
+                    <div style="break-inside: avoid;">
+                        <h3 class="text-lg font-semibold mb-4">حسب الاسم </h3>
+                        <div class="overflow-x-auto" >
+                            <table class="min-w-full divide-y divide-gray-200">
+                                <thead class="bg-gray-50">
+                                    <tr>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">الاسم</th>
+                                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">الهاتف</th>
+
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y divide-gray-200">
+                                    {% for post in stats.employees_stats.all_employees %}
+                                    <tr>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ post.name }}</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ post.phone }}</td>
+
+                                    </tr>
+                                    {% empty %}
+                                    <tr>
+                                        <td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+<script>
+
+const { jsPDF } = window.jspdf;
+
+
+async function printSection(sectionId) {
+    try {
+        const element = document.getElementById(sectionId);
+        if (!element) return;
+
+
+        const clone = element.cloneNode(true);
+        clone.style.width = '210mm'; 
+        clone.style.margin = '0 auto';
+        document.body.appendChild(clone);
+
+
+        const buttons = clone.querySelectorAll('.print-button');
+        buttons.forEach(btn => btn.style.display = 'none');
+
+
+        const header = document.createElement('div');
+        header.innerHTML = `
+            <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
+                <img src="${window.location.origin}/static/assetstravelers/image/img/Group%201171275883.svg" 
+                     width="80" style="height: auto;" />
+                <div style="text-align: right;">
+                    <h2 style="margin: 0; font-size: 1.25rem; font-weight: bold;">
+                        ${clone.querySelector('h2').textContent}
+                    </h2>
+                    <p style="margin: 5px 0 0; color: #666;">
+                        ${new Date().toLocaleDateString('ar-EG')}
+                    </p>
+                </div>
+            </div>
+            <hr style="border-top: 1px solid #eee; margin: 10px 0;" />
+        `;
+        clone.insertBefore(header, clone.firstChild);
+
+
+        const tables = clone.querySelectorAll('table');
+        tables.forEach(table => {
+            table.style.width = '100%';
+            table.style.fontSize = '11pt';
+        });
+
+        const options = {
+            scale: 2,
+            useCORS: true,
+            scrollY: 0,
+            windowHeight: clone.scrollHeight,
+            onclone: function(clonedDoc) {
+
+                const style = clonedDoc.createElement('style');
+                style.innerHTML = `
+                    body { 
+                        padding: 10mm !important; 
+                        font-size: 12pt !important;
+                    }
+                    table { 
+                        page-break-inside: avoid !important;
+                        break-inside: avoid !important;
+                    }
+                    tr {
+                        page-break-inside: avoid !important;
+                        break-inside: avoid !important;
+                    }
+                `;
+                clonedDoc.head.appendChild(style);
+            }
+        };
+
+        const canvas = await html2canvas(clone, options);
+        document.body.removeChild(clone);
+
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const imgWidth = 190; 
+        const imgHeight = (canvas.height * imgWidth) / canvas.width;
+        
+        pdf.addImage(canvas, 'PNG', 10, 10, imgWidth, imgHeight);
+        pdf.save(`${sectionId}-report.pdf`);
+        
+    } catch (error) {
+        console.error('Print error:', error);
+        alert('حدث خطأ أثناء الطباعة. يرجى المحاولة مرة أخرى.');
+    }
+}
+
+
+
+function printFullReport() {
+
+    const elementsToHide = [
+        document.querySelector('.search-filter-section'),
+        document.querySelectorAll('.print-button'),
+        document.querySelector('.flex.flex-wrap.justify-end.gap-4.mb-6')
+    ];
+    
+    elementsToHide.forEach(el => {
+        if (el) {
+            if (el.length) {
+                el.forEach(item => item.style.display = 'none');
+            } else {
+                el.style.display = 'none';
+            }
+        }
+    });
+
+
+    const printHeader = document.createElement('div');
+    printHeader.className = 'print-header mb-4';
+    printHeader.innerHTML = `
+        <div class="flex justify-between items-center mb-4">
+            <img src="${window.location.origin}/static/assetstravelers/image/img/Group 1171275883.svg" 
+                 width="80" alt="الشعار" class="print-logo" />
+            <div class="text-right print-title">
+                <h2 class="text-xl font-bold">التقرير الكامل</h2>
+                <p class="text-gray-600">تاريخ الطباعة: ${new Date().toLocaleDateString()}</p>
+            </div>
+        </div>
+        <hr class="my-2" />
+    `;
+    
+    const container = document.querySelector('.container');
+    container.insertBefore(printHeader, container.firstChild);
+    
+
+    const options = {
+        scale: 2,
+        useCORS: true,
+        scrollY: -window.scrollY,
+        windowHeight: document.documentElement.offsetHeight,
+        onclone: function(clonedDoc) {
+            const style = clonedDoc.createElement('style');
+            style.innerHTML = `
+                @media print {
+                    body { padding: 20px; background: white !important; }
+                    .print-header { display: flex !important; }
+                    .search-filter-section, .print-button { display: none !important; }
+                }
+            `;
+            clonedDoc.head.appendChild(style);
+        }
+    };
+    
+    html2canvas(container, options).then(canvas => {
+
+        const imgData = canvas.toDataURL('image/png');
+        const pdf = new jsPDF('p', 'mm', 'a4');
+        const imgWidth = 210;
+        const pageHeight = 295;
+        const imgHeight = canvas.height * imgWidth / canvas.width;
+        let heightLeft = imgHeight;
+        let position = 0;
+        
+        pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+        heightLeft -= pageHeight;
+        
+        while (heightLeft >= 0) {
+            position = heightLeft - imgHeight;
+            pdf.addPage();
+            pdf.addImage(imgData, 'PNG', 0, position, imgWidth, imgHeight);
+            heightLeft -= pageHeight;
+        }
+        
+
+        elementsToHide.forEach(el => {
+            if (el) {
+                if (el.length) {
+                    el.forEach(item => item.style.display = '');
+                } else {
+                    el.style.display = '';
+                }
+            }
+        });
+
+        container.removeChild(printHeader);
+        
+        pdf.save('full-report.pdf');
+    }).catch(error => {
+        console.error('Error generating PDF:', error);
+
+        elementsToHide.forEach(el => {
+            if (el) {
+                if (el.length) {
+                    el.forEach(item => item.style.display = '');
+                } else {
+                    el.style.display = '';
+                }
+            }
+        });
+        if (printHeader.parentNode) {
+            container.removeChild(printHeader);
+        }
+        alert('حدث خطأ أثناء إنشاء التقرير. يرجى المحاولة مرة أخرى.');
+    });
+}
+
+</script>
+
+<style>
+@media print {
+
+    table {
+        width: 100% !important;
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+    
+
+    .print-section {
+        page-break-after: always !important;
+        break-after: page !important;
+    }
+    
+
+    tr {
+        page-break-inside: avoid !important;
+        break-inside: avoid !important;
+    }
+    
+
+    @page {
+        margin: 10mm;
+    }
+    
+
+    body {
+        font-size: 12pt !important;
+    }
+    
+ 
+    th, td {
+        padding: 4px 6px !important;
+        font-size: 11pt !important;
+    }
+}
+</style>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} {% extends 'base.html' %}
 
 {% block content %}
 
@@ -361,7 +2047,7 @@ document.addEventListener('DOMContentLoaded', function () {
         </script>
         
     </div>
-{% endblock %}
+{% endblock %} {% endcomment %}
 
 
 

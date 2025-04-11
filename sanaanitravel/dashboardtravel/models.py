@@ -60,11 +60,11 @@ class Vehicle(models.Model):
     model = models.CharField(max_length=50,null=True)  # الموديل
     plate_number = models.CharField(max_length=20)  # رقم اللوحة
     status = models.CharField(max_length=20,null=True)  # الحالة
-    price = models.DecimalField(max_digits=10, decimal_places=2,null=True)  # سعر السيارة
+    price = models.DecimalField(max_digits=10, decimal_places=2,null=True , blank=True)  # سعر السيارة
     # owner = models.CharField(max_length=100,null=True)  # لمن تابعة
     passenger_capacity = models.IntegerField()  # عدد الركاب
     date_added = models.DateTimeField(auto_now_add=True)  # التاريخ والوقت
-    fuel_capacity = models.DecimalField(max_digits=10, decimal_places=2,null=True)  # سعة البنزين
+    fuel_capacity = models.DecimalField(max_digits=10, decimal_places=2,null=True , blank=True)  # سعة البنزين
     motor_type=models.CharField(max_length=50,null=True)
     # driver =  models.ManyToManyField(Driver)  # السائق
     driver = models.ForeignKey(Driver, on_delete=models.CASCADE)  # السائق

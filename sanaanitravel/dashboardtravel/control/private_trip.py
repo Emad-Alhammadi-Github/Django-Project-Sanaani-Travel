@@ -2,27 +2,75 @@ from django.db.models import Prefetch, Q
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
-from ..models import  PrivateTripRequest, PrivateTripApproval, PrivateTripPayment
+from ..models import  PrivateTripRequest, PrivateTripApproval, PrivateTripPayment,Nationality, City
 from ..forms import PrivateTripRequestForm, TripApprovalForm, PaymentForm
-
+from django.http import JsonResponse
 
 @login_required
 def request_private_trip(request):
     if request.method == 'POST':
         form = PrivateTripRequestForm(request.POST, request.FILES)
         if form.is_valid():
-            print(form.cleaned_data)  
             trip = form.save(commit=False)
             trip.customer = request.user
+            
+
+            yemen = Nationality.objects.filter(name='اليمن').first()
+            if (yemen and 
+                trip.departure.nationality == yemen and 
+                trip.destination.nationality == yemen):
+                trip.customer_passport_number = None  
+            
             trip.save()
-            print("تم حفظ الرحلة بنجاح!") 
-            return redirect('private_trip_status', trip_id=trip.id)
-        else:
-            print("أخطاء النموذج:", form.errors)
+            return redirect('success_page')
     else:
         form = PrivateTripRequestForm()
     
     return render(request, 'home/request_trip.html', {'form': form})
+
+def check_cities(request):
+    departure_id = request.GET.get('departure')
+    destination_id = request.GET.get('destination')
+    
+    try:
+        yemen = Nationality.objects.get(name='اليمن')
+        departure = City.objects.get(id=departure_id)
+        destination = City.objects.get(id=destination_id)
+        
+
+        both_in_yemen = (departure.nationality == yemen and 
+                        destination.nationality == yemen)
+        
+        return JsonResponse({
+            'hide_passport': both_in_yemen,
+            'departure': departure.name,
+            'destination': destination.name
+        })
+    except Exception as e:
+        return JsonResponse({'error': str(e)}, status=400)
+    
+
+
+
+
+
+
+# def request_private_trip(request):
+#     if request.method == 'POST':
+#         form = PrivateTripRequestForm(request.POST, request.FILES)
+#         if form.is_valid():
+#             print(form.cleaned_data)  
+#             trip = form.save(commit=False)
+#             trip.customer = request.user
+#             trip.save()
+#             print("تم حفظ الرحلة بنجاح!") 
+#             return redirect('private_trip_status', trip_id=trip.id)
+#         else:
+#             print("أخطاء النموذج:", form.errors)
+#     else:
+#         form = PrivateTripRequestForm()
+    
+#     return render(request, 'home/request_trip.html', {'form': form})
 
 @login_required
 def private_trip_status(request, trip_id):

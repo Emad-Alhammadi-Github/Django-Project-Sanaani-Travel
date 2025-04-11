@@ -19,7 +19,23 @@
      <!-- Card 1  -->
         <div class="relative shadow-lg bg-white border border-[#4278FF] h-min w-[80%] flex flex-col justify-between overflow-hidden rounded-2xl">
           <div class="h-[50%] w-full overflow-hidden">
-              <img src="{{ vehicle.image.url }}" alt="Vehicle Image" class="w-full h-full object-cover" />
+                {% if vehicle.image %}  
+            <img 
+              id="editImage{{ vehicle.id }}" 
+              src="{{ vehicle.image.url }}" 
+              alt="صورة المركبة" 
+              style="max-width: 200px; max-height: 400px;" 
+              onerror="this.onerror=null; this.src='{% static 'assetstravelers/image/img/icons8_collaborator_male_60px 2.png' %}'" 
+            />
+    {% else %}
+        <img 
+            id="editImage{{ driver.id }}" 
+            src="{% static 'assetstravelers/image/img/icons8_collaborator_male_60px 2.png' %}" 
+            alt="صورة الرخصة" 
+            style="max-width: 200px; max-height: 400px;" 
+        />
+    {% endif %}
+              {% comment %} <img src="{{ vehicle.image.url }}" alt="Vehicle Image" class="w-full h-full object-cover" /> {% endcomment %}
           </div>
       
           <div class="flex flex-col justify-between px-3 py-2 h-[50%]">

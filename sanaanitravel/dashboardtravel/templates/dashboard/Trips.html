@@ -138,7 +138,7 @@
 
 
 
-        <button onclick="openDialog('Dialog7')" class="flex gap-[2px] bg-[#4278FF] mx-2 mt-3 mb-3 items-center py-2 rounded-lg w-[170px]">
+        {% comment %} <button onclick="openDialog('Dialog7')" class="flex gap-[2px] bg-[#4278FF] mx-2 mt-3 mb-3 items-center py-2 rounded-lg w-[170px]">
             <h5 class="text-white pr-2">اضافة خدمة جديده</h5>
             <img class="" src="{% static 'assetstravelers/image/img/icons/add-circle.svg' %}" alt />
         </button>
@@ -162,16 +162,7 @@
                         </select>
                         <textarea name="description" class="custom-input" rows="14" placeholder="تفاصيل الخدمة"></textarea>
                     </div>
-                    {% comment %} <div class="flex flex-col items-center pt-2">
-                        <img id="service-image" 
-                             src="../../static/assetstravelers/image/img/icons8_collaborator_male_60px 2.png" 
-                             width="70%" height="90%" alt="service Image" />
-                        
-                        <label for="file-input">
-                          <input id="file-input" type="file" name="image" style="display: none" onchange="previewImage(event, 'service-image')" />
-                          <button class="custom-input w-[200px]" type="button" onclick="document.getElementById('file-input').click();">اختار صورة</button>
-                        </label>
-                      </div> {% endcomment %}
+  
 
                      <div class="flex flex-col items-center pt-2">
                         <img src="{% static 'assetstravelers/image/img/icons8_collaborator_male_60px 2.png' %}" width="90%" height="90%" alt />
@@ -191,7 +182,7 @@
                     </button>
                 </div>
             </form>
-        </div>
+        </div> {% endcomment %}
 
         <!-- Dialog 7 end  -->
 

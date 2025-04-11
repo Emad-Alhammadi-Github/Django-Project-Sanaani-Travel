@@ -153,7 +153,20 @@
               {% for passenger in passengers %}
               <tr>
                 <td class="px-4 py-2 border-b border-[#F5F0F1]">
-                    <img src="{{ passenger.image.url }}" alt width="70" class="cursor-pointer" onclick="openModal('{{ passenger.image.url }}')" />
+                      {% if passenger.image %} 
+                     <img src="{{ passenger.image.url }}" alt width="70" class="cursor-pointer" onclick="openModal('{{ passenger.image.url }}')" />
+
+    {% else %}
+                        <img src="{% static 'assetstravelers/image/img/icons8_collaborator_male_60px 2.png' %}" alt="صورة افتراضية" width="70" />
+    {% endif %}
+
+
+
+
+
+
+
+
                   </td>
                   <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ passenger.name }}</td>
                   <td class="px-4 py-2 border-b border-[#F5F0F1]">{{ passenger.paid_amount }}</td>
@@ -238,6 +251,8 @@
 
 
                   <div class="flex flex-col items-center pt-2">
+
+                      {% if passenger.image %} 
                     <img 
                       id="editImage{{ passenger.id }}" 
                       src="{{ passenger.image.url }}" 
@@ -245,6 +260,19 @@
                       style="max-width: 200px; max-height: 400px;" 
                       onerror="this.onerror=null; this.src='{% static 'assetstravelers/image/img/icons8_collaborator_male_60px 2.png' %}'" 
                     />
+    {% else %}
+                         <img 
+                      id="editImage{{ passenger.id }}" 
+                      src="{% static 'assetstravelers/image/img/icons8_collaborator_male_60px 2.png' %}" 
+                      alt="صورة الهوية" 
+                      style="max-width: 200px; max-height: 400px;" 
+                    />
+    {% endif %}
+
+
+
+
+
                     <label 
                       for="identify_img-file-input-{{ passenger.id }}" 
                       class="custom-upload-button text-center"
@@ -262,6 +290,7 @@
 
 
                   <div class="flex flex-col items-center pt-2">
+                      {% if passenger.image %} 
                     <img 
                       id="editImage{{ passenger.id }}" 
                       src="{{ passenger.image.url }}" 
@@ -269,6 +298,22 @@
                       style="max-width: 200px; max-height: 400px;" 
                       onerror="this.onerror=null; this.src='{% static 'assetstravelers/image/img/icons8_collaborator_male_60px 2.png' %}'" 
                     />
+    {% else %}
+                         <img 
+                      id="editImage{{ passenger.id }}" 
+                      src="{% static 'assetstravelers/image/img/icons8_collaborator_male_60px 2.png' %}" 
+                      alt="صورة الهوية" 
+                      style="max-width: 200px; max-height: 400px;" 
+                    />
+    {% endif %}
+
+
+
+
+
+
+
+
                     <label 
                       for="file-input-{{ passenger.id }}" 
                       class="custom-upload-button text-center"

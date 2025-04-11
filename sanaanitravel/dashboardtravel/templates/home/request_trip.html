@@ -2,6 +2,31 @@
 {% load static %}
 {% block ttyy %}
 <div class="w-full mt-[30px]">
+{% if form.errors %}
+<div class="bg-red-50 border-l-4 border-red-500 p-4 mb-4">
+    <div class="flex">
+        <div class="flex-shrink-0">
+            <svg class="h-5 w-5 text-red-500" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd" />
+            </svg>
+        </div>
+        <div class="ml-3">
+            <h3 class="text-sm font-medium text-red-800">
+                يوجد {% if form.errors.items|length == 1 %}خطأ{% else %}أخطاء{% endif %} في النموذج
+            </h3>
+            <div class="mt-2 text-sm text-red-700">
+                <ul class="list-disc pl-5 space-y-1">
+                    {% for field, errors in form.errors.items %}
+                        {% for error in errors %}
+                            <li>{{ field|title }}: {{ error }}</li>
+                        {% endfor %}
+                    {% endfor %}
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
     <div class="w-[90%] h-[90vh] mx-auto   bg-[#ffffff]  border-2 border-[#3c487b] rounded-[24px]">
 
                     <div class="text-center mb-1">
@@ -13,11 +38,7 @@
     {% csrf_token %}
     
 
-    {% if form.errors %}
-    <div class="bg-red-50 border-l-4 border-red-500 p-4 mb-1">
 
-    </div>
-    {% endif %}
     
 
     <div class="border-b border-gray-200 px-2 py-2">
@@ -42,12 +63,14 @@
                        class="border border-gray-300 rounded-md p-2 w-full focus:ring-blue-500 focus:border-blue-500">
             </div>
             
-            <div>
-                <label for="id_customer_passport_number" class="block text-sm font-medium text-gray-700 mb-1">رقم الجواز</label>
-                <input type="text" name="{{ form.customer_passport_number.name }}" id="id_customer_passport_number"
-                       value="{{ form.customer_passport_number.value|default_if_none:'' }}"
-                       class="border border-gray-300 rounded-md p-2 w-full focus:ring-blue-500 focus:border-blue-500">
-            </div>
+<div id="passport-field">
+    {% if form.customer_passport_number %}
+        <label for="id_customer_passport_number" class="block text-sm font-medium text-gray-700 mb-1">رقم الجواز</label>
+        <input type="text" name="{{ form.customer_passport_number.name }}" id="id_customer_passport_number"
+               value="{{ form.customer_passport_number.value|default_if_none:'' }}"
+               class="border border-gray-300 rounded-md p-2 w-full focus:ring-blue-500 focus:border-blue-500">
+    {% endif %}
+</div>
             
             <div>
                 <label for="id_customer_nationality" class="block text-sm font-medium text-gray-700 mb-1">الجنسية</label>
@@ -226,6 +249,49 @@ document.addEventListener('DOMContentLoaded', function() {
     const tripTimeInput = document.getElementById('id_trip_time');
     if (tripTimeInput) {
         tripTimeInput.type = 'time';
+    }
+});
+
+
+
+
+
+
+
+
+
+
+
+
+document.addEventListener('DOMContentLoaded', function() {
+    const departure = document.getElementById('id_departure');
+    const destination = document.getElementById('id_destination');
+    const passportField = document.getElementById('passport-field');
+
+    function checkPassportField() {
+        if (!departure.value || !destination.value) return;
+        
+        fetch(`/check_cities/?departure=${departure.value}&destination=${destination.value}`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.hide_passport) {
+                    passportField.style.display = 'none';
+                } else {
+                    passportField.style.display = 'block';
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                passportField.style.display = 'block';
+            });
+    }
+
+    departure.addEventListener('change', checkPassportField);
+    destination.addEventListener('change', checkPassportField);
+    
+
+    if (departure.value && destination.value) {
+        checkPassportField();
     }
 });
 </script>

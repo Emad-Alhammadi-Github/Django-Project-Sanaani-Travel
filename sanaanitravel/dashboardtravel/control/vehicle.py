@@ -1,3 +1,4 @@
+from decimal import Decimal
 from django.shortcuts import render, get_object_or_404, redirect
 from ..models import Driver, Vehicle
 from django.db.models import Q
@@ -26,32 +27,46 @@ def vehicle_detail(request, vehicle_id):
 
 
 
-
-
-
 @login_required(login_url='loginadmin')
 def add_vehicle(request):
     if request.method == 'POST':
-        vehicle = Vehicle(
-            name=request.POST['name'],
-            vehicle_type=request.POST['vehicle_type'],
-            model=request.POST['model'],
-            plate_number=request.POST['plate_number'],
-            status=request.POST['status'],
-            price=request.POST['price'],
-            # owner=request.POST['owner'],
-            passenger_capacity=request.POST['passenger_capacity'],
-            motor_type=request.POST['motor_type'],
-            fuel_capacity=request.POST['fuel_capacity'],
-            description=request.POST['description'],
-            driver=Driver.objects.get(id=request.POST['driver']),
-            image=request.FILES['image'],
-            img1=request.FILES['img1']
-        )
-        vehicle.save()
-        return redirect('vehicle_list')
+ 
+        price = request.POST.get('price', '0') or '0'
+        fuel_capacity = request.POST.get('fuel_capacity', '0') or '0'
+        
+        try:
+            vehicle = Vehicle(
+                name=request.POST['name'],
+                vehicle_type=request.POST['vehicle_type'],
+                model=request.POST.get('model'),
+                plate_number=request.POST['plate_number'],
+                status=request.POST.get('status'),
+                price=Decimal(price),  
+                passenger_capacity=request.POST['passenger_capacity'],
+                motor_type=request.POST.get('motor_type'),
+                fuel_capacity=Decimal(fuel_capacity),  
+                description=request.POST.get('description', ''),
+                driver=Driver.objects.get(id=request.POST['driver']),
+            )
+            
+  
+            if 'image' in request.FILES:
+                vehicle.image = request.FILES['image']
+            if 'img1' in request.FILES:
+                vehicle.img1 = request.FILES['img1']
+            
+            vehicle.save()
+            return redirect('vehicle_list')
+            
+        except Exception as e:
+    
+            print(f"Error: {e}")
+    
+            return render(request, 'dashboard/Vehicle.html', {'error': str(e)})
 
     return render(request, 'dashboard/Vehicle.html')
+
+
 
 
 

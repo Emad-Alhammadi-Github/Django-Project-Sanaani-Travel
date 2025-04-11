@@ -39,7 +39,7 @@ urlpatterns = [
     path('my-private-trips/', my_private_trips, name='my_private_trips'),
     path('private-trip/payment/<int:trip_id>/', make_payment, name='make_payment'),
     # path('payment/confirmation/<int:payment_id>/', payment_confirmation, name='payment_confirmation'),
-    
+    path('check_cities/', check_cities, name='check_cities'),
 
     path('private-trips/', manage_private_trips, name='manage_private_trips'),
     path('private-trip/approve/<int:trip_id>/', approve_private_trip, name='approve_private_trip'),
@@ -167,7 +167,8 @@ urlpatterns = [
 
 
 #####################################  ادارة التقارير ##################################################################
-    path('report/', report_view, name='report'),
+    # path('report/', report_view, name='report'),
+        path('reports/', reports_view, name='report'),
     path('get-cities/', get_cities, name='get_cities'),
 
 

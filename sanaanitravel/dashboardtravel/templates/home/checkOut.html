@@ -113,7 +113,7 @@
                                 type="text"
                                 name="name"
                                 placeholder="الاسم الرباعي"
-                                class="border-none text-sm flex-1" />
+                                class="border-none text-sm flex-1" required/>
                         </div>
                         <div class="w-full flex">
                             <div
@@ -125,7 +125,7 @@
                                     type="number"
                                     name="id_number"
                                     placeholder="رقم البطاقة الشخصية"
-                                    class="border-none text-sm flex-1" />
+                                    class="border-none text-sm flex-1" required/>
                             </div>
                             {% if not is_yemeni_trip %}
                             <div
@@ -137,7 +137,7 @@
                                     type="text"
                                     name="passport_number"
                                     placeholder=" رقم الجواز"
-                                    class="border-none text-sm flex-1" />
+                                    class="border-none text-sm flex-1" required/>
                             </div>
                             {% endif %}
                         </div>
@@ -178,7 +178,7 @@
                                 <img
                                     src="{% static 'assetstravelers/image/img/icons8_gender_equality_24px 1.svg'%}"
                                     alt />
-                                    <select name="gender" class="border-none text-sm flex-1" required>
+                                    <select name="gender" class="border-none text-sm flex-1" >
                                         <option value="">الجنس</option>
                                         <option value="1">ذكر</option>
                                         <option value="0">أنثى</option>
@@ -202,17 +202,18 @@
 
 
 
-                    <div class="w-1/3 mt-20">
-                        <input type="file" style="display: none" name="image" onchange="previewImage(event, 'passenger-image')"
-                            id="image" />
-                        <label
-                            for="image"
-                            class="bg-[#fafafb] border rounded-xl border-[#ececee] cursor-pointer hover:bg-[#d8d8d8] transition-all flex flex-col m-6 py-9 justify-center items-center gap-2">
-                            <h5 class="text-[#3b3b3c] text-[18px]">صوره سند
-                                الايداع</h5>
-                            <img id="passenger-image"   src="{% static 'assetstravelers/image/img/camera.svg'%}" />
-                        </label>
-                    </div> 
+<div class="w-1/3 mt-20">
+    <input type="file" style="display: none" name="image" 
+           onchange="previewImage(event, 'passenger-image')"
+           id="image"
+           data-required-message="يرجى إدخال صورة سند الإيداع" />
+    <label for="image" id="image-label"
+           class="bg-[#fafafb] border rounded-xl border-[#ececee] cursor-pointer hover:bg-[#d8d8d8] transition-all flex flex-col m-6 py-9 justify-center items-center gap-2">
+        <h5 class="text-[#3b3b3c] text-[18px]">صورة سند الايداع</h5>
+        <img id="passenger-image" src="{% static 'assetstravelers/image/img/camera.svg'%}" />
+    </label>
+    <div id="image-error" class="text-red-500 text-sm text-center hidden">يرجى إدخال صورة سند الإيداع</div>
+</div>
 
 
 
@@ -242,5 +243,82 @@
 
             </form>
         </div>
+
+<script>
+function previewImage(event, imgId) {
+    const reader = new FileReader();
+    const imgElement = document.getElementById(imgId);
+    
+    reader.onload = function(){
+        imgElement.src = reader.result;
+    };
+    
+    if (event.target.files[0]) {
+        reader.readAsDataURL(event.target.files[0]);
+    }
+}
+
+document.addEventListener('DOMContentLoaded', function() {
+    const imageInput = document.getElementById('image');
+    const imageLabel = document.getElementById('image-label');
+    const imageError = document.getElementById('image-error');
+    const form = document.querySelector('form');
+console.log('Script loaded'); 
+ 
+    imageInput.addEventListener('change', function(e) {
+        if (this.files && this.files.length > 0) {
+            imageLabel.style.border = '1px solid #ececee';
+            imageError.classList.add('hidden');
+        } else {
+            imageLabel.style.border = '2px solid red';
+            imageError.classList.remove('hidden');
+        }
+    });
+
+    form.addEventListener('submit', function(e) {
+        if (!imageInput.files || imageInput.files.length === 0) {
+            e.preventDefault();
+            
+        
+            imageError.classList.remove('hidden');
+            imageLabel.style.border = '2px solid red';
+            
+         
+            imageLabel.classList.add('animate-shake');
+            setTimeout(() => {
+                imageLabel.classList.remove('animate-shake');
+            }, 500);
+            
+           
+            imageLabel.scrollIntoView({ behavior: 'smooth', block: 'center' });
+            
+          
+            alert(imageInput.getAttribute('data-required-message'));
+        }
+    });
+});
+
+</script>
+
+<style>
+.animate-shake {
+    animation: shake 0.5s;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-5px); }
+    40%, 80% { transform: translateX(5px); }
+}
+
+#image-error {
+    margin-top: -10px;
+    margin-bottom: 10px;
+}
+</style>
+
+
+
+
     </body>
 </html>
