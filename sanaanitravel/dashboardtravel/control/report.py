@@ -38,20 +38,15 @@ def reports_view(request):
     
 
     querysets = {
-        'trips': Trip.objects.all(),
-        'passengers': Passenger.objects.all(),
-        'vehicles': Vehicle.objects.all(),
-        'drivers': Driver.objects.all(),
-        'invoices': Invoice.objects.all(),
-        'private_trips': PrivateTripRequest.objects.all(),
-        'employees': Employee.objects.all(),
-        'nationalities': Nationality.objects.all(),
-        'cities': City.objects.all(),
-        'travel_types': TravelType.objects.all(),
-        'trip_categories': TripCategory.objects.all(),
+        'trips': Trip.objects.select_related('travel_type', 'trip_category', 'vehicle_type', 'departure', 'destination'),
+        'passengers': Passenger.objects.select_related('trip_location', 'nationality'),
+        'vehicles': Vehicle.objects.select_related('driver'),
+        'drivers': Driver.objects.select_related('nationality'),
+        'invoices': Invoice.objects.select_related('passenger', 'trip'),
+        'private_trips': PrivateTripRequest.objects.select_related('departure', 'destination', 'vehicle_type', 'customer_nationality'),
+        'employees': Employee.objects.select_related('nationality', 'user'),
     }
-    
-    # تطبيق الفلاتر
+  
     if search_query:
         for name, qs in querysets.items():
             if name == 'trips':
@@ -162,96 +157,101 @@ def reports_view(request):
                 total=Sum('total_amount')
             ).order_by('-count'),
         },
-        
+        "trips_stats" : {
+        'by_type': querysets['trips'].exclude(travel_type__isnull=True).values(
+            'travel_type__name'
+        ).annotate(
+            count=Count('id'),
+            avg_seats=Avg('seat_count'),
+            avg_price=Avg('seat_price')
+        ).annotate(
+            percentage=ExpressionWrapper(
+                100.0 * F('count') / (total_trips if total_trips > 0 else 1),
+                output_field=FloatField()
+            )
+        ),
+        'by_category': querysets['trips'].exclude(trip_category__isnull=True).values(
+            'trip_category__name'
+        ).annotate(
+            count=Count('id')
+        ).annotate(
+            percentage=ExpressionWrapper(
+                100.0 * F('count') / (total_trips if total_trips > 0 else 1),
+                output_field=FloatField()
+            )
+        ),
+        'by_vehicle': querysets['trips'].exclude(vehicle_type__isnull=True).values(
+            'vehicle_type__name'
+        ).annotate(
+            count=Count('id')
+        ).annotate(
+            percentage=ExpressionWrapper(
+                100.0 * F('count') / (total_trips if total_trips > 0 else 1),
+                output_field=FloatField()
+            )
+        ),
+        'by_route': querysets['trips'].exclude(departure__isnull=True).exclude(destination__isnull=True).values(
+            'departure__name', 'destination__name'
+        ).annotate(
+            count=Count('id')
+        ).order_by('-count')[:10],
+        'total': total_trips,
+    },
 
-        'trips_stats': {
-            'by_type': querysets['trips'].values(
-                'travel_type__name'
-            ).annotate(
-                count=Count('id'),
-                avg_seats=Avg('seat_count'),
-                avg_price=Avg('seat_price')
-            ).annotate(
-                percentage=ExpressionWrapper(
-                    100.0 * F('count') / total_trips if total_trips > 0 else 0,
-                    output_field=FloatField()
-                )
-            ),
-            'by_category': querysets['trips'].values(
-                'trip_category__name'
-            ).annotate(
-                count=Count('id')
-            ).annotate(
-                percentage=ExpressionWrapper(
-                    100.0 * F('count') / total_trips if total_trips > 0 else 0,
-                    output_field=FloatField()
-                )
-            ),
-            'by_vehicle': querysets['trips'].values(
-                'vehicle_type__name'
-            ).annotate(
-                count=Count('id')
-            ).annotate(
-                percentage=ExpressionWrapper(
-                    100.0 * F('count') / total_trips if total_trips > 0 else 0,
-                    output_field=FloatField()
-                )
-            ),
-            'by_route': querysets['trips'].values(
-                'departure__name', 'destination__name'
-            ).annotate(
-                count=Count('id')
-            ).order_by('-count')[:10],
-            'total': total_trips,
-        },
-        
+'passengers_stats' : {
+    'by_nationality': querysets['passengers'].exclude(nationality__isnull=True).values(
+        'nationality__name'
+    ).annotate(
+        count=Count('id')
+    ).annotate(
+        percentage=ExpressionWrapper(
+            100.0 * F('count') / (total_passengers if total_passengers > 0 else 1),
+            output_field=FloatField()
+        )
+    ).order_by('-count'),
+    
+    'by_gender': querysets['passengers'].exclude(gender__isnull=True).values(
+        'gender'
+    ).annotate(
+        count=Count('id')
+    ).annotate(
+        percentage=ExpressionWrapper(
+            100.0 * F('count') / (total_passengers if total_passengers > 0 else 1),
+            output_field=FloatField()
+        )
+    ),
+    
+    'by_departure_city': querysets['passengers'].exclude(trip_location__departure__isnull=True).values(
+        'trip_location__departure__name',
+        'trip_location__departure__nationality__name'
+    ).annotate(
+        count=Count('id')
+    ).annotate(
+        percentage=ExpressionWrapper(
+            100.0 * F('count') / (total_passengers if total_passengers > 0 else 1),
+            output_field=FloatField()
+        )
+    ).order_by('-count'),
+    
+    'by_arrival_city': querysets['passengers'].exclude(trip_location__destination__isnull=True).values(
+        'trip_location__destination__name',
+        'trip_location__destination__nationality__name'
+    ).annotate(
+        count=Count('id')
+    ).annotate(
+        percentage=ExpressionWrapper(
+            100.0 * F('count') / (total_passengers if total_passengers > 0 else 1),
+            output_field=FloatField()
+        )
+    ).order_by('-count'),
+    
+    'total': total_passengers,
+    'all_passengers': querysets['passengers'].select_related(
+        'nationality', 'trip_location__departure', 'trip_location__destination'
+    ).order_by('-date_added'),
+},
 
-        'passengers_stats': {
-            'by_nationality': querysets['passengers'].values(
-                'nationality__name'
-            ).annotate(
-                count=Count('id')
-            ).annotate(
-                percentage=ExpressionWrapper(
-                    100.0 * F('count') / total_passengers if total_passengers > 0 else 0,
-                    output_field=FloatField()
-                )
-            ).order_by('-count'),
-            'by_gender': querysets['passengers'].values(
-                'gender'
-            ).annotate(
-                count=Count('id')
-            ).annotate(
-                percentage=ExpressionWrapper(
-                    100.0 * F('count') / total_passengers if total_passengers > 0 else 0,
-                    output_field=FloatField()
-                )
-            ),
-            'by_departure_city': querysets['passengers'].values(
-                'trip_location__departure__name',
-                'trip_location__departure__nationality__name'
-            ).annotate(
-                count=Count('id')
-            ).annotate(
-                percentage=ExpressionWrapper(
-                    100.0 * F('count') / total_passengers if total_passengers > 0 else 0,
-                    output_field=FloatField()
-                )
-            ).order_by('-count'),
-            'by_arrival_city': querysets['passengers'].values(
-                'trip_location__destination__name',
-                'trip_location__destination__nationality__name'
-            ).annotate(
-                count=Count('id')
-            ).annotate(
-                percentage=ExpressionWrapper(
-                    100.0 * F('count') / total_passengers if total_passengers > 0 else 0,
-                    output_field=FloatField()
-                )
-            ).order_by('-count'),
-            'total': total_passengers,
-             'all_passengers': querysets['passengers'].order_by('-date_added'),
-        },
+
         
 
         'vehicles_stats': {
@@ -447,7 +447,9 @@ def reports_view(request):
 
 
 
+
     internal_invoices = Invoice.objects.filter(
+
         trip__is_internal=True,
         date_add=today,
         status='paid'  
@@ -470,7 +472,7 @@ def reports_view(request):
     private_invoices = Invoice.objects.filter(
         trip__trip_category__name__icontains='خاصة',
         date_add=today,
-        status='paid'
+        # status='paid'
     )
     private_income = private_invoices.aggregate(
         total=Sum('paid_amount')
@@ -480,7 +482,7 @@ def reports_view(request):
     public_invoices = Invoice.objects.filter(
         trip__trip_category__name__icontains='عامة',
         date_add=today,
-        status='paid'
+        # status='paid'
     )
     public_income = public_invoices.aggregate(
         total=Sum('paid_amount')
@@ -489,7 +491,7 @@ def reports_view(request):
 
     private_trip_payments = PrivateTripPayment.objects.filter(
         payment_date__date=today,
-        status='paid'
+        # status='paid'
     )
     private_trip_income = private_trip_payments.aggregate(
         total=Sum('amount')

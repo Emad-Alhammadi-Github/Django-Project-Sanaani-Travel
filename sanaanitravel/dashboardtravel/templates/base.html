@@ -165,9 +165,9 @@
             <!-- القائمة الفرعية -->
             <div id="reservationDropdown" class="hidden flex flex-col pl-6 mt-2">
                 <div class="border-l-[2px] border-[#000000]"></div>
-                <div class="mx-8">
-                    <a href="{% url 'reservation_requests' %}" class="text-[#07002c] font-bold text-[14px] py-1">طلبات الحجز العامة</a>
-                    <a href="{% url 'reservation_requests_priveit' %}" class="text-[#07002c] font-bold text-[14px] py-1">طلبات الحجز الخاصة</a>
+                <div class="mx-4">
+                    <a href="{% url 'reservation_requests' %}" class="text-[#07002c] font-bold text-[14px]  py-1">طلبات الحجز العامة</a>
+                    <a href="{% url 'manage_private_trips' %}" class="text-[#07002c] font-bold text-[14px]  py-1">طلبات الحجز الخاصة بالعميل</a>
                     <a href="{% url 'approve_reservation_list' %}" class="text-[#07002c] font-bold text-[14px] py-1">الطلبات المقبولة</a>
                     <a href="{% url 'reject_reservation_list' %}" class="text-[#07002c] font-bold text-[14px] py-1">الطلبات المرفوضة</a>
                 </div>
@@ -302,12 +302,12 @@
         </div>
  {% endif %}
 
-         <div class="flex flex-row h-10 gap-2 justify-start w-[80%]">
+         {% comment %} <div class="flex flex-row h-10 gap-2 justify-start w-[80%]">
             <div class="border-l-[2px] border-[#000000]"></div>
             <img src="{% static 'assetstravelers/image/img/icons/icons8_Bus_128px 1.svg'%}" width="24" />
             <div class="border-l-[2px] border-[#000000]"></div>
             <a href="{% url 'manage_private_trips' %}" class="text-[#07002c] font-bold text-[16px]" id="link-vehicle" onclick="changeActiveLink(this)">ادارة الطلبات للرحلات الخاصة بالعميل</a>
-        </div>
+        </div> {% endcomment %}
 </div>
 
             

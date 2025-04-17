@@ -50,19 +50,22 @@
 
 
                     <div>
-            <select name="trip_location" id="trip_location" class="custom-input flex-1" required onchange="checkTripCities()">
-                <option value="">الرحلة</option>
-                {% for trip in trips %}
-                    <option value="{{ trip.id }}" data-departure="{{ trip.departure.nationality.id }}" data-destination="{{ trip.destination.nationality.id }}">
-                        {{ trip.departure }} إلى {{ trip.destination }} ({{ trip.date }})
-                    </option>
-                {% empty %}
-                    <option value="">لا توجد رحلات متاحة</option>
-                {% endfor %}
-            </select>
+                        <select name="trip_location" id="trip_location" class="custom-input flex-1" required onchange="checkTripCities(); updateRemainingAmount()">
+    <option value="">الرحلة</option>
+    {% for trip in trips %}
+        <option value="{{ trip.id }}" 
+                data-departure="{{ trip.departure.nationality.id }}" 
+                data-destination="{{ trip.destination.nationality.id }}"
+                data-price="{{ trip.seat_price }}">
+            {{ trip.departure }} إلى {{ trip.destination }} ({{ trip.date }})
+        </option>
+    {% empty %}
+        <option value="">لا توجد رحلات متاحة</option>
+    {% endfor %}
+</select>
+
                         <input type="number" name="paid_amount" class="custom-input" placeholder="العربون" required oninput="updateRemainingAmount()" />
                         <input type="text" name="remaining_amount" id="remaining_amount" class="custom-input" placeholder="المتبقي" disabled />
-                        {% comment %} <input type="date" name="trip_date" class="custom-input" placeholder="التاريخ" required /> {% endcomment %}
         
                         <div class="flex gap-1">
                             <select name="gender" class="custom-input flex-1" required>
@@ -213,7 +216,7 @@
                   <div>
                       <input type="text" name="name" value="{{ passenger.name }}" class="custom-input" placeholder="الاسم الرباعي" required />
                       <input type="text" name="id_number" value="{{ passenger.id_number }}" class="custom-input" placeholder="رقم البطاقة الشخصية" required />
-                      <input type="text" name="passport_number" id="edit_passport_number_{{ passenger.id }}" value="{{ passenger.passport_number }}" class="custom-input hidden" placeholder="رقم الجواز" required />
+                      <input type="text" name="passport_number" id="edit_passport_number_{{ passenger.id }}" value="{{ passenger.passport_number }}" class="custom-input hidden" placeholder="رقم الجواز" />
 
                       <input type="text" name="phone" value="{{ passenger.phone }}"  class="custom-input" placeholder="رقم الهاتف 1" required />
                       <input type="text" name="phone2" value="{{ passenger.phone }}" class="custom-input" placeholder="رقم الهاتف 2" />
@@ -227,10 +230,13 @@
                     {% endfor %}
                 </select>
 
+<input type="number" name="paid_amount" value="{{ passenger.paid_amount|floatformat }}" 
+       class="custom-input" placeholder="العربون" required 
+       oninput="updateEditRemainingAmount('{{ passenger.id }}')" />
 
-                      <input type="number" name="paid_amount" value="{{ passenger.paid_amount|floatformat }}" class="custom-input" placeholder="العربون" required oninput="updateRemainingAmount()" />
-                      <input type="text" name="remaining_amount"  id="remaining_amount" class="custom-input" placeholder="المتبقي" disabled />
-                      {% comment %} <input type="date" name="trip_date" value="{{ passenger.trip_date|date:'Y-m-d' }}" id="editTripDate" class="custom-input" placeholder="التاريخ" /> {% endcomment %}
+<input type="text" name="remaining_amount" id="edit_remaining_amount_{{ passenger.id }}" 
+       class="custom-input" placeholder="المتبقي" disabled value="{{ passenger.remaining_amount|floatformat }}" />
+
 
                       <div class="flex gap-1">
                           <select name="gender" class="custom-input flex-1" id>
@@ -252,10 +258,10 @@
 
                   <div class="flex flex-col items-center pt-2">
 
-                      {% if passenger.image %} 
+                      {% if passenger.identify_img %} 
                     <img 
                       id="editImage{{ passenger.id }}" 
-                      src="{{ passenger.image.url }}" 
+                      src="{{ passenger.identify_img.url }}" 
                       alt="صورة الهوية" 
                       style="max-width: 200px; max-height: 400px;" 
                       onerror="this.onerror=null; this.src='{% static 'assetstravelers/image/img/icons8_collaborator_male_60px 2.png' %}'" 
@@ -415,18 +421,60 @@
       </div>
       
     <script>
-        function updateRemainingAmount() {
-            const tripSelect = document.querySelector('select[name="trip_location"]');
-            const paidAmountInput = document.querySelector('input[name="paid_amount"]');
-            const remainingAmountInput = document.getElementById('remaining_amount');
-        
-            const selectedOption = tripSelect.options[tripSelect.selectedIndex];
-            const seatPrice = selectedOption ? parseFloat(selectedOption.getAttribute('data-price')) : 0;
-            const paidAmount = parseFloat(paidAmountInput.value) || 0;
-        
-            const remainingAmount = seatPrice - paidAmount;
-            remainingAmountInput.value = remainingAmount >= 0 ? remainingAmount.toFixed(2) : '0.00';
-        }
+   
+function updateRemainingAmount() {
+    const tripSelect = document.getElementById('trip_location');
+    const paidAmountInput = document.querySelector('input[name="paid_amount"]');
+    const remainingAmountInput = document.getElementById('remaining_amount');
+    
+
+    const selectedOption = tripSelect.options[tripSelect.selectedIndex];
+    const seatPrice = selectedOption ? parseFloat(selectedOption.getAttribute('data-price')) || 0 : 0;
+    
+
+    const paidAmount = parseFloat(paidAmountInput.value) || 0;
+    
+  
+    const remainingAmount = seatPrice - paidAmount;
+    remainingAmountInput.value = remainingAmount >= 0 ? remainingAmount.toFixed(2) : '0.00';
+}
+
+
+document.addEventListener('DOMContentLoaded', function() {
+
+    updateRemainingAmount();
+    
+
+    document.querySelector('input[name="paid_amount"]').addEventListener('input', updateRemainingAmount);
+});
+
+
+
+function updateEditRemainingAmount(passengerId) {
+    const tripSelect = document.getElementById(`editTripLocation${passengerId}`);
+    const paidAmountInput = document.querySelector(`#EditDialog${passengerId} input[name="paid_amount"]`);
+    const remainingAmountInput = document.getElementById(`edit_remaining_amount_${passengerId}`);
+    
+    const selectedOption = tripSelect.options[tripSelect.selectedIndex];
+    const seatPrice = selectedOption ? parseFloat(selectedOption.getAttribute('data-price')) || 0 : 0;
+    const paidAmount = parseFloat(paidAmountInput.value) || 0;
+    
+    const remainingAmount = seatPrice - paidAmount;
+    remainingAmountInput.value = remainingAmount >= 0 ? remainingAmount.toFixed(2) : '0.00';
+}
+
+
+function initEditDialog(passengerId) {
+    const dialog = document.getElementById(`EditDialog${passengerId}`);
+    dialog.querySelector('input[name="paid_amount"]').addEventListener('input', function() {
+        updateEditRemainingAmount(passengerId);
+    });
+    
+
+}
+
+
+
 
         function updateNewRemaining(passengerId) {
             const remainingAmountInput = document.getElementById(`editRemainingAmount${passengerId}`);

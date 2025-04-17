@@ -48,12 +48,12 @@ def add_invoice(request):
             trip=Trip.objects.get(id=request.POST['trip']),
             
             seat_number=request.POST['seat_number'],
-            total_amount=request.POST['total_amount'],
+            total_amount=request.POST.get('total_amount', 0),
             payment_method=request.POST['payment_method'],
             status=request.POST['status'],
         )
         invoice.save()
-        return redirect('invoice_list')
+        return redirect('invoices_list')
     
     passengers = Passenger.objects.all()
     vehicles = Vehicle.objects.all()

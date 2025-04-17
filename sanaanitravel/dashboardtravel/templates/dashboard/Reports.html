@@ -641,6 +641,8 @@
                     <div>
                         <h3 class="text-lg font-semibold mb-4">حسب نوع الرحلة</h3>
                         <div class="overflow-x-auto">
+                                    {% if stats.trips_stats.by_type %}
+
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
                                     <tr>
@@ -658,15 +660,21 @@
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">{{ type.count }}</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">{{ type.percentage|floatformat:2 }}%</td>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">{{ type.avg_seats|floatformat:1 }}</td>
-                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ type.avg_price|floatformat:2 }} ر.س</td>
+                                        <td class="px-6 py-4 whitespace-nowrap text-sm">{{ type.avg_price|floatformat:2 }} ر.ي</td>
                                     </tr>
                                     {% empty %}
                                     <tr>
                                         <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
                                     </tr>
                                     {% endfor %}
+
                                 </tbody>
                             </table>
+                                                                {% else %}
+    <tr>
+        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+    </tr>
+{% endif %}
                         </div>
                     </div>
                     
@@ -674,6 +682,8 @@
                     <div>
                         <h3 class="text-lg font-semibold mb-4">حسب فئة الرحلة</h3>
                         <div class="overflow-x-auto">
+                                    {% if stats.trips_stats.by_category %}
+
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
                                     <tr>
@@ -694,8 +704,14 @@
                                         <td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
                                     </tr>
                                     {% endfor %}
+
                                 </tbody>
                             </table>
+                                                                {% else %}
+    <tr>
+        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+    </tr>
+{% endif %}
                         </div>
                     </div>
                 </div>
@@ -704,6 +720,8 @@
                 <div class="mb-8">
                     <h3 class="text-lg font-semibold mb-4">أشهر المسارات</h3>
                     <div class="overflow-x-auto">
+                                {% if stats.trips_stats.by_route %}
+
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
@@ -722,8 +740,14 @@
                                     <td colspan="2" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
                                 </tr>
                                 {% endfor %}
+
                             </tbody>
                         </table>
+                                                        {% else %}
+    <tr>
+        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+    </tr>
+{% endif %}
                     </div>
                 </div>
                 
@@ -731,6 +755,8 @@
                 <div>
                     <h3 class="text-lg font-semibold mb-4">حسب المركبة</h3>
                     <div class="overflow-x-auto">
+                                {% if stats.trips_stats.by_vehicle %}
+
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
@@ -751,8 +777,14 @@
                                     <td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
                                 </tr>
                                 {% endfor %}
+
                             </tbody>
                         </table>
+                                                        {% else %}
+    <tr>
+        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+    </tr>
+{% endif %}
                     </div>
                 </div>
             </div>
@@ -774,6 +806,8 @@
                     <div>
                         <h3 class="text-lg font-semibold mb-4">حسب الجنسية</h3>
                         <div class="overflow-x-auto">
+                                    {% if stats.passengers_stats.by_nationality %}
+
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
                                     <tr>
@@ -783,6 +817,7 @@
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
+
                                     {% for nation in stats.passengers_stats.by_nationality %}
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">{{ nation.nationality__name }}</td>
@@ -794,14 +829,22 @@
                                         <td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
                                     </tr>
                                     {% endfor %}
+
                                 </tbody>
                             </table>
+                                                                {% else %}
+    <tr>
+        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+    </tr>
+{% endif %}
                         </div>
                     </div>
 
                     <div>
                         <h3 class="text-lg font-semibold mb-4">حسب الجنس</h3>
                         <div class="overflow-x-auto">
+                                    {% if stats.passengers_stats.by_gender %}
+
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
                                     <tr>
@@ -811,6 +854,8 @@
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
+
+
                                     {% for gender in stats.passengers_stats.by_gender %}
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">
@@ -826,8 +871,14 @@
                                         <td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
                                     </tr>
                                     {% endfor %}
+
                                 </tbody>
                             </table>
+                                                                {% else %}
+    <tr>
+        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+    </tr>
+{% endif %}
                         </div>
                     </div>
                 </div>
@@ -836,6 +887,8 @@
                 <div class="mb-8">
                     <h3 class="text-lg font-semibold mb-4">حسب محافظة المغادرة</h3>
                     <div class="overflow-x-auto">
+                                {% if stats.passengers_stats.by_departure_city %}
+
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
@@ -858,8 +911,14 @@
                                     <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
                                 </tr>
                                 {% endfor %}
+
                             </tbody>
                         </table>
+                                                        {% else %}
+    <tr>
+        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+    </tr>
+{% endif %}
                     </div>
                 </div>
                 
@@ -867,6 +926,8 @@
                 <div>
                     <h3 class="text-lg font-semibold mb-4">حسب محافظة الوصول</h3>
                     <div class="overflow-x-auto">
+                                {% if stats.passengers_stats.by_arrival_city %}
+
                         <table class="min-w-full divide-y divide-gray-200">
                             <thead class="bg-gray-50">
                                 <tr>
@@ -889,8 +950,14 @@
                                     <td colspan="4" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
                                 </tr>
                                 {% endfor %}
+
                             </tbody>
                         </table>
+                                                        {% else %}
+    <tr>
+        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+    </tr>
+{% endif %}
                     </div>
                 </div>
             </div>
@@ -915,6 +982,8 @@
                 <div class="bg-white shadow rounded-lg p-6 mb-8">
         <h2 class="text-2xl font-bold text-gray-800 mb-6">قائمة المسافرين (إجمالي: {{ stats.passengers_stats.total }})</h2>
         <div class="overflow-x-auto">
+                    {% if stats.passengers_stats.all_passengers %}
+
             <table class="min-w-full divide-y divide-gray-200">
                 <thead class="bg-gray-50">
                     <tr>
@@ -960,8 +1029,14 @@
                         </td>
                     </tr>
                     {% endfor %}
+
                 </tbody>
             </table>
+                                {% else %}
+    <tr>
+        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+    </tr>
+{% endif %}
         </div>
     </div>
             </div>
@@ -984,6 +1059,8 @@
                     <div>
                         <h3 class="text-lg font-semibold mb-4">حسب النوع</h3>
                         <div class="overflow-x-auto">
+                                    {% if stats.vehicles_stats.by_type %}
+
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
                                     <tr>
@@ -1004,8 +1081,14 @@
                                         <td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
                                     </tr>
                                     {% endfor %}
+
                                 </tbody>
                             </table>
+                                                                {% else %}
+    <tr>
+        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+    </tr>
+{% endif %}
                         </div>
                     </div>
                     
@@ -1013,6 +1096,8 @@
                     <div>
                         <h3 class="text-lg font-semibold mb-4">حسب الحالة</h3>
                         <div class="overflow-x-auto">
+                                    {% if stats.vehicles_stats.by_status %}
+
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
                                     <tr>
@@ -1031,8 +1116,14 @@
                                         <td colspan="2" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
                                     </tr>
                                     {% endfor %}
+
                                 </tbody>
                             </table>
+                                                                {% else %}
+    <tr>
+        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+    </tr>
+{% endif %}
                         </div>
                     </div>
                     
@@ -1040,6 +1131,8 @@
                     <div>
                         <h3 class="text-lg font-semibold mb-4">أكثر السائقين</h3>
                         <div class="overflow-x-auto">
+                                    {% if stats.vehicles_stats.by_driver %}
+
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
                                     <tr>
@@ -1058,8 +1151,14 @@
                                         <td colspan="2" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
                                     </tr>
                                     {% endfor %}
+
                                 </tbody>
                             </table>
+                                                                {% else %}
+    <tr>
+        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+    </tr>
+{% endif %}
                         </div>
                     </div>
                 </div>
@@ -1085,6 +1184,8 @@
                     <div>
                         <h3 class="text-lg font-semibold mb-4">حسب الاسم</h3>
                         <div class="overflow-x-auto">
+                                    {% if typewq in stats.vehicles_stats.all_vehicles %}
+
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
                                     <tr>
@@ -1105,8 +1206,14 @@
                                         <td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
                                     </tr>
                                     {% endfor %}
+
                                 </tbody>
                             </table>
+                                                                {% else %}
+    <tr>
+        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+    </tr>
+{% endif %}
                         </div>
                     </div>
                     
@@ -1130,6 +1237,8 @@
                     <div>
                         <h3 class="text-lg font-semibold mb-4">حسب النوع</h3>
                         <div class="overflow-x-auto">
+                                    {% if stats.drivers_stats.by_type %}
+
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
                                     <tr>
@@ -1153,8 +1262,14 @@
                                         <td colspan="2" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
                                     </tr>
                                     {% endfor %}
+
                                 </tbody>
                             </table>
+                                                                {% else %}
+    <tr>
+        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+    </tr>
+{% endif %}
                         </div>
                     </div>
                     
@@ -1162,6 +1277,8 @@
                     <div>
                         <h3 class="text-lg font-semibold mb-4">حسب الجنسية</h3>
                         <div class="overflow-x-auto">
+                                    {% if stats.drivers_stats.by_nationality %}
+
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
                                     <tr>
@@ -1170,6 +1287,9 @@
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
+
+                                    
+
                                     {% for nation in stats.drivers_stats.by_nationality %}
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">{{ nation.nationality__name }}</td>
@@ -1180,8 +1300,14 @@
                                         <td colspan="2" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
                                     </tr>
                                     {% endfor %}
+
                                 </tbody>
                             </table>
+                                                                {% else %}
+    <tr>
+        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+    </tr>
+{% endif %}
                         </div>
                     </div>
                     
@@ -1189,6 +1315,8 @@
                     <div>
                         <h3 class="text-lg font-semibold mb-4">حسب سنوات الخبرة</h3>
                         <div class="overflow-x-auto">
+                                    {% if stats.drivers_stats.by_experience %}
+
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
                                     <tr>
@@ -1197,6 +1325,7 @@
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
+
                                     {% for exp in stats.drivers_stats.by_experience %}
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">{{ exp.experience_years }}</td>
@@ -1207,8 +1336,14 @@
                                         <td colspan="2" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
                                     </tr>
                                     {% endfor %}
+
                                 </tbody>
                             </table>
+                                                                {% else %}
+    <tr>
+        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+    </tr>
+{% endif %}
                         </div>
                     </div>
                 </div>
@@ -1230,6 +1365,8 @@
                     <div>
                         <h3 class="text-lg font-semibold mb-4">حسب الاسم</h3>
                         <div class="overflow-x-auto">
+                                    {% if stats.drivers_stats.all_drivers %}
+
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
                                     <tr>
@@ -1238,6 +1375,7 @@
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
+
                                     {% for typeqq in stats.drivers_stats.all_drivers %}
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">{{ typeqq.name }}</td>
@@ -1248,8 +1386,14 @@
                                         <td colspan="2" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
                                     </tr>
                                     {% endfor %}
+
                                 </tbody>
                             </table>
+                                                                {% else %}
+    <tr>
+        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+    </tr>
+{% endif %}
                         </div>
                     </div>
                     
@@ -1275,6 +1419,8 @@
                     <div style="break-inside: avoid;">
                         <h3 class="text-lg font-semibold mb-4">حسب المسمى الوظيفي</h3>
                         <div class="overflow-x-auto" >
+                                    {% if stats.employees_stats.by_position %}
+
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
                                     <tr>
@@ -1284,6 +1430,7 @@
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
+
                                     {% for pos in stats.employees_stats.by_position %}
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">{{ pos.job_title }}</td>
@@ -1295,8 +1442,14 @@
                                         <td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
                                     </tr>
                                     {% endfor %}
+
                                 </tbody>
                             </table>
+                                                                {% else %}
+    <tr>
+        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+    </tr>
+{% endif %}
                         </div>
                     </div>
                     
@@ -1304,6 +1457,8 @@
                     <div style="break-inside: avoid;">
                         <h3 class="text-lg font-semibold mb-4">حسب الجنسية</h3>
                         <div class="overflow-x-auto" >
+                                    {% if stats.employees_stats.by_nationality %}
+
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
                                     <tr>
@@ -1312,6 +1467,7 @@
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
+
                                     {% for nation in stats.employees_stats.by_nationality %}
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">{{ nation.nationality__name }}</td>
@@ -1322,8 +1478,14 @@
                                         <td colspan="2" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
                                     </tr>
                                     {% endfor %}
+
                                 </tbody>
                             </table>
+                                                                {% else %}
+    <tr>
+        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+    </tr>
+{% endif %}
                         </div>
                     </div>
                     
@@ -1331,6 +1493,8 @@
                     <div style="break-inside: avoid;">
                         <h3 class="text-lg font-semibold mb-4">حسب الجنس</h3>
                         <div class="overflow-x-auto">
+                                    {% if stats.employees_stats.by_gender %}
+
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
                                     <tr>
@@ -1339,6 +1503,7 @@
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y divide-gray-200">
+
                                     {% for gender in stats.employees_stats.by_gender %}
                                     <tr>
                                         <td class="px-6 py-4 whitespace-nowrap text-sm">
@@ -1353,8 +1518,14 @@
                                         <td colspan="2" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
                                     </tr>
                                     {% endfor %}
+
                                 </tbody>
                             </table>
+                                                                {% else %}
+    <tr>
+        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+    </tr>
+{% endif %}
                         </div>
                     </div>
                 </div>
@@ -1379,6 +1550,8 @@
                     <div style="break-inside: avoid;">
                         <h3 class="text-lg font-semibold mb-4">حسب الاسم </h3>
                         <div class="overflow-x-auto" >
+                                    {% if stats.employees_stats.all_employees %}
+
                             <table class="min-w-full divide-y divide-gray-200">
                                 <thead class="bg-gray-50">
                                     <tr>
@@ -1399,8 +1572,14 @@
                                         <td colspan="3" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
                                     </tr>
                                     {% endfor %}
+
                                 </tbody>
                             </table>
+                                                                {% else %}
+    <tr>
+        <td colspan="5" class="px-6 py-4 text-center text-sm text-gray-500">لا توجد بيانات</td>
+    </tr>
+{% endif %}
                         </div>
                     </div>
                     
