@@ -336,39 +336,36 @@ def reports_view(request):
     }
     
 
-
-
     current_year = datetime.now().year  
-
-
     user_entered_dates = bool(start_date or end_date)
 
     if user_entered_dates:
-
         try:
-            start_date_obj = datetime.strptime(start_date, "%Y-%m-%d").date() if start_date else None
-            end_date_obj = datetime.strptime(end_date, "%Y-%m-%d").date() if end_date else None
-            
+     
+            if isinstance(start_date, str):
+                start_date = datetime.strptime(start_date, "%Y-%m-%d").date() if start_date else None
+            if isinstance(end_date, str):
+                end_date = datetime.strptime(end_date, "%Y-%m-%d").date() if end_date else None
 
-            filter_year = start_date_obj.year if start_date_obj else (end_date_obj.year if end_date_obj else current_year)
+            filter_year = start_date.year if start_date else (end_date.year if end_date else current_year)
             
-
+     
             trips_query = querysets["trips"].filter(date_added__year=filter_year)
             date_filter = {"trip_location__date_added__year": filter_year}
             
-
+          
             start_date = datetime(filter_year, 1, 1).date()
             end_date = datetime(filter_year, 12, 31).date()
             
-        except ValueError:
-
+        except (ValueError, AttributeError):
+      
             filter_year = current_year
             trips_query = querysets["trips"].filter(date_added__year=filter_year)
             date_filter = {"trip_location__date_added__year": filter_year}
             start_date = datetime(filter_year, 1, 1).date()
             end_date = datetime(filter_year, 12, 31).date()
     else:
-
+      
         filter_year = current_year
         trips_query = querysets["trips"].filter(date_added__year=filter_year)
         date_filter = {"trip_location__date_added__year": filter_year}
@@ -379,20 +376,18 @@ def reports_view(request):
     monthly_income, mid_year_income, full_year_income = calculate_income(trips_query)
     total_income = full_year_income
 
-
     print(f"عدد الرحلات : {trips_query.count()}")
     today = date.today()
 
     if start_date or end_date:
-
         try:
-
+          
             if isinstance(start_date, str):
-                start_date = datetime.strptime(start_date, "%Y-%m-%d").date() if start_date else None
+                start_date = datetime.strptime(start_date, "%Y-%m-%d").date()
             if isinstance(end_date, str):
-                end_date = datetime.strptime(end_date, "%Y-%m-%d").date() if end_date else None
+                end_date = datetime.strptime(end_date, "%Y-%m-%d").date()
             
-
+         
             if start_date and end_date:
                 trips_query = querysets["trips"].filter(date_added__date__range=(start_date, end_date))
                 date_filter = {"trip_location__date_added__date__range": [start_date, end_date]}
@@ -404,13 +399,13 @@ def reports_view(request):
                 date_filter = {"trip_location__date_added__date": end_date}
                 
         except ValueError:
-
+       
             start_date = today
             end_date = today
             trips_query = querysets["trips"].filter(date_added__date=today)
             date_filter = {"trip_location__date_added__date": today}
     else:
-   
+    
         start_date = today
         end_date = today
         trips_query = querysets["trips"].filter(date_added__date=today)
