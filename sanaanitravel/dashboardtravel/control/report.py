@@ -14,7 +14,7 @@ from django.db.models import Q, Sum, Count, Avg, F, ExpressionWrapper, FloatFiel
 from datetime import datetime
 from ..models import *
 
-
+import re
 
 
 
@@ -50,14 +50,44 @@ def reports_view(request):
     if search_query:
         for name, qs in querysets.items():
             if name == 'trips':
+              
+                if '-' in search_query:
+                    parts = [part.strip() for part in search_query.split('-')]
+                    if len(parts) == 2:
+                        departure_part = parts[0].strip()
+                        destination_part = parts[1].strip()
+                        
+                        
+                        querysets[name] = qs.filter(
+                            Q(departure__name__icontains=departure_part) &
+                            Q(destination__name__icontains=destination_part)
+                        )
+                        
+                       
+                        if not querysets[name].exists():
+                            querysets[name] = qs.filter(
+                                Q(departure__name__icontains=departure_part) |
+                                Q(destination__name__icontains=destination_part)
+                            )
+                        continue
+                
+              
                 querysets[name] = qs.filter(
                     Q(departure__name__icontains=search_query) |
                     Q(destination__name__icontains=search_query) |
                     Q(travel_type__name__icontains=search_query) |
                     Q(trip_category__name__icontains=search_query) |
                     Q(vehicle_type__name__icontains=search_query) |
-                    Q(details__icontains=search_query)
+                    Q(vehicle_type__plate_number__icontains=search_query) |
+                    Q(vehicle_type__driver__name__icontains=search_query) |
+                    Q(date__icontains=search_query) |
+                    Q(time__icontains=search_query) |
+                    Q(seat_count__icontains=search_query) |
+                    Q(seat_price__icontains=search_query) |
+                    Q(details__icontains=search_query) |
+                    Q(is_internal__icontains=search_query)
                 )
+   
             elif name == 'passengers':
                 querysets[name] = qs.filter(
                     Q(name__icontains=search_query) |
@@ -66,29 +96,51 @@ def reports_view(request):
                     Q(phone__icontains=search_query) |
                     Q(nationality__name__icontains=search_query) |
                     Q(trip_location__departure__name__icontains=search_query) |
-                    Q(trip_location__destination__name__icontains=search_query)
+                    Q(trip_location__destination__name__icontains=search_query) |
+                    Q(paid_amount__icontains=search_query) |
+                    Q(remaining_amount__icontains=search_query) |
+                    Q(seat_number__icontains=search_query) |
+                    Q(gender__icontains=search_query)
                 )
             elif name == 'vehicles':
                 querysets[name] = qs.filter(
                     Q(name__icontains=search_query) |
                     Q(plate_number__icontains=search_query) |
                     Q(model__icontains=search_query) |
-                    Q(driver__name__icontains=search_query)
+                    Q(driver__name__icontains=search_query) |
+                    Q(vehicle_type__icontains=search_query) |
+                    Q(status__icontains=search_query) |
+                    Q(price__icontains=search_query) |
+                    Q(passenger_capacity__icontains=search_query) |
+                    Q(fuel_capacity__icontains=search_query) |
+                    Q(motor_type__icontains=search_query) |
+                    Q(description__icontains=search_query)
                 )
             elif name == 'drivers':
                 querysets[name] = qs.filter(
                     Q(name__icontains=search_query) |
+                    Q(driver_type__icontains=search_query) |
+                    Q(experience_years__icontains=search_query) |
                     Q(phone__icontains=search_query) |
+                    Q(license_type__icontains=search_query) |
                     Q(license_number__icontains=search_query) |
                     Q(id_number__icontains=search_query) |
-                    Q(nationality__name__icontains=search_query)
+                    Q(passport_number__icontains=search_query) |
+                    Q(gender__icontains=search_query) |
+                    Q(nationality__name__icontains=search_query) |
+                    Q(date_of_birth__icontains=search_query)
                 )
             elif name == 'invoices':
                 querysets[name] = qs.filter(
                     Q(passenger__name__icontains=search_query) |
                     Q(trip__departure__name__icontains=search_query) |
                     Q(trip__destination__name__icontains=search_query) |
-                    Q(payment_method__icontains=search_query)
+                    Q(payment_method__icontains=search_query) |
+                    Q(paid_amount__icontains=search_query) |
+                    Q(remaining_amount__icontains=search_query) |
+                    Q(seat_number__icontains=search_query) |
+                    Q(total_amount__icontains=search_query) |
+                    Q(status__icontains=search_query)
                 )
             elif name == 'private_trips':
                 querysets[name] = qs.filter(
@@ -96,7 +148,17 @@ def reports_view(request):
                     Q(departure__name__icontains=search_query) |
                     Q(destination__name__icontains=search_query) |
                     Q(customer_phone__icontains=search_query) |
-                    Q(status__icontains=search_query)
+                    Q(status__icontains=search_query) |
+                    Q(trip_type__name__icontains=search_query) |
+                    Q(vehicle_type__name__icontains=search_query) |
+                    Q(passenger_count__icontains=search_query) |
+                    Q(trip_date__icontains=search_query) |
+                    Q(trip_time__icontains=search_query) |
+                    Q(special_requests__icontains=search_query) |
+                    Q(customer_id_number__icontains=search_query) |
+                    Q(customer_passport_number__icontains=search_query) |
+                    Q(customer_email__icontains=search_query) |
+                    Q(customer_nationality__name__icontains=search_query)
                 )
             elif name == 'employees':
                 querysets[name] = qs.filter(
@@ -104,8 +166,23 @@ def reports_view(request):
                     Q(job_title__icontains=search_query) |
                     Q(phone__icontains=search_query) |
                     Q(id_number__icontains=search_query) |
+                    Q(salary__icontains=search_query) |
+                    Q(gender__icontains=search_query) |
+                    Q(nationality__name__icontains=search_query) |
+                    Q(user_type__icontains=search_query) |
+                    Q(user__username__icontains=search_query) |
+                    Q(user__email__icontains=search_query)
+                )
+            elif name == 'nationalities':
+                querysets[name] = qs.filter(
+                    Q(name__icontains=search_query)
+                )
+            elif name == 'cities':
+                querysets[name] = qs.filter(
+                    Q(name__icontains=search_query) |
                     Q(nationality__name__icontains=search_query)
                 )
+
 
     if start_date and end_date:
         try:

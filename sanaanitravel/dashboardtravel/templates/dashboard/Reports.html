@@ -988,6 +988,7 @@
                 <thead class="bg-gray-50">
                     <tr>
                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الاسم</th>
+                        <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الهاتف</th>
                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">رقم الهوية</th>
                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الجنسية</th>
                         <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">الجنس</th>
@@ -1003,9 +1004,13 @@
                             <div class="flex items-center">
                   
                                     <div class="text-sm font-medium text-gray-900">{{ passengerwq.name }}</div>
-                                    <div class="text-sm text-gray-500">{{ passengerwq.phone }}</div>
+                           
+                                    {% comment %} <div class="text-sm text-gray-500">{{ passengerwq.phone }}</div> {% endcomment %}
                                 </div>
                             </div>
+                        </td>
+                                                <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
+                            {{ passengerwq.phone }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm text-gray-500">
                             {{ passengerwq.id_number }}
